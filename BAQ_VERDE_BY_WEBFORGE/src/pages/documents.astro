@@ -1,7 +1,87 @@
 ---
-import Layout from "../layouts/Layout.astro"
+import Layout from "../layouts/Layout.astro";
+import DocumentButton from "../components/DocumentButton.astro";
+import SearchBar from "../components/SearchBar.astro";
+
+const documents = [
+  { title: "Política de Privacidad", href: "/docs/privacy" },
+  { title: "Términos y Condiciones", href: "/docs/terms" },
+  { title: "Manual del Usuario", href: "/docs/manual" },
+  { title: "Informe Anual 2024", href: "/docs/report2024" },
+  { title: "Guía de Instalación", href: "/docs/installation" },
+  { title: "Reglamento Interno", href: "/docs/regulations" },
+  { title: "Carta de Bienvenida", href: "/docs/welcome" },
+  { title: "Plan Estratégico", href: "/docs/strategy" },
+  { title: "Sistema de Gestión", href: "/docs/gms" },
+  { title: "Código de Ética", href: "/docs/ethics" },
+  { title: "Protocolo de Seguridad", href: "/docs/security" },
+  { title: "Formulario de Solicitud", href: "/docs/request" },
+  { title: "Mapa del Sitio", href: "/docs/sitemap" },
+  { title: "Ficha Técnica", href: "/docs/specs" },
+];
 ---
 
-<Layout>
-  
+<Layout title="documents">
+  <div class="document-page">
+    <h1>DOCUMENTACIÓN EJEMPLOS</h1>
+    <p class="subtitle">Consulta los documentos oficiales disponibles</p>
+
+    <SearchBar />
+
+    <div class="document-list">
+      {documents.map(doc => (
+        <DocumentButton title={doc.title} href={doc.href} />
+      ))}
+    </div>
+  </div>
+
+  <style>
+  .documents-page {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .documents-page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://i.imgur.com/7qKZxLk.png'); /* Hojas verdes */
+    background-repeat: repeat;
+    opacity: 0.1;
+    z-index: -1;
+  }
+
+  h1 {
+    text-align: center;
+    color: #2e7d32;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+
+  .document-list {
+    background-color: #4CAF50;
+    border-radius: 15px;
+    padding: 7px;
+    margin: 20px auto;
+    min-height: 400px;
+    height: 100%;
+    width: 70%;
+  }
+  </style>
 </Layout>
