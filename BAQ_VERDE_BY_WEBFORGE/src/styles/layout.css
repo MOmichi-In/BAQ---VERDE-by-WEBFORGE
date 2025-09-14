@@ -5,33 +5,39 @@
   box-sizing: border-box;
 }
 
+/* HTML y BODY ocupan toda la pantalla */
+html,
 body {
+  height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
 }
 
-.container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+/* 🟢 Contenedor principal para layout flexible */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/* HEADER */
+/* HEADER → Transparente, sin fondo, sin borde, sin nada */
 .header {
-  background: linear-gradient(135deg, #2e7d32, #4caf50);
-  color: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   padding: 1rem 0;
-  position: relative;
-  z-index: 10;
 }
 
 .header .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .header .logo img {
@@ -39,10 +45,11 @@ body {
 }
 
 .header .nav a {
-  color: white;
+  color: rgb(255, 255, 255);
   text-decoration: none;
   margin: 0 0.75rem;
   font-size: 0.95rem;
+  font-weight: 500;
   transition: opacity 0.3s;
 }
 
@@ -50,12 +57,60 @@ body {
   opacity: 0.9;
 }
 
-/* FOOTER */
+.hero {
+  position: relative;
+  height: 600px;
+  background: url('/images/hero-bg.webp') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  z-index: 1;
+}
+
+/* ✅ Filtro verde translúcido sobre la imagen */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(34, 139, 34, 0.5); /* Verde oscuro con transparencia */
+  z-index: 1;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+  max-width: 800px;
+  padding: 0 1rem;
+}
+
+/* 🟢 MAIN: Espaciado natural, respetando márgenes */
+main {
+  flex: 1;
+  background-color: #ffffff;
+  margin-top: 5%;
+}
+
+/* 🟢 FOOTER: Pegado al fondo */
 .footer {
   background: #1a2b3c;
   color: white;
   padding: 2.5rem 0 1rem;
-  margin-top: 3rem;
+  margin-top: auto;
+}
+
+.footer .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .footer-grid {
@@ -82,7 +137,6 @@ body {
 .footer-col ul li a {
   color: #ccc;
   text-decoration: none;
-  transition: color 0.3s;
 }
 
 .footer-col ul li a:hover {
@@ -110,15 +164,24 @@ body {
   font-size: 0.9rem;
 }
 
-/* Responsive */
+/* 📱 Responsive */
 @media (max-width: 768px) {
+  .hero {
+    height: 400px;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+    padding: 0 1rem;
+  }
+
   .header .container {
     flex-direction: column;
     text-align: center;
   }
 
   .header .nav {
-    margin-top: 1rem;
+    margin-top: 0.75rem;
   }
 
   .header .nav a {

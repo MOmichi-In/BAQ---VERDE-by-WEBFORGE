@@ -1,7 +1,9 @@
 ---
 const title = 'Observatorio Ambiental';
 const year = new Date().getFullYear();
+import "../styles/layout.css";
 ---
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,11 +11,10 @@ const year = new Date().getFullYear();
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
-  <link rel="stylesheet" href="/css/layout.css" />
 </head>
 <body>
 
-  <!-- HEADER -->
+  <!-- HEADER → TOTALMENTE TRANSPARENTE -->
   <header class="header">
     <div class="container">
       <div class="logo">
@@ -29,11 +30,19 @@ const year = new Date().getFullYear();
     </div>
   </header>
 
-   <main>
-    <slot>
+  <!-- HERO → Imagen de fondo, texto centrado, espacios laterales -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Observatorio Ambiental</h1>
+    </div>
+  </section>
+
+  <!-- ✅ Contenido dinámico de la página → USANDO <slot /> (Astro moderno) -->
+  <main>
+    <slot />
   </main>
-  
-  <!-- FOOTER -->
+
+  <!-- FOOTER → Pegado al fondo -->
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">
