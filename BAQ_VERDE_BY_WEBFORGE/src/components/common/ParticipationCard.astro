@@ -1,0 +1,28 @@
+---
+const { title, image, href } = Astro.props;
+import "../../styles/common/cards.css";
+---
+
+<div class="card">
+  <div class="card-header">
+    <h3>{title}</h3>
+  </div>
+
+  <img src={image} alt={title} class="card-image" />
+
+  <a href="{href}" class="card-buttom">Ver mas</a>
+</div>
+
+<style>
+@media (max-width: 900px) {
+  .card {
+    height: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    height: auto;
+  }
+}
+</style>

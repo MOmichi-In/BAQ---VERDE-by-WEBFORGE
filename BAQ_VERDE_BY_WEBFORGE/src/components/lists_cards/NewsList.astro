@@ -1,0 +1,106 @@
+---
+import NewCard from "../common/NewCard.astro";
+import { newsData } from "../../lib/news_data.js";
+import "../../styles/common/carousel.css";
+---
+
+<div class="news-carousel carousel">
+  <div class="cards-wrapper">
+    {newsData.map((news) => (
+      <div class="card-container">
+        <NewCard {...news} href={"/news/" + news.id} />
+      </div>
+    ))}
+  </div>
+
+  <div class="carousel-controls">
+    <button class="prevBtn" aria-label="Previous">Anterior</button>
+    <button class="nextBtn" aria-label="Next">Siguiente</button>
+  </div>
+</div>
+
+<style>
+.news-carousel .card-container .card {
+  height: 500px;
+  /* max-width: 350px; */
+  width: 100%;
+}
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    console.log("[carousel] inline init running...");
+
+    const carousel = document.querySelector(".carousel");
+    if (!carousel) return;
+
+    const wrapper = carousel.querySelector(".cards-wrapper");
+    const prevBtn = carousel.querySelector(".prevBtn");
+    const nextBtn = carousel.querySelector(".nextBtn");
+    const controls = carousel.querySelector(".carousel-controls");
+
+    let currentIndex = 0;
+
+    function getCardWidth() {
+      const firstCard = wrapper.querySelector(".card-container");
+      return firstCard ? firstCard.offsetWidth : 0;
+    }
+
+    function visibleCount() {
+      const cw = getCardWidth();
+      if (!cw) return 1;
+      return Math.max(1, Math.floor(wrapper.clientWidth / cw));
+    }
+
+    function updateCarousel() {
+      const cardWidth = getCardWidth();
+      const offset = -(currentIndex * cardWidth);
+      wrapper.style.transform = `translateX(${offset}px)`;
+    }
+
+    function checkMode() {
+      if (window.innerWidth > 900) {
+        // --- modo escritorio ---
+        controls.style.display = "flex";
+        wrapper.style.transition = "transform 0.4s ease-in-out";
+
+        const maxIndex = wrapper.children.length - visibleCount();
+        currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+        updateCarousel();
+      } else {
+        // --- modo móvil/tablet ---
+        controls.style.display = "none";
+        wrapper.style.transition = "none";
+        wrapper.style.transform = "none";
+      }
+    }
+
+    nextBtn?.addEventListener("click", () => {
+      const maxIndex = wrapper.children.length - visibleCount();
+      if (currentIndex < maxIndex) {
+        currentIndex++; // mover de 1 en 1
+        updateCarousel();
+      }
+    });
+
+    prevBtn?.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        currentIndex--; // mover de 1 en 1
+        updateCarousel();
+      }
+    });
+
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(checkMode, 120);
+    });
+
+    carousel.querySelectorAll("img").forEach((img) => {
+      if (img.complete) return;
+      img.addEventListener("load", checkMode);
+    });
+
+    checkMode();
+  });
+</script>
