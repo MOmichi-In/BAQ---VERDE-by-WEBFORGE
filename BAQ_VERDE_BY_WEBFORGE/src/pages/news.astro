@@ -1,7 +1,23 @@
 ---
-import Layout from "../layouts/Layout.astro"
+import Layout from "../layouts/Layout.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import NewsList from "../components/NewsList.astro";
 ---
 
 <Layout>
-  
+  <!-- comunicados -->
+  <SectionHeader
+    title="Comunicados"
+    subtitle="Mantente informado con los comunicados oficiales de nuestro laboratorio, donde compartimos alertas ambientales, novedades y actualizaciones importantes para la comunidad"
+  />
+
+  <NewsList/>
+
+  <!-- Alertas -->
+  <SectionHeader
+    title="Alertas Ambientales"
+    subtitle="Informamos oportunamente sobre riesgos y eventos ambientales que pueden afecta rla salud pública y los ecosistemas, con el fin de promover la prevención y la acción responsable."
+  />
+
+  <NewsList/>
 </Layout>
