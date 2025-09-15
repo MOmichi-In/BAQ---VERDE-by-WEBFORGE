@@ -1,5 +1,23 @@
+---
+const text = 'El Observatorio Ambiental es una plataforma para el monitoreo, análisis y difusión de información ambiental. Nuestro objetivo es brindar datos confiables para la toma de decisiones y la concientización ciudadana.';
+---
 
-/* Estilos locales solo para este componente */
+<section class="banner-about">
+  <div class="container">
+    <div class="content">
+      <p>{text}</p>
+    </div>
+  </div>
+  
+  <!-- SVGs decorativos -->
+  <img src="/images/svg/tucan.svg" class="toucan" alt="Tucán" />
+  <img src="/images/svg/leon.svg" class="chameleon" alt="Camaleón" />
+  <img src="/images/svg/plantas.svg" class="leaves-left" alt="Hojas izquierda" />
+  <img src="/images/svg/plantas_2.svg" class="leaves-right" alt="Hojas derecha" />
+</section>
+
+<style>
+  /* Estilos locales solo para este componente */
 .banner-about {
   position: relative;
   padding: 4rem 0;
@@ -14,74 +32,68 @@
   padding: 0 1rem;
   display: flex;
   justify-content: center;
-  align-items: center; /* Cambié a center para centrar verticalmente */
+  align-items: center;
   position: relative;
-  z-index: 10; /* Z-index mayor para el contenido principal */
+  z-index: 10;
   height: 100%;
 }
 
 .banner-about .content {
   text-align: center;
   color: #2e7d32;
-  font-size: 1.2rem; /* Aumenté ligeramente el tamaño */
+  font-size: 1.2rem;
   line-height: 1.6;
-  max-width: 700px; /* Reduje el ancho máximo */
+  max-width: 700px;
   margin: 0 auto;
-  padding: 2rem 1rem; /* Más padding vertical */
+  padding: 2rem 1rem;
   z-index: 2;
-  font-weight: 500; /* Añadí peso a la fuente */
+  font-weight: 500;
 }
-
 
 .banner-about p {
   margin: 0;
 }
 
-/* Posiciona cada SVG con precisión */
 .banner-about img {
   position: absolute;
   z-index: 1;
-  pointer-events: none; /* Evita interferir con el contenido */
+  pointer-events: none;
 }
 
 /* TUCÁN - Superior izquierda */
 .banner-about .toucan {
-  position: absolute;
-  top: 0; /* Comienza desde arriba */
-  left: 0; /* Comienza desde la izquierda */
-  width: 300px; /* Mucho más grande para cubrir más área */
+  top: 0;
+  left: 5%; 
+  width: 300px;
   height: auto;
-  z-index: 1;
-  transform: rotate(0deg); /* Sin rotación para mantener la posición natural */
-  pointer-events: none; /* No interfiere con otros elementos */
-  max-width: none; /* Permite que crezca sin restricciones */
+  transform: rotate(0deg);
 }
 
 /* CAMALEÓN - Superior derecha */
 .banner-about .chameleon {
-  top: 8%; /* Más cerca del borde superior */
-  right: 0%; /* Un poco más a la izquierda para no estar pegado al borde */
-  width: 350px; /* Igual que el tucán */
+  top: 8%;
+  right: 5%; 
+  width: 350px;
   height: auto;
-  transform: rotate(-5deg); /* Rotación opuesta para simular naturalidad */
+  transform: rotate(-5deg);
 }
 
 /* HOJAS IZQUIERDA - Inferior izquierda */
 .banner-about .leaves-left {
-  bottom: -1%; /* Más cerca del borde inferior */
-  left: 5%; /* Un poco más a la derecha */
-  width: 300px; /* Igual que el tucán */
+  bottom: -1%;
+  left: 5%; 
+  width: 300px;
   height: auto;
-  transform: rotate(-3deg); /* Pequeña rotación para simular naturalidad */
+  transform: rotate(-3deg);
 }
 
 /* HOJAS DERECHA - Al lado del camaleón */
 .banner-about .leaves-right {
-  bottom: -5%; /* Cerca del borde inferior */
-  right: 0%; /* Un poco a la izquierda del borde derecho */
-  width: 250px; /* Igual que las hojas del tucán */
+  bottom: -5%;
+  right: 5%; 
+  width: 250px;
   height: auto;
-  transform: rotate(3deg); /* Ligera rotación para simular naturalidad */
+  transform: rotate(3deg);
 }
 
 /* Responsive Design */
@@ -91,19 +103,19 @@
     top: 8%;
     left: 3%;
   }
-  
+
   .banner-about .chameleon {
     width: 140px;
     top: 6%;
     right: 3%;
   }
-  
+
   .banner-about .leaves-left {
     width: 100px;
     bottom: 6%;
     left: 2%;
   }
-  
+
   .banner-about .leaves-right {
     width: 110px;
     bottom: 4%;
@@ -116,31 +128,31 @@
     padding: 3rem 0;
     min-height: 300px;
   }
-  
+
   .banner-about .content {
     font-size: 1.1rem;
     max-width: 90%;
     padding: 1.5rem 1rem;
   }
-  
+
   .banner-about .toucan {
     width: 100px;
     top: 5%;
     left: 2%;
   }
-  
+
   .banner-about .chameleon {
     width: 110px;
     top: 3%;
     right: 2%;
   }
-  
+
   .banner-about .leaves-left {
     width: 80px;
     bottom: 4%;
     left: 1%;
   }
-  
+
   .banner-about .leaves-right {
     width: 90px;
     bottom: 2%;
@@ -153,15 +165,15 @@
     padding: 2rem 0;
     min-height: 250px;
   }
-  
+
   .banner-about .content {
     font-size: 1rem;
     padding: 1rem;
   }
-  
-  /* En móviles muy pequeños, oculta algunos elementos para mejor legibilidad */
+
   .banner-about .leaves-left,
   .banner-about .leaves-right {
     opacity: 0.6;
   }
 }
+</style>

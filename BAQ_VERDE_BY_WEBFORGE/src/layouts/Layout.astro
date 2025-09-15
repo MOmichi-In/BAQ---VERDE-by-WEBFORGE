@@ -1,5 +1,5 @@
 ---
-const title = 'Observatorio Ambiental';
+const { title = "Observatorio Ambiental" } = Astro.props; 
 const year = new Date().getFullYear();
 import "../styles/layout.css";
 ---
@@ -14,7 +14,6 @@ import "../styles/layout.css";
 </head>
 <body>
 
-  <!-- HEADER → TOTALMENTE TRANSPARENTE -->
   <header class="header">
     <div class="container">
       <div class="logo">
@@ -30,19 +29,16 @@ import "../styles/layout.css";
     </div>
   </header>
 
-  <!-- HERO → Imagen de fondo, texto centrado, espacios laterales -->
   <section class="hero">
     <div class="hero-content">
-      <h1>Observatorio Ambiental</h1>
+        <h1>{title}</h1> 
     </div>
   </section>
 
-  <!-- ✅ Contenido dinámico de la página → USANDO <slot /> (Astro moderno) -->
   <main>
     <slot />
   </main>
 
-  <!-- FOOTER → Pegado al fondo -->
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">

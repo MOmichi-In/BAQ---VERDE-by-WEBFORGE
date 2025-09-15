@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import DocumentButton from "../components/DocumentButton.astro";
-import SearchBar from "../components/SearchBar.astro";
+import DocumentButton from "../components/document_sections/DocumentButton.astro";
+import SearchBar from "../components/document_sections/SearchBar.astro";
 
 const documents = [
   { title: "Política de Privacidad", href: "/docs/privacy" },
@@ -21,7 +21,7 @@ const documents = [
 ];
 ---
 
-<Layout title="documents">
+<Layout title="Documentos">
   <div class="document-page">
     <h1>DOCUMENTACIÓN EJEMPLOS</h1>
     <p class="subtitle">Consulta los documentos oficiales disponibles</p>
@@ -34,9 +34,10 @@ const documents = [
       ))}
     </div>
   </div>
+</Layout>
 
-  <style>
-  .documents-page {
+<style>
+    .documents-page {
     max-width: 600px;
     margin: 40px auto;
     padding: 20px;
@@ -83,5 +84,5 @@ const documents = [
     height: 100%;
     width: 70%;
   }
-  </style>
-</Layout>
+
+</style>
