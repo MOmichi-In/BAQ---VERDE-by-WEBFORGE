@@ -1,20 +1,14 @@
 ---
-// NewsList.astro
-import Card from "../common/Card.astro";
-import { newsData } from "../../lib/data.js";
+import NewCard from "../common/NewCard.astro";
+import { newsData } from "../../lib/news_data.js";
+import "../../styles/common/carousel.css";
 ---
 
-<div class="news-carousel">
+<div class="news-carousel carousel">
   <div class="cards-wrapper">
     {newsData.map((news) => (
       <div class="card-container">
-        <Card
-          title={news.title}
-          image={news.image}
-          description={news.description}
-          text={news.text}
-          href={"/news/" + news.id}
-        />
+        <NewCard {...news} href={"/news/" + news.id} />
       </div>
     ))}
   </div>
@@ -26,102 +20,29 @@ import { newsData } from "../../lib/data.js";
 </div>
 
 <style>
-  .news-carousel {
-  max-width: 1200px;
-  margin: 0 auto;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Desktop: transform-based carousel */
-.cards-wrapper {
-  display: flex;
-  transition: transform 0.4s ease-in-out;
-  will-change: transform;
-}
-
-.card-container {
-  flex: 0 0 calc(100% / 3);
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-}
-
-/* force card size if Card.astro permite width:100% */
-.card-container .card {
+.news-carousel .card-container .card {
   height: 500px;
-  max-width: 350px;
+  /* max-width: 350px; */
   width: 100%;
 }
-
-/* Controls (desktop) */
-.carousel-controls {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 20px 0 30px;
-}
-.carousel-controls button {
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  border: none;
-  color: white;
-  font-weight: bold;
-  border-radius: 10px;
-  cursor: pointer;
-}
-.carousel-controls button:hover { background-color: #3e8e3c; }
-
-/* Tablet: 2 cards, swipe with snap */
-@media (max-width: 900px) and (min-width: 601px) {
-  .cards-wrapper {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .card-container {
-    flex: 0 0 50%;
-    scroll-snap-align: start;
-  }
-  .card-container .card {
-    height: 420px;
-    max-width: 90%;
-  }
-  .carousel-controls { display: none; }
-}
-
-/* Mobile: 1 card, swipe with snap */
-@media (max-width: 600px) {
-  .cards-wrapper {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .card-container {
-    flex: 0 0 100%;
-    scroll-snap-align: start;
-  }
-  .card-container .card {
-    height: 380px;
-    max-width: 95%;
-  }
-  .carousel-controls { display: none; }
-}
-
 </style>
 
-<script client:load>
-  // For each carousel on the page, attach isolated behavior
-  document.querySelectorAll('.news-carousel').forEach((carousel) => {
-    const wrapper = carousel.querySelector('.cards-wrapper');
-    const prevBtn = carousel.querySelector('.prevBtn');
-    const nextBtn = carousel.querySelector('.nextBtn');
-    const controls = carousel.querySelector('.carousel-controls');
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    console.log("[carousel] inline init running...");
+
+    const carousel = document.querySelector(".carousel");
+    if (!carousel) return;
+
+    const wrapper = carousel.querySelector(".cards-wrapper");
+    const prevBtn = carousel.querySelector(".prevBtn");
+    const nextBtn = carousel.querySelector(".nextBtn");
+    const controls = carousel.querySelector(".carousel-controls");
 
     let currentIndex = 0;
 
     function getCardWidth() {
-      const firstCard = wrapper.querySelector('.card-container');
+      const firstCard = wrapper.querySelector(".card-container");
       return firstCard ? firstCard.offsetWidth : 0;
     }
 
@@ -139,56 +60,47 @@ import { newsData } from "../../lib/data.js";
 
     function checkMode() {
       if (window.innerWidth > 900) {
-        // desktop -> show buttons and use transform-based sliding
-        if (controls) controls.style.display = 'flex';
-        wrapper.style.transition = 'transform 0.4s ease-in-out';
+        // --- modo escritorio ---
+        controls.style.display = "flex";
+        wrapper.style.transition = "transform 0.4s ease-in-out";
 
-        // ensure currentIndex is within valid range
-        const maxIndex = Math.max(0, wrapper.children.length - visibleCount());
-        currentIndex = Math.min(currentIndex, maxIndex);
+        const maxIndex = wrapper.children.length - visibleCount();
+        currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
         updateCarousel();
       } else {
-        // tablet / mobile -> hide buttons and enable native horizontal scroll (snap)
-        if (controls) controls.style.display = 'none';
-        wrapper.style.transition = 'none';
-        wrapper.style.transform = 'none';
-
-        // put scrollLeft to the corresponding card (if you want to preserve index)
-        const cardW = getCardWidth();
-        wrapper.scrollLeft = currentIndex * cardW;
+        // --- modo móvil/tablet ---
+        controls.style.display = "none";
+        wrapper.style.transition = "none";
+        wrapper.style.transform = "none";
       }
     }
 
-    // Next / Prev (desktop only logic will clamp automatically)
-    nextBtn?.addEventListener('click', () => {
-      const maxIndex = Math.max(0, wrapper.children.length - visibleCount());
+    nextBtn?.addEventListener("click", () => {
+      const maxIndex = wrapper.children.length - visibleCount();
       if (currentIndex < maxIndex) {
-        currentIndex++;
+        currentIndex++; // mover de 1 en 1
         updateCarousel();
       }
     });
 
-    prevBtn?.addEventListener('click', () => {
+    prevBtn?.addEventListener("click", () => {
       if (currentIndex > 0) {
-        currentIndex--;
+        currentIndex--; // mover de 1 en 1
         updateCarousel();
       }
     });
 
-    // Recalculate when resizing (small debounce)
     let resizeTimeout;
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(checkMode, 120);
     });
 
-    // Recalculate after images load (images can change card width/height)
-    carousel.querySelectorAll('img').forEach(img => {
+    carousel.querySelectorAll("img").forEach((img) => {
       if (img.complete) return;
-      img.addEventListener('load', checkMode);
+      img.addEventListener("load", checkMode);
     });
 
-    // init
     checkMode();
   });
 </script>
