@@ -1,10 +1,37 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import BannerAbout from "../components/home_sections/About.astro"
+import BannerAbout from "../components/home_sections/About.astro";
 import TitleSection from "../components/home_sections/Section.astro";
-
+import Card from "../components/ambiental_cards/ambiental_card.astro";
+import { cardsData } from "../lib/card_ambiental_data.js";
 ---
+
 <Layout>
-  	<BannerAbout />
-	<TitleSection />
+  <BannerAbout />
+  <TitleSection />
+
+  <section class="cards-section">
+    <div class="cards-grid">
+      {cardsData.map((card) => (
+        <Card title={card.title} />
+      ))}
+    </div>
+  </section>
 </Layout>
+
+<style>
+.cards-section {
+  padding: 8rem 0;
+  background-color: #ffffff;
+  background-image: url("/images/svg/flores.svg");
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+</style>
