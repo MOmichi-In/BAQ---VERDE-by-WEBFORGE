@@ -1,0 +1,46 @@
+---
+const title = 'GEO - Servicios';
+---
+
+<section class="title-section">
+  <div class="container">
+    <h2>{title}</h2>
+  </div>
+</section>
+
+<style>
+
+/* Fondo de la sección */
+.title-section {
+  background: url('/images/svg/section_geo.svg') no-repeat center center;
+  background-size: cover;
+  min-height: 400px; /* altura mínima */
+  
+  /* 🔑 Flex directo en la sección */
+  display: flex;
+  justify-content: center; 
+  align-items: center;      
+  text-align: center;
+  position: relative;
+}
+
+/* Contenedor */
+.title-section .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  z-index: 2;
+}
+
+/* Estilo del título */
+.title-section h2 {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+  margin: 0;
+}
+
+
+</style>
