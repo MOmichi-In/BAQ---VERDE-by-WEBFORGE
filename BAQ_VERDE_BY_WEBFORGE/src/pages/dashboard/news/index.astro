@@ -1,0 +1,133 @@
+---
+import { date } from 'astro:schema';
+import Layout from '../../../layouts/DashboardLayout.astro';
+import { api } from '../../../lib/api';
+export const prerender = false;
+
+const cookieStore = Astro.cookies;
+const sessionToken = cookieStore.get('token')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/login');
+}
+
+// Borrar la cookie directamente desde el servidor si se pide
+if (Astro.url.searchParams.get('logout') === 'true') {
+  Astro.cookies.delete('token', { path: '/' });
+  return Astro.redirect('/login');
+}
+
+const data = await api("/news", sessionToken)
+
+// Obtener noticias desde la API
+const noticiasRes = data
+const noticias = noticiasRes
+---
+
+<Layout title="Gestión de Noticias">
+  <div class="container">
+    <div class="header">
+      <h1>📰 Gestión de Noticias</h1>
+      <a href="/dashboard/news/create" class="btn-primary">+ Crear Noticia</a>
+    </div>
+
+    <div class="noticias-grid">
+      {noticias.map((noticia) => (
+        <div class="noticia-card">
+          <h3>Titulo: {noticia.title}</h3>
+          <p>Categoria: {noticia.category}</p>
+          <!-- ✅ Corregido: src={...} en vez de src=`...` -->
+          <!-- ✅ Añadida clase "noticia-img" para controlar estilo -->
+          <img src={`http://localhost:8000${noticia.img_url}`} alt="Imagen de la noticia" class="noticia-img" />
+          <div class="actions">
+            <a href={`/dashboard/noticias/${noticia._id}`} class="btn-edit">✏️ Editar</a>
+            <button class="btn-delete" data-id={noticia._id}>🗑️ Eliminar</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <style>
+    .container { padding: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .btn-primary {
+      padding: 10px 20px;
+      background: #FFC107;
+      color: #212121;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .noticias-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    .noticia-card {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+    }
+
+    /* ✅ ESTILOS NUEVOS PARA LA IMAGEN — EVITA DESBORDE */
+    .noticia-img {
+      width: 100%;
+      height: auto;
+      max-height: 300px;     /* Limita la altura máxima */
+      object-fit: cover;     /* Recorta la imagen manteniendo proporción */
+      border-radius: 8px;    /* Bordes redondeados */
+      margin: 15px 0;        /* Espacio arriba y abajo */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra sutil */
+    }
+
+    .fecha { color: #ccc; font-size: 0.9rem; margin: 5px 0; }
+    .actions { margin-top: 15px; display: flex; gap: 10px; }
+    .btn-edit, .btn-delete {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-edit { background: #2196F3; color: white; }
+    .btn-delete { background: #f44336; color: white; }
+  </style>
+
+<script>
+  document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.target.dataset.id;
+      if (confirm('¿Eliminar esta noticia?')) {
+
+        // 👇 Obtener el token de las cookies
+        const token = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('token='))
+          ?.split('=')[1];
+
+        if (!token) {
+          alert('No estás autenticado. Por favor, inicia sesión.');
+          return;
+        }
+
+        const res = await fetch(`http://localhost:8000/news/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`, // 👈 ¡Token agregado!
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (res.ok) {
+          location.reload();
+        } else {
+          const errorData = await res.json().catch(() => ({}));
+          alert(`Error al eliminar: ${errorData.detail || 'Error desconocido'}`);
+        }
+      }
+    });
+  });
+</script>
+</Layout>

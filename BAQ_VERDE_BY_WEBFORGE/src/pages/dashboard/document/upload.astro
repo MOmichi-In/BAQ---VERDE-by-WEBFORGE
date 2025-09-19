@@ -1,0 +1,105 @@
+---
+import Layout from '../../../layouts/DashboardLayout.astro';
+
+const cookieStore = Astro.cookies;
+const sessionToken = cookieStore.get('token')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/login');
+}
+
+if (Astro.url.searchParams.get('logout') === 'true') {
+  Astro.cookies.delete('token', { path: '/' });
+  return Astro.redirect('/login');
+}
+
+let error = null;
+let success = null;
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const file = formData.get('file') as File;
+  const title = formData.get('title')?.toString();
+
+  if (!file) {
+    error = 'Selecciona un archivo';
+  } else {
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+    uploadData.append('title', title || file.name);
+
+    const res = await fetch(`${Astro.url.origin}/api/admin/documentos`, {
+      method: 'POST',
+      body: uploadData
+    });
+
+    if (res.ok) {
+      success = 'Documento subido con éxito';
+      Astro.redirect('/dashboard/documentos');
+    } else {
+      error = 'Error al subir el documento';
+    }
+  }
+}
+---
+
+<Layout title="Subir Documento">
+  <div class="container">
+    <h1>📤 Subir Nuevo Documento</h1>
+
+    {error && <div class="alert error">{error}</div>}
+    {success && <div class="alert success">{success}</div>}
+
+    <form method="post" enctype="multipart/form-data" class="form-doc">
+      <div class="form-group">
+        <label for="title">Título (opcional)</label>
+        <input type="text" id="title" name="title" />
+      </div>
+      <div class="form-group">
+        <label for="file">Archivo (PDF, DOC, XLS, etc.)</label>
+        <input type="file" id="file" name="file" required accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
+      </div>
+      <button type="submit" class="btn-submit">💾 Subir Documento</button>
+      <a href="/dashboard/documentos" class="btn-cancel">⬅️ Cancelar</a>
+    </form>
+  </div>
+
+  <style>
+    .container { padding: 20px; max-width: 600px; margin: 0 auto; }
+    .form-doc { display: flex; flex-direction: column; gap: 20px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    .btn-submit {
+      padding: 12px 24px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-cancel {
+      padding: 10px 20px;
+      background: #666;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      text-align: center;
+      display: inline-block;
+    }
+    .alert {
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .alert.error { background: #f44336; color: white; }
+    .alert.success { background: #4CAF50; color: white; }
+  </style>
+</Layout>
