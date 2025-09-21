@@ -8,14 +8,15 @@ import "../../styles/common/cards.css";
     <h3>{title}</h3>
   </div>
 
-  <img src={image} alt={title} class="card-image" />
+  <img src={`${import.meta.env.PUBLIC_URL_SERVER}${image}`} alt={title} class="card-image" />
 
+  <!-- <p>{image}</p> -->
   <div class="card-content">
     <p class="card-description">{ description }</p>
     <p class="card-text">{ text }</p>
   </div>
 
-  <a href="{href}" class="card-buttom">Ver más</a>
+  <a href={`/news/${Astro.props.id}`} class="card-buttom">Ver más</a>
 </div>
 
 <style>

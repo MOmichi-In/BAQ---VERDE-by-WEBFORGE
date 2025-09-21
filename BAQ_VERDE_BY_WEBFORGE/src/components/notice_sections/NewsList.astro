@@ -1,30 +1,57 @@
 ---
 import NewCard from "../common/NewCard.astro";
-import { newsData } from "../../lib/news_data.js";
 import "../../styles/common/carousel.css";
+import { api } from "../../lib/api.js";
+
+const category = Astro.props.category || null;
+let url = '/news';
+if (category) {
+  url += `?category=${encodeURIComponent(category)}`;
+}
+
+let newsData = [];
+
+const response = await api(url, {method: 'POST', headers: {'Content-Type': 'application/json'}});
+console.log(response);
+newsData = response;
 ---
 
-<!-- Componente principal del carrusel de noticias -->
+<!-- <pre style="background:#f4f4f4; padding:1rem; border:1px solid #ccc; margin:1rem 0; overflow:auto;">
+  category: {category}
+  newsData: {JSON.stringify(newsData, null, 2)}
+</pre> -->
+
 <div class="news-carousel carousel">
   <div class="cards-wrapper">
-    {newsData.map((news) => (
-      <div class="card-container">
-        <NewCard {...news} href={"/news/" + news.id} />
-      </div>
-    ))}
+    {newsData.length === 0 ? (
+      <p style="text-align: center; padding: 2rem; color: #666;">No hay noticias disponibles.</p>
+    ) : (
+      newsData.map((news) => (
+        <div class="card-container">
+          <NewCard
+            title={news.title}
+            image={news.img_url || "/placeholder.jpg"}
+            description={news.content?.substring(0, 100) + "..."}
+            text={news.content}
+            id={news._id}
+            href={`/news/${news._id}`}
+          />
+        </div>
+      ))
+    )}
   </div>
 
-  <!-- Controles del carrusel (Botones siguiente y anterior) -->
-  <div class="carousel-controls">
-    <button class="prevBtn" aria-label="Previous">Anterior</button>
-    <button class="nextBtn" aria-label="Next">Siguiente</button>
-  </div>
+  {newsData.length > 0 && (
+    <div class="carousel-controls">
+      <button class="prevBtn" aria-label="Previous">Anterior</button>
+      <button class="nextBtn" aria-label="Next">Siguiente</button>
+    </div>
+  )}
 </div>
 
 <style>
 .news-carousel .card-container .card {
   height: 500px;
-  /* max-width: 350px; */
   width: 100%;
 }
 </style>
