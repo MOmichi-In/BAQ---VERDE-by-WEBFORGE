@@ -36,7 +36,7 @@ if (Astro.request.method === 'POST') {
       const arrayBuffer = await imageFile.arrayBuffer();
       const base64 = Buffer.from(arrayBuffer).toString('base64');
       const mimeType = imageFile.type;
-      img_url = `${base64}`;
+      img_url = `data:${imageFile.type};base64,${base64}`;
     }
     console.log(img_url)
 

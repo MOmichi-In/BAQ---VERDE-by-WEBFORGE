@@ -1,0 +1,260 @@
+---
+// src/pages/dashboard/news/edit/[id].astro
+
+import Layout from '../../../../layouts/DashboardLayout.astro';
+import { api } from '../../../../lib/api';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+
+// Obtener token
+const cookieStore = Astro.cookies;
+const sessionToken = cookieStore.get('token')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/login');
+}
+
+// Obtener la noticia actual por ID
+let noticia;
+try {
+  const res = await api(`/news/${id}`, sessionToken);
+  noticia = res;
+} catch (error) {
+  console.error("Error al cargar la noticia:", error);
+  return Astro.redirect('/dashboard/news?error=noticia_no_encontrada');
+}
+
+// Si es POST, no lo manejamos aquí — lo manejamos con JS en el cliente
+// (porque necesitamos convertir la imagen a base64 antes de enviar)
+---
+
+<Layout title="Editar Noticia">
+  <div class="container">
+    <h1>✏️ Editar Noticia</h1>
+    <a href="/dashboard/news" class="btn-secondary">← Volver</a>
+
+    <form class="form-noticia" id="edit-form">
+      <div class="form-group">
+        <label for="title">Título</label>
+        <input 
+          type="text" 
+          id="title" 
+          name="title" 
+          value={noticia.title} 
+          required 
+          class="input-field"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="category">Categoría</label>
+        <input 
+          type="text" 
+          id="category" 
+          name="category" 
+          value={noticia.category} 
+          required 
+          class="input-field"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="content">Contenido</label>
+        <textarea 
+          id="content" 
+          name="content" 
+          rows="6" 
+          required 
+          class="input-field"
+        >{noticia.content}</textarea>
+      </div>
+
+      <!-- Campo para subir nueva imagen (opcional) -->
+      <div class="form-group">
+        <label for="image">Imagen (opcional: si no eliges, se mantiene la actual)</label>
+        <input 
+          type="file" 
+          id="image" 
+          name="image" 
+          accept="image/*" 
+          class="input-field"
+        />
+        <!-- Preview de la imagen seleccionada -->
+        <div id="image-preview" class="preview-img" style="display: none; margin-top: 10px;">
+          <label>Nueva imagen seleccionada:</label><br>
+          <img id="preview-img-tag" src="" alt="Vista previa" class="preview-img-tag" />
+        </div>
+      </div>
+<input type="hidden" id="noticia-id" value={noticia._id} />
+
+      <!-- Mostrar imagen actual SIEMPRE -->
+      {noticia.img_url && (
+        <div class="preview-img">
+          <label>Imagen actual:</label>
+          <img 
+            src={`${import.meta.env.PUBLIC_URL_SERVER}${noticia.img_url}`} 
+            alt="Imagen actual" 
+            class="preview-img-tag"
+          />
+        </div>
+      )}
+
+      <button type="submit" class="btn-primary">💾 Guardar Cambios</button>
+    </form>
+  </div>
+
+  <style>
+    .container { 
+      padding: 20px; 
+      max-width: 800px; 
+      margin: 0 auto; 
+    }
+    .btn-secondary {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 8px 16px;
+      background: #6c757d;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .form-noticia { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 15px; 
+    }
+    .form-group { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 5px; 
+    }
+    .input-field {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    .preview-img { 
+      margin: 20px 0; 
+    }
+    .preview-img-tag {
+      max-width: 100%;
+      height: auto;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .btn-primary {
+      padding: 12px 24px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+    .btn-primary:hover { 
+      background: #218838; 
+    }
+
+    /* Estilo para el contenedor de preview */
+    #image-preview {
+      background: rgba(0,0,0,0.05);
+      padding: 15px;
+      border-radius: 8px;
+    }
+  </style>
+
+  <script>
+    const noticiaId = document.getElementById('noticia-id').value;
+
+    // Preview de imagen seleccionada
+    document.getElementById('image').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const previewContainer = document.getElementById('image-preview');
+      const previewImg = document.getElementById('preview-img-tag');
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          previewImg.src = event.target.result; // base64
+          previewContainer.style.display = 'block';
+        };
+        reader.onerror = function() {
+          alert('Error al leer la imagen.');
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewContainer.style.display = 'none';
+      }
+    });
+
+    // Manejar envío del formulario
+    document.getElementById('edit-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {
+        title: formData.get('title')?.toString() || '',
+        category: formData.get('category')?.toString() || '',
+        content: formData.get('content')?.toString() || '',
+      };
+
+      // Si se seleccionó una nueva imagen, convertirla a base64
+      const imageFile = formData.get('image');
+if (imageFile && imageFile.size > 0) {
+  try {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result); // ← Devuelve "data:image/jpeg;base64,/9j/4AAQ..."
+      reader.onerror = reject;
+      reader.readAsDataURL(imageFile); // ← ¡Esto incluye el prefijo!
+    });
+    data.img_url = base64;
+    console.log("📤 Data URL enviado (inicio):", base64.substring(0, 100));
+  } catch (err) {
+    alert('Error al leer la imagen.');
+    console.error(err);
+    return;
+  }
+}
+      // Si no se selecciona imagen, NO se envía img_url → backend debe permitirlo
+
+      // Obtener token de cookies
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
+
+      if (!token) {
+        alert('No estás autenticado.');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/news/${noticiaId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          window.location.href = '/dashboard/news?success=noticia_actualizada';
+        } else {
+          const errorData = await res.json().catch(() => ({}));
+          alert(`Error: ${errorData.detail || 'No se pudo actualizar la noticia.'}`);
+        }
+      } catch (err) {
+        alert('Error de conexión.');
+        console.error(err);
+      }
+    });
+  </script>
+</Layout>
