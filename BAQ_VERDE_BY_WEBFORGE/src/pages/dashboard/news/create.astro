@@ -56,7 +56,7 @@ if (Astro.request.method === 'POST') {
     if (res) {
       success = 'Noticia creada con éxito';
       // Redirigir inmediatamente (no puedes usar setTimeout en server-side)
-      return Astro.redirect('/dashboard/noticias');
+      return Astro.redirect('/dashboard/news');
     } else {
       error = 'Error al crear la noticia';
     }

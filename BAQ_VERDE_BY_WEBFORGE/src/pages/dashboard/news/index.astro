@@ -38,7 +38,7 @@ const noticias = noticiasRes
           <p>Categoria: {noticia.category}</p>
           <!-- ✅ Corregido: src={...} en vez de src=`...` -->
           <!-- ✅ Añadida clase "noticia-img" para controlar estilo -->
-          <img src={`http://localhost:8000${noticia.img_url}`} alt="Imagen de la noticia" class="noticia-img" />
+          <img src={`${import.meta.env.PUBLIC_URL_SERVER}${noticia.img_url}`} alt="Imagen de la noticia" class="noticia-img" />
           <div class="actions">
             <a href={`/dashboard/noticias/${noticia._id}`} class="btn-edit">✏️ Editar</a>
             <button class="btn-delete" data-id={noticia._id}>🗑️ Eliminar</button>
@@ -111,8 +111,8 @@ const noticias = noticiasRes
           alert('No estás autenticado. Por favor, inicia sesión.');
           return;
         }
-
-        const res = await fetch(`http://localhost:8000/news/${id}`, {
+        console.log(import.meta.env.PUBLIC_URL_SERVER + "aswddadsa")
+        const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/news/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`, // 👈 ¡Token agregado!
