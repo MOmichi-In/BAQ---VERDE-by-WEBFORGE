@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import Layout from '../../../layouts/DashboardLayout.astro';
 
 const cookieStore = Astro.cookies;
@@ -13,62 +15,131 @@ if (Astro.url.searchParams.get('logout') === 'true') {
   return Astro.redirect('/login');
 }
 
-let error = null;
-let success = null;
-
-if (Astro.request.method === 'POST') {
-  const formData = await Astro.request.formData();
-  const file = formData.get('file') as File;
-  const title = formData.get('title')?.toString();
-
-  if (!file) {
-    error = 'Selecciona un archivo';
-  } else {
-    const uploadData = new FormData();
-    uploadData.append('file', file);
-    uploadData.append('title', title || file.name);
-
-    const res = await fetch(`${Astro.url.origin}/api/admin/documentos`, {
-      method: 'POST',
-      body: uploadData
-    });
-
-    if (res.ok) {
-      success = 'Documento subido con éxito';
-      Astro.redirect('/dashboard/documentos');
-    } else {
-      error = 'Error al subir el documento';
-    }
-  }
-}
+// Solo renderizamos, la lógica de subida se mueve al cliente
 ---
 
 <Layout title="Subir Documento">
   <div class="container">
     <h1>📤 Subir Nuevo Documento</h1>
 
-    {error && <div class="alert error">{error}</div>}
-    {success && <div class="alert success">{success}</div>}
+    <div id="message"></div>
 
-    <form method="post" enctype="multipart/form-data" class="form-doc">
+    <form id="uploadForm" enctype="multipart/form-data" class="form-doc">
       <div class="form-group">
-        <label for="title">Título (opcional)</label>
-        <input type="text" id="title" name="title" />
+        <label for="name">Título *</label>
+        <input type="text" id="name" name="name" required />
       </div>
       <div class="form-group">
-        <label for="file">Archivo (PDF, DOC, XLS, etc.)</label>
-        <input type="file" id="file" name="file" required accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
+        <label for="file">Archivo (PDF, DOC, XLS, etc.) *</label>
+        <input type="file" id="file" name="file" required accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.odt,.ods" />
+      </div>
+      <div class="form-group">
+        <label for="description">Descripción</label>
+        <textarea id="description" name="description" rows="3" placeholder="Describe brevemente el documento"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="autor">Autor *</label>
+        <input type="text" id="autor" name="autor" required placeholder="Ej: Juan Pérez" />
+      </div>
+      <div class="form-group">
+        <label for="date_disponibility">Fecha de Disponibilidad *</label>
+        <input type="datetime-local" id="date_disponibility" name="date_disponibility" required />
       </div>
       <button type="submit" class="btn-submit">💾 Subir Documento</button>
-      <a href="/dashboard/documentos" class="btn-cancel">⬅️ Cancelar</a>
+      <a href="/dashboard/document" class="btn-cancel">⬅️ Cancelar</a>
     </form>
   </div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const fileInput = document.getElementById('file');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        showMessage('Selecciona un archivo', 'error');
+        return;
+      }
+
+      // Leer archivo como base64 con FileReader (solo en cliente)
+      const base64WithHeader = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("Error al leer el archivo"));
+        reader.readAsDataURL(file);
+      }).catch(err => {
+        showMessage(err.message, 'error');
+        return;
+      });
+
+      // Obtener otros campos
+      const name = document.getElementById('name').value || file.name;
+      const description = document.getElementById('description').value || '';
+      const autor = document.getElementById('autor').value || 'Anónimo';
+      const dateDisponibility = document.getElementById('date_disponibility').value || new Date().toISOString();
+
+      // Construir payload
+      const payload = {
+        name,
+        document_url: base64WithHeader,
+        description,
+        autor,
+        date_disponibility: new Date(dateDisponibility).toISOString(),
+      };
+
+      // Obtener token (asumiendo que está en cookies, lo leemos con JS)
+      const token = getCookie('token');
+      if (!token) {
+        showMessage('Sesión expirada. Por favor, inicia sesión de nuevo.', 'error');
+        window.location.href = '/login';
+        return;
+      }
+
+      // Enviar
+      try {
+        const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/documents`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (res.ok) {
+          showMessage('Documento subido con éxito', 'success');
+          setTimeout(() => {
+            window.location.href = '/dashboard/document';
+          }, 1500);
+        } else {
+          const errorData = await res.json().catch(() => ({}));
+          showMessage(errorData.detail || 'Error al subir el documento', 'error');
+        }
+      } catch (err) {
+        showMessage('Error de conexión: ' + err.message, 'error');
+      }
+    });
+
+    function showMessage(text, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.innerHTML = `<div class="alert ${type}">${text}</div>`;
+    }
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+  </script>
 
   <style>
     .container { padding: 20px; max-width: 600px; margin: 0 auto; }
     .form-doc { display: flex; flex-direction: column; gap: 20px; }
     .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-    .form-group input {
+    .form-group input,
+    .form-group textarea {
       width: 100%;
       padding: 10px;
       border: 1px solid #ccc;
@@ -76,6 +147,7 @@ if (Astro.request.method === 'POST') {
       background: rgba(255,255,255,0.1);
       color: white;
     }
+    .form-group textarea { resize: vertical; }
     .btn-submit {
       padding: 12px 24px;
       background: #4CAF50;

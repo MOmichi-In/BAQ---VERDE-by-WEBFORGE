@@ -1,0 +1,163 @@
+---
+import Layout from '../../../layouts/DashboardLayout.astro';
+import { api } from '../../../lib/api';
+
+export const prerender = false;
+
+const cookieStore = Astro.cookies;
+const sessionToken = cookieStore.get('token')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/login');
+}
+
+if (Astro.url.searchParams.get('logout') === 'true') {
+  Astro.cookies.delete('token', { path: '/' });
+  return Astro.redirect('/login');
+}
+
+// Obtener estaciones desde la API
+const data = await api("/stations", sessionToken);
+const stations = data || [];
+---
+
+<Layout title="Gestión de Estaciones">
+  <div class="container">
+    <div class="header">
+      <h1>📡 Gestión de Estaciones</h1>
+      <a href="/dashboard/stations/create" class="btn-primary">+ Crear Estación</a>
+    </div>
+
+    {stations.length === 0 ? (
+      <div class="empty-state">
+        <p>📭 No hay estaciones registradas.</p>
+        <a href="/dashboard/stations/create" class="btn-primary">Crear primera estación</a>
+      </div>
+    ) : (
+      <div class="stations-grid">
+        {stations.map((station) => (
+          <div class="station-card">
+            <h3>📍 {station.name}</h3>
+            <p><strong>Lat:</strong> {station.lat}°</p>
+            <p><strong>Lon:</strong> {station.lon}°</p>
+            <div class="charts">
+              <strong>Gráficos permitidos:</strong>
+              <ul>
+                {station.charts_permited.map((chart) => (
+                  <li>{chart}</li>
+                ))}
+              </ul>
+            </div>
+            <div class="actions">
+              <a href={`/dashboard/stations/edit/${station._id}`} class="btn-edit">✏️ Editar</a>
+              <button class="btn-delete" data-id={station._id}>🗑️ Eliminar</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+
+  <style>
+    .container { padding: 20px; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .btn-primary {
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .stations-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    .station-card {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .station-card h3 {
+      margin-top: 0;
+      color: #FFC107;
+    }
+    .charts ul {
+      margin: 5px 0;
+      padding-left: 20px;
+    }
+    .charts li {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    .btn-edit, .btn-delete {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-edit { background: #2196F3; color: white; }
+    .btn-delete { background: #f44336; color: white; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #ccc;
+    }
+    .empty-state .btn-primary {
+      margin-top: 20px;
+    }
+  </style>
+
+  <script>
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.target.dataset.id;
+        if (confirm('¿Eliminar esta estación? Esta acción no se puede deshacer.')) {
+
+          // Obtener token de cookies
+          const token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('token='))
+            ?.split('=')[1];
+
+          if (!token) {
+            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+            window.location.href = '/login';
+            return;
+          }
+
+          const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/stations/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (res.ok) {
+            alert('Estación eliminada con éxito');
+            location.reload();
+          } else {
+            const errorData = await res.json().catch(() => ({}));
+            alert(`Error al eliminar: ${errorData.detail || 'Error desconocido'}`);
+          }
+        }
+      });
+    });
+  </script>
+</Layout>

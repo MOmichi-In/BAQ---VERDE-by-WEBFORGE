@@ -1,49 +1,107 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import DocumentButton from "../components/document_sections/DocumentButton.astro";
 import SearchBar from "../components/document_sections/SearchBar.astro";
+import { api } from "../lib/api.js";
 
-const documents = [
-  { title: "Política de Privacidad", href: "/docs/privacy" },
-  { title: "Términos y Condiciones", href: "/docs/terms" },
-  { title: "Manual del Usuario", href: "/docs/manual" },
-  { title: "Informe Anual 2024", href: "/docs/report2024" },
-  { title: "Guía de Instalación", href: "/docs/installation" },
-  { title: "Reglamento Interno", href: "/docs/regulations" },
-  { title: "Carta de Bienvenida", href: "/docs/welcome" },
-  { title: "Plan Estratégico", href: "/docs/strategy" },
-  { title: "Sistema de Gestión", href: "/docs/gms" },
-  { title: "Código de Ética", href: "/docs/ethics" },
-  { title: "Protocolo de Seguridad", href: "/docs/security" },
-  { title: "Formulario de Solicitud", href: "/docs/request" },
-  { title: "Mapa del Sitio", href: "/docs/sitemap" },
-  { title: "Ficha Técnica", href: "/docs/specs" },
-];
+let url = "/documents";
+let documentsData = [];
+
+const response = await api(url, {method: 'POST', headers: {'Content-type': 'application/json'}});
+
+documentsData = response;
+
+// Función para formatear fechas
+function formatDate(dateString) {
+  if (!dateString) return "-";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 ---
 
 <Layout title="Documentos">
-  <div class="document-page">
-    <h1>DOCUMENTACIÓN EJEMPLOS</h1>
-    <p class="subtitle">Consulta los documentos oficiales disponibles</p>
+  <div class="documents-page">
+    <div class="header">
+      <h1>DOCUMENTACIÓN OFICIAL</h1>
+      <p class="subtitle">Consulta los documentos oficiales disponibles</p>
+    </div>
 
     <SearchBar />
 
-    <div class="document-list">
-      {documents.map(doc => (
-        <DocumentButton title={doc.title} href={doc.href} />
-      ))}
+    <div class="table-container">
+      <!-- tabla solo en desktop -->
+      <table class="documents-table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Fecha de Disponibilidad</th>
+            <th>Autor</th>
+            <th>Descargar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {documentsData.map((doc, index) => (
+            <tr class={index % 2 === 0 ? 'even' : 'odd'}>
+              <td class="title-cell">{doc.name}</td>
+              <td class="description-cell">{doc.description}</td>
+              <td class="date-cell">{formatDate(doc.date_disponibility)}</td>
+              <td class="author-cell">{doc.autor}</td>
+              <td class="action-cell">
+                <a href={`${import.meta.env.PUBLIC_URL_SERVER}${doc.document_url}`} class="download-btn" target="_blank" rel="noopener noreferrer">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  Descargar
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <!-- Cards solo visibles en <=900px -->
+      <div class="accordion">
+        {documentsData.map((doc, index) => (
+          <div class="accordion-item">
+            <button class="accordion-header">
+              <span class="accordion-title">{doc.name}</span>
+              <span class="accordion-author">👤 {doc.autor}</span>
+              <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <p class="description">{doc.description}</p>
+              <p class="date">{formatDate(doc.date_disponibility)}</p>
+              <a href={`${import.meta.env.PUBLIC_URL_SERVER}${doc.document_url}`} class="download-btn" target="_blank">⬇ Download</a>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </Layout>
 
 <style>
-    .documents-page {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  .accordion {
+    display: none;
+  }
+
+  .documents-page {
+    display: table;
+    max-width: 95vw;
+    width: 100%;
+    margin: 20px auto;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
   }
@@ -55,34 +113,262 @@ const documents = [
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('https://i.imgur.com/7qKZxLk.png'); /* Hojas verdes */
+    background-image: url('https://i.imgur.com/7qKZxLk.png');
     background-repeat: repeat;
-    opacity: 0.1;
-    z-index: -1;
+    opacity: 0.03;
+    z-index: 0;
+    pointer-events: none;
   }
 
-  h1 {
+  .header {
+    position: relative;
+    z-index: 1;
     text-align: center;
-    color: #2e7d32;
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
-
-  .subtitle {
-    text-align: center;
-    color: #666;
-    font-size: 14px;
     margin-bottom: 30px;
   }
 
-  .document-list {
-    background-color: #4CAF50;
-    border-radius: 15px;
-    padding: 7px;
-    margin: 20px auto;
-    min-height: 400px;
-    height: 100%;
-    width: 70%;
+  h1 {
+    color: #1b5e20;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
   }
 
+  .subtitle {
+    color: #557e59;
+    font-size: 16px;
+    margin-bottom: 0;
+    font-weight: 400;
+  }
+
+  .table-container {
+    position: relative;
+    z-index: 1;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-top: 25px;
+    width: 100%;
+    overflow-x: scroll;
+    /* Forzar que el scroll siempre esté presente */
+    scrollbar-width: thin;
+    scrollbar-color: #4CAF50 #f0f9f0;
+  }
+
+  /* Estilo personalizado para scrollbar en navegadores Webkit */
+  .table-container::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .table-container::-webkit-scrollbar-track {
+    background: #f0f9f0;
+    border-radius: 10px;
+  }
+
+  .table-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    border-radius: 10px;
+  }
+
+  .table-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+  }
+
+  .documents-table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .documents-table thead {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+  }
+
+  .documents-table th {
+    padding: 18px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .documents-table td {
+    padding: 16px;
+    border-bottom: 1px solid #e8f5e8;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  .documents-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .documents-table tr.even {
+    background-color: #fafafa;
+  }
+
+  .documents-table tr.odd {
+    background-color: white;
+  }
+
+  .documents-table tbody tr:hover {
+    background-color: #f1f8e9;
+    transform: scale(1.005);
+    transition: all 0.2s ease;
+  }
+
+  .title-cell {
+    font-weight: 600;
+    color: #2e7d32;
+    min-width: 200px;
+    width: 35%;
+  }
+
+  .description-cell {
+    max-width: 100px;
+    width: 60%;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: normal;
+    color: #666;
+  }
+
+  .date-cell {
+    color: #666;
+    font-size: 13px;
+    white-space: nowrap;
+    font-family: 'Courier New', monospace;
+    width: 15%;
+    min-width: 100px;
+  }
+
+  .author-cell {
+    color: #555;
+    font-style: italic;
+    width: 20%;
+    min-width: 120px;
+  }
+
+  .action-cell {
+    text-align: center;
+    width: 15%;
+    min-width: 120px;
+  }
+
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  }
+
+  .download-btn:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  }
+
+  .download-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Desde 900px hacia abajo → ocultamos tabla y mostramos cards */
+  @media (max-width: 900px) {
+    .documents-table {
+      display: none;
+    }
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .accordion-item {
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .accordion-header {
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #4CAF50, #2e7d32);
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .accordion-header:hover {
+      background: linear-gradient(135deg, #388e3c, #256d36);
+    }
+
+    .accordion-icon {
+      transform: rotate(0deg);
+      transition: transform 0.3s ease;
+    }
+
+    .accordion-item.active .accordion-icon {
+      transform: rotate(180deg);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 16px;
+      background: #f9fdf9;
+      transition: max-height 0.4s ease, padding 0.3s ease;
+    }
+
+    .accordion-item.active .accordion-content {
+      max-height: 300px; /* suficiente para descripción */
+      padding: 16px;
+    }
+
+    .description {
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .date {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 12px;
+    }
+  }
 </style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const items = document.querySelectorAll(".accordion-item");
+    items.forEach(item => {
+      const header = item.querySelector(".accordion-header");
+      header.addEventListener("click", () => {
+        item.classList.toggle("active");
+      });
+    });
+  });
+</script>
