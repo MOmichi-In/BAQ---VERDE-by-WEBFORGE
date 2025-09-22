@@ -22,18 +22,22 @@ ParticipationsData = response;
 
 <div class="participation-carousel carousel">
   <div class="cards-wrapper">
-    {ParticipationsData.map((item) => (
-      <div class="card-container">
-        <ParticipationCard 
-          title={item.title}
-          image={item.img_url || "/placeholder.jpg"}
-          description={item.content?.substring(0, 100) + "..."}
-          text={item.content}
-          id={item._id}
-          href={`/news/${item._id}`}
-        />
-      </div>
-    ))}
+    {ParticipationsData.length === 0 ? (
+      <p style="text-align: center; padding: 2rem; color: #666;">No hay participaciones disponibles.</p>
+    ) : (
+      ParticipationsData.map((item) => (
+        <div class="card-container">
+          <ParticipationCard 
+            title={item.title}
+            image={item.img_url || "/placeholder.jpg"}
+            description={item.content?.substring(0, 100) + "..."}
+            text={item.content}
+            id={item._id}
+            href={`/news/${item._id}`}
+          />
+        </div>
+      ))
+    )}
   </div>
 
   {ParticipationsData.length > 0 && (
