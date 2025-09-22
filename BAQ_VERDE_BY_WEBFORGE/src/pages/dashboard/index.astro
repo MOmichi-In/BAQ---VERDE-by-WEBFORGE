@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-
+import "../../styles/global.css";
 const cookieStore = Astro.cookies;
 const sessionToken = cookieStore.get('token')?.value;
 
@@ -16,168 +16,401 @@ if (Astro.url.searchParams.get('logout') === 'true') {
 ---
 
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Dashboard - Observatorio Ambiental</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrativo - Observatorio Ambiental</title>
+    
+    <!-- Importar estilos globales -->
+    
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-      :root {
-        --primary-green: #4CAF50;
-        --secondary-yellow: #FFC107;
-        --text-white: #FFFFFF;
-        --text-dark: #212121;
-        --bg-overlay: rgba(0, 0, 0, 0.3);
-      }
+        body {
+            background-color: var(--color-gris-claro);
+        }
 
-      body {
-        margin: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: var(--primary-green);
-        color: var(--text-white);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
+        /* Header */
+        .header {
+            background: var(--color-blanco);
+            border-bottom: 1px solid var(--color-gris-medio);
+            padding: 0 var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 40px;
-        background-color: rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: bold;
-        font-size: 1.2rem;
-      }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
 
-      .logo span {
-        color: var(--text-white);
-      }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--color-verde);
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-blanco);
+            font-size: 20px;
+        }
 
-      .nav-links {
-        display: flex;
-        gap: 20px;
-      }
+        .logo-text h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--color-azul-oscuro);
+        }
 
-      .nav-links a {
-        color: var(--text-white);
-        text-decoration: none;
-        font-size: 1rem;
-        transition: color 0.3s;
-      }
+        .logo-text p {
+            font-size: 0.85rem;
+            color: var(--color-gris-oscuro);
+            margin: 0;
+        }
 
-      .nav-links a:hover {
-        color: var(--secondary-yellow);
-      }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
 
-      .main-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 40px;
-        background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
-        background-size: cover;
-        background-position: center;
-        background-color: var(--primary-green);
-        color: var(--text-white);
-        position: relative;
-      }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-gris-claro);
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-      .main-content::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.3);
-        z-index: 1;
-      }
+        .user-profile:hover {
+            background: var(--color-gris-medio);
+        }
 
-      .content {
-        position: relative;
-        z-index: 2;
-        max-width: 800px;
-        padding: 20px;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-      }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--color-verde);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-blanco);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
 
-      h1 {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: var(--text-white);
-      }
+        .user-info h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--color-azul-oscuro);
+        }
 
-      h1 span {
-        color: var(--secondary-yellow);
-      }
+        .user-info p {
+            font-size: 0.8rem;
+            color: var(--color-gris-oscuro);
+            margin: 0;
+        }
 
-      p {
-        font-size: 1.2rem;
-        margin-bottom: 30px;
-      }
+        /* Main Content */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
 
-      .logout-btn {
-        padding: 12px 24px;
-        background-color: var(--secondary-yellow);
-        color: var(--primary-green);
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
+        /* Welcome Section */
+        .welcome-section {
+            background: var(--color-verde);
+            color: var(--color-blanco);
+            padding: var(--spacing-xxl) var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+            overflow: hidden;
+        }
 
-      .logout-btn:hover {
-        background-color: #e6b800;
-        transform: translateY(-2px);
-      }
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: var(--color-verde-secundario);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
 
-      .logout-btn:active {
-        transform: translateY(0);
-      }
+        .welcome-section::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 120px;
+            height: 120px;
+            background: var(--color-amarillo);
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-content h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-blanco);
+        }
+
+        .welcome-content p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            color: var(--color-blanco);
+        }
+
+        .welcome-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+        }
+
+        .stat-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-amarillo);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--color-blanco);
+            margin-top: var(--spacing-xs);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-azul-oscuro);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--spacing-xl);
+            max-width: 1100px;
+        }
+
+        .action-card {
+            background: var(--color-blanco);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid var(--color-gris-medio);
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-verde);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--color-verde);
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-blanco);
+            font-size: 24px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .action-card:nth-child(2n) .action-icon {
+            background: var(--color-verde-secundario);
+        }
+
+        .action-card:nth-child(3n) .action-icon {
+            background: var(--color-azul-oscuro);
+        }
+
+        .action-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-azul-oscuro);
+        }
+
+        .action-card p {
+            color: var(--color-gris-oscuro);
+            font-size: 0.9rem;
+        }
+
+        .action-link {
+            color: var(--color-verde);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            transition: color 0.2s ease;
+        }
+
+        .action-link:hover {
+            color: var(--color-verde-secundario);
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 var(--spacing-md);
+            }
+            
+            .main-container {
+                padding: var(--spacing-md);
+            }
+            
+            .welcome-content h2 {
+                font-size: 2rem;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <!-- Encabezado -->
+</head>
+<body>
+    <!-- Header -->
     <header class="header">
-      <div class="logo">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L15.09 8.26L19.88 9.09L16.74 14.1L18.32 18.58L12 17.58L5.68 18.58L7.26 14.1L4.12 9.09L8.91 8.26L12 2Z" fill="#4CAF50"/>
-        </svg>
-        <span>Observatorio Ambiental</span>
-      </div>
-      <nav class="nav-links">
-        <a href="/">Inicio</a>
-        <a href="/dashboard/participacion">Participación ciudadana</a>
-        <a href="/mapas">Mapas</a>
-        <a href="/dashboard/news">Noticias</a>
-        <a href="/documentos">Documentos</a>
-      </nav>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Observatorio Ambiental</h1>
+                    <p>Panel Administrativo</p>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        AD
+                    </div>
+                    <div class="user-info">
+                        <h3>Administrador</h3>
+                        <p>Super usuario</p>
+                    </div>
+                    <i class="fas fa-chevron-down" style="color: var(--color-gris-oscuro); font-size: 0.8rem;"></i>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <!-- Contenido principal -->
-    <main class="main-content">
-      <div class="content">
-        <h1>Dashboard <span>Observatorio</span></h1>
-        <p>Bienvenido al panel de control del Observatorio Ambiental.</p>
-        <button class="logout-btn" onclick="window.location.href = '?logout=true'">
-          🚫 Cerrar Sesión
-        </button>
-      </div>
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="welcome-content">
+                <h2>Panel de Administración</h2>
+                <p>Gestiona y supervisa todos los aspectos del Observatorio Ambiental de Barranquilla</p>
+                
+                <div class="welcome-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <div class="stat-label">Noticias publicadas</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <div class="stat-label">Reportes ciudadanos</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <div class="stat-label">Documentos oficiales</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <h2 class="section-title">Módulos de Administración</h2>
+            <div class="actions-grid">
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h3>Gestión de Noticias</h3>
+                    <p>Administra las publicaciones, artículos y comunicados del observatorio ambiental. Crea, edita y publica contenido informativo.</p>
+                    <a href="#" class="action-link">
+                        Gestionar noticias <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Participación Ciudadana</h3>
+                    <p>Supervisa reportes ciudadanos, comentarios y sugerencias de la comunidad sobre temas ambientales en Barranquilla.</p>
+                    <a href="#" class="action-link">
+                        Ver participación <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Gestión de Datos e Información</h3>
+                    <p>Administra bases de datos ambientales, informes técnicos, documentos oficiales y archivos del observatorio.</p>
+                    <a href="#" class="action-link">
+                        Gestionar datos <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
     </main>
-  </body>
+</body>
 </html>

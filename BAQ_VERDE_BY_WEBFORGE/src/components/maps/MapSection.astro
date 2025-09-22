@@ -1,38 +1,580 @@
 ---
-import 'leaflet/dist/leaflet.css';
+// Función mejorada para crear iconos de marcador
+    function createCustomMarkerIcon(color, number) {      
+      return L.divIcon({
+        className: 'custom-marker-icon',
+        html: `<div style="background-color: ${color};" class="marker-bubble">${number}</div>`,
+        iconSize: [36, 48],
+        iconAnchor: [18, 42],
+        popupAnchor: [0, -42]
+      });
+    }
 ---
 
-<div id="map" class="map-container" />
+<!-- Importar estilos globales -->
+<style is:global>
+  @import url('../../styles/global.css');
+</style>
+
+<!-- Estilos de Leaflet -->
+<link 
+  rel="stylesheet" 
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+/>
+<!-- Font Awesome -->
+<link 
+  rel="stylesheet" 
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-  .map-container {
-    height: 400px;
+  /* Contenedor principal */
+  .map-app-container {
+    display: flex;
+    height: 600px;
     width: 100%;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    font-family: var(--font-family-base);
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-gris-medio);
+  }
+
+  /* Sidebar izquierdo - Estilo más moderno */
+  .sidebar {
+    width: 320px;
+    background: var(--color-blanco);
+    padding: 0;
+    border-right: 1px solid var(--color-gris-medio);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Header del sidebar */
+  .sidebar-header {
+    padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md) var(--spacing-md);
+    background: linear-gradient(135deg, var(--color-verde) 0%, var(--color-azul-oscuro) 100%);
+    color: var(--color-blanco);
+    position: relative;
+  }
+
+  .sidebar h3 {
+    color: var(--color-blanco);
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    font-family: var(--font-family-heading);
+  }
+
+  .sidebar-subtitle {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: var(--spacing-xs);
+  }
+
+  /* Contenido del sidebar */
+  .sidebar-content {
+    flex: 1;
+    padding: var(--spacing-md);
+    overflow-y: auto;
+    background: var(--color-gris-claro);
+  }
+
+  /* Grupo de filtros */
+  .filter-group {
+    margin-bottom: var(--spacing-md);
+  }
+
+  /* Items de filtro mejorados */
+  .filter-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--color-blanco);
+    border: 1px solid var(--color-gris-medio);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: var(--spacing-md);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .filter-item:hover {
+    background: var(--color-blanco);
+    border-color: var(--color-verde);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .filter-item.active {
+    background: var(--color-blanco);
+    border-color: var(--color-verde);
+    box-shadow: 0 0 0 3px rgba(39, 155, 72, 0.1);
+  }
+
+  /* Iconos más modernos */
+  .filter-item-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 14px;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .filter-item-content {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .filter-item-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-azul-oscuro);
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-family: var(--font-family-heading);
+  }
+
+  .category-count {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-gris-oscuro);
+    background-color: var(--color-gris-medio);
+    padding: 2px var(--spacing-sm);
+    border-radius: var(--border-radius-lg);
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .filter-item-description {
+    font-size: 13px;
+    color: var(--color-gris-oscuro);
+    line-height: 1.4;
+  }
+
+  /* Switch moderno */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-gris-medio);
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 34px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--color-blanco);
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+  }
+
+  input:checked + .slider {
+    background-color: var(--color-verde);
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 0 3px rgba(39, 155, 72, 0.2);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(20px);
+  }
+
+  /* Colores específicos para los sliders por categoría */
+  input:checked + .slider.airQuality-slider { 
+    background-color: var(--color-amarillo); 
+  }
+  input:focus + .slider.airQuality-slider { 
+    box-shadow: 0 0 0 3px rgba(255, 234, 0, 0.2); 
+  }
+
+  input:checked + .slider.biodiversity-slider { 
+    background-color: var(--color-verde); 
+  }
+  input:focus + .slider.biodiversity-slider { 
+    box-shadow: 0 0 0 3px rgba(39, 155, 72, 0.2); 
+  }
+
+  input:checked + .slider.soil-slider { 
+    background-color: var(--color-verde-secundario); 
+  }
+  input:focus + .slider.soil-slider { 
+    box-shadow: 0 0 0 3px rgba(57, 169, 52, 0.2); 
+  }
+
+  /* Mapa */
+  #map {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    background-color: var(--color-gris-claro);
+  }
+
+  /* Popup personalizado más moderno */
+  .leaflet-popup-content-wrapper {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: none;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .leaflet-popup-content {
+    font-family: var(--font-family-base);
+    color: var(--color-azul-oscuro);
+    font-size: 14px;
+    margin: 0;
+    padding: var(--spacing-md);
+    background: var(--color-blanco);
+  }
+
+  .leaflet-popup-content h4 {
+    color: var(--color-verde);
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--font-family-heading);
+  }
+
+  .leaflet-popup-content p {
+    margin: var(--spacing-xs) 0 0 0;
+    color: var(--color-gris-oscuro);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .leaflet-popup-tip {
+    background: var(--color-blanco);
+    border: none;
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Controles del mapa mejorados */
+  .leaflet-control-zoom {
+    border: none;
+    box-shadow: var(--shadow-md);
+  }
+
+  .leaflet-control-zoom a {
+    background: var(--color-blanco);
+    color: var(--color-azul-oscuro);
+    border: none;
+    border-radius: var(--border-radius-md) !important;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .leaflet-control-zoom a:hover {
+    background: var(--color-gris-claro);
+    color: var(--color-verde);
+  }
+
+  /* Marcadores mejorados */
+  .custom-marker-icon {
+    background: transparent;
+    border: none;
+  }
+
+  .marker-bubble {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-blanco);
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: var(--shadow-md);
+    border: 3px solid var(--color-blanco);
+    position: relative;
+    transform: translateY(-50%);
+  }
+
+  .marker-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--color-blanco);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .map-app-container {
+      flex-direction: column;
+      height: auto;
+    }
+    
+    .sidebar {
+      width: 100%;
+      max-height: 350px;
+    }
+    
+    #map {
+      height: 400px;
+    }
+
+    .sidebar-content {
+      max-height: 250px;
+    }
   }
 </style>
 
+<!-- Contenido principal -->
+<div class="map-app-container">
+  <!-- Sidebar izquierdo -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Datos Ambientales</h3>
+      <div class="sidebar-subtitle">Barranquilla, Colombia</div>
+    </div>
+    
+    <div class="sidebar-content">
+      <!-- Grupo 1: Calidad del Aire -->
+      <div class="filter-group">
+        <div class="filter-item" data-category="airQuality">
+          <div class="filter-item-icon" style="background-color: rgba(255, 234, 0, 0.1); color: #FFEA00;">
+            <i class="fas fa-wind"></i>
+          </div>
+          <div class="filter-item-content">
+            <div class="filter-item-title">Calidad del aire <span class="category-count">(0)</span></div>
+            <div class="filter-item-description">Estaciones de monitoreo, contaminantes</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked data-category="airQuality">
+            <span class="slider airQuality-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Grupo 2: Biodiversidad -->
+      <div class="filter-group">
+        <div class="filter-item" data-category="biodiversity">
+          <div class="filter-item-icon" style="background-color: rgba(39, 155, 72, 0.1); color: #279B48;">
+            <i class="fas fa-leaf"></i>
+          </div>
+          <div class="filter-item-content">
+            <div class="filter-item-title">Biodiversidad <span class="category-count">(0)</span></div>
+            <div class="filter-item-description">Reservas naturales, corredores</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" data-category="biodiversity">
+            <span class="slider biodiversity-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Grupo 3: Suelo -->
+      <div class="filter-group">
+        <div class="filter-item" data-category="soil">
+          <div class="filter-item-icon" style="background-color: rgba(57, 169, 52, 0.1); color: #39A934;">
+            <i class="fas fa-mountain"></i>
+          </div>
+          <div class="filter-item-content">
+            <div class="filter-item-title">Suelo <span class="category-count">(0)</span></div>
+            <div class="filter-item-description">Calidad, erosión, uso de tierra</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" data-category="soil">
+            <span class="slider soil-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mapa -->
+  <div id="map"></div>
+</div>
+
 <script>
-  // Cargar Leaflet solo en el cliente
-  import("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js").then((L) => {
-    // Crear el mapa
-    const map = L.map('map').setView([20.659698, -103.349609], 13); // Coordenadas de ejemplo: Guadalajara, México
+  // Solo se ejecuta en el navegador
+  if (typeof window !== "undefined") {
+    // Configuración de categorías y colores actualizados
+    const categoriesConfig = {
+      airQuality: {
+        color: '#FFEA00', // Amarillo oficial
+        bgColor: 'rgba(255, 234, 0, 0.1)',
+        iconClass: 'fas fa-wind',
+        title: 'Calidad del aire',
+        description: 'Estaciones de monitoreo, contaminantes'
+      },
+      biodiversity: {
+        color: '#279B48', // Verde oficial
+        bgColor: 'rgba(39, 155, 72, 0.1)',
+        iconClass: 'fas fa-leaf',
+        title: 'Biodiversidad',
+        description: 'Reservas naturales, corredores'
+      },
+      soil: {
+        color: '#39A934', // Verde secundario oficial
+        bgColor: 'rgba(57, 169, 52, 0.1)',
+        iconClass: 'fas fa-mountain',
+        title: 'Suelo',
+        description: 'Calidad, erosión, uso de tierra'
+      }
+    };
 
-    // Capa de OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    // Datos de ejemplo mejorados
+    const allMarkersData = [
+      { id: 'aq1', lat: 11.000, lng: -74.810, category: 'airQuality', popupContent: '<h4>Estación A de Aire</h4><p>Nivel de CO2: Medio<br>PM2.5: 35 μg/m³</p>' },
+      { id: 'aq2', lat: 10.995, lng: -74.820, category: 'airQuality', popupContent: '<h4>Estación B de Aire</h4><p>Nivel de polen: Bajo<br>Ozono: 0.08 ppm</p>' },
+      { id: 'aq3', lat: 10.985, lng: -74.795, category: 'airQuality', popupContent: '<h4>Estación C de Aire</h4><p>Contaminantes: PM2.5<br>Calidad: Moderada</p>' },
+      { id: 'b1', lat: 10.970, lng: -74.800, category: 'biodiversity', popupContent: '<h4>Reserva Natural Ciénaga</h4><p>Especies de aves: 150<br>Área protegida: 45 ha</p>' },
+      { id: 'b2', lat: 10.960, lng: -74.815, category: 'biodiversity', popupContent: '<h4>Corredor Ecológico</h4><p>Flora y fauna diversa<br>Conectividad: Alta</p>' },
+      { id: 's1', lat: 10.950, lng: -74.790, category: 'soil', popupContent: '<h4>Zona de Reforestación</h4><p>Tipo de suelo: Arcilloso<br>pH: 6.5</p>' },
+      { id: 's2', lat: 10.940, lng: -74.805, category: 'soil', popupContent: '<h4>Muestra de Suelo</h4><p>Riesgo de erosión: Bajo<br>Materia orgánica: 3.2%</p>' },
+      { id: 's3', lat: 10.930, lng: -74.800, category: 'soil', popupContent: '<h4>Análisis de Suelo</h4><p>Uso agrícola<br>Fertilidad: Buena</p>' },
+    ];
 
-    // Opcional: añadir un marcador
-    L.marker([20.659698, -103.349609]).addTo(map)
-      .bindPopup('¡Hola desde OpenStreetMap!')
-      .openPopup();
-  });
+    let map;
+    let currentMarkers = {}; 
 
-  // Cargar estilos de Leaflet
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-  document.head.appendChild(link);
+    // Función mejorada para crear iconos de marcador
+    function createCustomMarkerIcon(color, number) {
+      // Necesitamos obtener el valor real del color si es una variable CSS
+      let actualColor = color;
+      if (color.startsWith('var(')) {
+        const rootStyles = getComputedStyle(document.documentElement);
+        const colorName = color.replace('var(', '').replace(')', '');
+        actualColor = rootStyles.getPropertyValue(colorName).trim();
+      }
+      
+      return L.divIcon({
+        className: 'custom-marker-icon',
+        html: `<div style="background-color: ${actualColor};" class="marker-bubble">${number}</div>`,
+        iconSize: [36, 48],
+        iconAnchor: [18, 42],
+        popupAnchor: [0, -42]
+      });
+    }
+
+    // Función principal para renderizar/actualizar los marcadores en el mapa
+    function renderMarkers() {
+      // Elimina todos los marcadores existentes del mapa
+      for (const category in currentMarkers) {
+        currentMarkers[category].forEach(marker => {
+          map.removeLayer(marker);
+        });
+      }
+      currentMarkers = {};
+
+      // Obtiene las categorías que están activas
+      const activeCategories = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked'))
+                                    .map(input => input.dataset.category);
+
+      const categoryCounts = {};
+
+      // Actualizar estados visuales de los items
+      document.querySelectorAll('.filter-item').forEach(item => {
+        const category = item.dataset.category;
+        const isActive = activeCategories.includes(category);
+        item.classList.toggle('active', isActive);
+      });
+
+      activeCategories.forEach(activeCat => {
+        let categoryMarkerCount = 0;
+        currentMarkers[activeCat] = [];
+
+        allMarkersData.filter(data => data.category === activeCat)
+                      .forEach((markerData, index) => {
+          categoryMarkerCount++;
+          const color = categoriesConfig[activeCat].color;
+          const markerIcon = createCustomMarkerIcon(color, categoryMarkerCount);
+          const marker = L.marker([markerData.lat, markerData.lng], { icon: markerIcon })
+                          .addTo(map)
+                          .bindPopup(markerData.popupContent);
+          currentMarkers[activeCat].push(marker);
+        });
+        categoryCounts[activeCat] = categoryMarkerCount;
+      });
+
+      // Actualiza los contadores en la barra lateral
+      document.querySelectorAll('.sidebar .filter-item').forEach(item => {
+        const category = item.dataset.category;
+        const countSpan = item.querySelector('.category-count');
+        if (countSpan) {
+          countSpan.textContent = `(${categoryCounts[category] || 0})`;
+        }
+      });
+    }
+
+    // Función para cargar Leaflet e inicializar el mapa
+    const loadLeaflet = () => {
+      map = L.map("map", {
+        center: [10.9877, -74.8055],
+        zoom: 13,
+        zoomControl: true,
+        attributionControl: true
+      });
+
+      // Capa base de OpenStreetMap
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 19
+      }).addTo(map);
+
+      renderMarkers();
+
+      // Event listeners
+      document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', renderMarkers);
+      });
+    };
+
+    // Carga Leaflet e inicializa
+    if (window.L) {
+      loadLeaflet();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.onload = loadLeaflet;
+      document.head.appendChild(script);
+    }
+  }
 </script>
