@@ -1,9 +1,10 @@
 ---
+import Layout from "../../layouts/DashboardLayout.astro";
+
 export const prerender = false;
 
 const cookieStore = Astro.cookies;
 const sessionToken = cookieStore.get('token')?.value;
-
 if (!sessionToken) {
   return Astro.redirect('/login');
 }
@@ -14,11 +15,6 @@ if (Astro.url.searchParams.get('logout') === 'true') {
   return Astro.redirect('/login');
 }
 ---
-
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Dashboard - Observatorio Ambiental</title>
     <style>
       :root {
         --primary-green: #4CAF50;
@@ -92,6 +88,7 @@ if (Astro.url.searchParams.get('logout') === 'true') {
         background-color: var(--primary-green);
         color: var(--text-white);
         position: relative;
+        height: 70vh;
       }
 
       .main-content::before {
@@ -150,26 +147,9 @@ if (Astro.url.searchParams.get('logout') === 'true') {
         transform: translateY(0);
       }
     </style>
-  </head>
-  <body>
-    <!-- Encabezado -->
-    <header class="header">
-      <div class="logo">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L15.09 8.26L19.88 9.09L16.74 14.1L18.32 18.58L12 17.58L5.68 18.58L7.26 14.1L4.12 9.09L8.91 8.26L12 2Z" fill="#4CAF50"/>
-        </svg>
-        <span>Observatorio Ambiental</span>
-      </div>
-      <nav class="nav-links">
-        <a href="/">Inicio</a>
-        <a href="/dashboard/participacion">Participación ciudadana</a>
-        <a href="/mapas">Mapas</a>
-        <a href="/dashboard/news">Noticias</a>
-        <a href="/dashboard/document">Documentos</a>
-      </nav>
-    </header>
+  <Layout>
 
-    <!-- Contenido principal -->
+
     <main class="main-content">
       <div class="content">
         <h1>Dashboard <span>Observatorio</span></h1>
@@ -179,5 +159,5 @@ if (Astro.url.searchParams.get('logout') === 'true') {
         </button>
       </div>
     </main>
-  </body>
-</html>
+
+  </Layout>

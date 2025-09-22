@@ -46,7 +46,7 @@ if (Astro.url.searchParams.get('logout') === 'true') {
         <input type="datetime-local" id="date_disponibility" name="date_disponibility" required />
       </div>
       <button type="submit" class="btn-submit">💾 Subir Documento</button>
-      <a href="/dashboard/documentos" class="btn-cancel">⬅️ Cancelar</a>
+      <a href="/dashboard/document" class="btn-cancel">⬅️ Cancelar</a>
     </form>
   </div>
 
@@ -111,7 +111,7 @@ if (Astro.url.searchParams.get('logout') === 'true') {
         if (res.ok) {
           showMessage('Documento subido con éxito', 'success');
           setTimeout(() => {
-            window.location.href = '/dashboard/documentos';
+            window.location.href = '/dashboard/document';
           }, 1500);
         } else {
           const errorData = await res.json().catch(() => ({}));

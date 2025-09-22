@@ -22,11 +22,11 @@ let success = null;
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
   const title = formData.get('title')?.toString();
-  const category = formData.get('category')?.toString();
+ const category = formData.get('category')?.toString();
   const content = formData.get('content')?.toString();
   const imageFile = formData.get('image') as File;
 
-  if (!title || !category || !content) {
+  if (!title || !content) {
     error = 'Todos los campos son requeridos';
   } else {
     let img_url = null;
@@ -45,7 +45,7 @@ if (Astro.request.method === 'POST') {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title,
-        category,
+        category: "Participacion",
         content,
         img_url, 
       })
@@ -56,7 +56,7 @@ if (Astro.request.method === 'POST') {
     if (res) {
       success = 'Noticia creada con éxito';
       // Redirigir inmediatamente (no puedes usar setTimeout en server-side)
-      return Astro.redirect('/dashboard/news');
+      return Astro.redirect('/dashboard/stake');
     } else {
       error = 'Error al crear la noticia';
     }
@@ -66,7 +66,7 @@ if (Astro.request.method === 'POST') {
 
 <Layout title="Crear Noticia">
   <div class="container">
-    <h1>📝 Crear Nueva Noticia</h1>
+    <h1>📝 Crear Nueva Participacion</h1>
 
     {error && <div class="alert error">{error}</div>}
     {success && <div class="alert success">{success}</div>}
@@ -77,15 +77,6 @@ if (Astro.request.method === 'POST') {
         <input type="text" id="title" name="title" required />
       </div>
 
-      <div class="form-group">
-        <label for="category">Categoría</label>
-        <select id="category" name="category" required>
-          <option value="">Selecciona una categoría</option>
-          <option value="Alertas">Alertas</option>
-          <option value="Comunicados">Comunicados</option>
-          <!-- Añade más según necesites -->
-        </select>
-      </div>
 
       <div class="form-group">
         <label for="content">Contenido</label>
@@ -98,7 +89,7 @@ if (Astro.request.method === 'POST') {
       </div>
 
       <button type="submit" class="btn-submit">💾 Guardar Noticia</button>
-      <a href="/dashboard/news" class="btn-cancel">⬅️ Cancelar</a>
+      <a href="/dashboard/stake" class="btn-cancel">⬅️ Cancelar</a>
     </form>
   </div>
 

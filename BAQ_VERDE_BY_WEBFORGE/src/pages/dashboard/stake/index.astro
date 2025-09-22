@@ -17,31 +17,29 @@ if (Astro.url.searchParams.get('logout') === 'true') {
   return Astro.redirect('/login');
 }
 
-const data = await api("/news/?category=Alertas", sessionToken)
-const data2 = await api("/news/?category=Comunicados", sessionToken)
+const data = await api("/news/?category=Participacion", sessionToken)
 
 // Obtener noticias desde la API
-const noticiasRes = [...data, ...data2];
+const noticiasRes = data
 const noticias = noticiasRes
 ---
 
 <Layout title="Gestión de Noticias">
   <div class="container">
     <div class="header">
-      <h1>📰 Gestión de Noticias</h1>
-      <a href="/dashboard/news/create" class="btn-primary">+ Crear Noticia</a>
+      <h1>Gestión de Participacion ciudadana</h1>
+      <a href="/dashboard/stake/create" class="btn-primary">+ Crear Participacion</a>
     </div>
 
     <div class="noticias-grid">
       {noticias.map((noticia) => (
         <div class="noticia-card">
           <h3>Titulo: {noticia.title}</h3>
-          <p>Categoria: {noticia.category}</p>
           <!-- ✅ Corregido: src={...} en vez de src=`...` -->
           <!-- ✅ Añadida clase "noticia-img" para controlar estilo -->
-          <img src={`${import.meta.env.PUBLIC_URL_SERVER}${noticia.img_url}`} alt="Imagen de la noticia" class="noticia-img" />
+          <img src={`${import.meta.env.PUBLIC_URL_SERVER}${noticia.img_url}`} alt="Imagen de la participacion ciudadana" class="noticia-img" />
           <div class="actions">
-            <a href={`/dashboard/news/edit/${noticia._id}`} class="btn-edit">✏️ Editar</a>
+            <a href={`/dashboard/stake/edit/${noticia._id}`} class="btn-edit">✏️ Editar</a>
             <button class="btn-delete" data-id={noticia._id}>🗑️ Eliminar</button>
           </div>
         </div>
