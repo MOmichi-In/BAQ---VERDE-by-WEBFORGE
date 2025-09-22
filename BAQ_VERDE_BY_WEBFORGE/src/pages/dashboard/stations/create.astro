@@ -64,151 +64,445 @@ if (Astro.request.method === 'POST') {
 ---
 
 <Layout title="Crear Estación">
-  <div class="container">
-    <h1>📡 Crear Nueva Estación</h1>
-
-    {error && <div class="alert error">{error}</div>}
-    {success && <div class="alert success">{success}</div>}
-
-    <form method="post" class="form-station">
-      <div class="form-group">
-        <label for="name">Nombre de la Estación *</label>
-        <input type="text" id="name" name="name" required placeholder="Ej: Estación Norte" />
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="lat">Latitud * (-90 a 90)</label>
-          <input type="number" id="lat" name="lat" required min="-90" max="90" step="1" placeholder="Ej: 4" />
+  <div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1 class="dashboard-title">📡 Crear Nueva Estación</h1>
+          <p class="dashboard-subtitle">Registra una nueva estación de monitoreo ambiental</p>
         </div>
-        <div class="form-group">
-          <label for="lon">Longitud * (-180 a 180)</label>
-          <input type="number" id="lon" name="lon" required min="-180" max="180" step="1" placeholder="Ej: -74" />
+        <div class="header-actions">
+          <a href="/dashboard/stations" class="btn-back">
+            <span class="btn-icon">⬅️</span>
+            Volver al Panel
+          </a>
         </div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Gráficos Permitidos * (Selecciona al menos uno)</label>
-        <div class="checkbox-group">
-          {['PM10', 'PM2.5', 'CO', 'O3', 'SO2', 'ICA'].map((chart) => (
-            <label class="checkbox-label">
-              <input type="checkbox" name={`chart_${chart}`} value={chart} />
-              {chart}
+    <!-- Alert Messages -->
+    {error && (
+      <div class="alert alert-error">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-content">
+          <strong>Error:</strong> {error}
+        </div>
+      </div>
+    )}
+
+    {success && (
+      <div class="alert alert-success">
+        <div class="alert-icon">✅</div>
+        <div class="alert-content">
+          <strong>Éxito:</strong> {success}
+        </div>
+      </div>
+    )}
+
+    <!-- Form Section -->
+    <div class="form-container">
+      <div class="form-header">
+        <h2 class="form-title">Información de la Estación</h2>
+        <p class="form-subtitle">Completa todos los campos obligatorios para registrar la estación</p>
+      </div>
+
+      <form method="post" class="news-form">
+        <div class="form-grid">
+          <!-- Nombre -->
+          <div class="form-group full-width">
+            <label for="name" class="form-label">
+              <span class="label-icon">📍</span>
+              Nombre de la Estación *
             </label>
-          ))}
-        </div>
-      </div>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              class="form-input"
+              placeholder="Ej: Estación Norte"
+              required 
+            />
+          </div>
 
-      <button type="submit" class="btn-submit">💾 Crear Estación</button>
-      <a href="/dashboard/stations" class="btn-cancel">⬅️ Cancelar</a>
-    </form>
+          <!-- Latitud y Longitud -->
+          <div class="form-group">
+            <label for="lat" class="form-label">
+              <span class="label-icon">🧭</span>
+              Latitud * (-90 a 90)
+            </label>
+            <input 
+              type="number" 
+              id="lat" 
+              name="lat" 
+              class="form-input"
+              min="-90" 
+              max="90" 
+              step="1" 
+              placeholder="Ej: 4"
+              required 
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="lon" class="form-label">
+              <span class="label-icon">🧭</span>
+              Longitud * (-180 a 180)
+            </label>
+            <input 
+              type="number" 
+              id="lon" 
+              name="lon" 
+              class="form-input"
+              min="-180" 
+              max="180" 
+              step="1" 
+              placeholder="Ej: -74"
+              required 
+            />
+          </div>
+
+          <!-- Gráficos Permitidos -->
+          <div class="form-group full-width">
+            <label class="form-label">
+              <span class="label-icon">📊</span>
+              Gráficos Permitidos * (Selecciona al menos uno)
+            </label>
+            <div class="checkbox-group">
+              {['PM10', 'PM2.5', 'CO', 'O3', 'SO2', 'ICA'].map((chart) => (
+                <label class="checkbox-item">
+                  <input 
+                    type="checkbox" 
+                    name={`chart_${chart}`} 
+                    value={chart} 
+                    class="checkbox-input"
+                  />
+                  <span class="checkbox-label">{chart}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            <span class="btn-icon">💾</span>
+            Crear Estación
+          </button>
+          <a href="/dashboard/stations" class="btn-cancel">
+            <span class="btn-icon">❌</span>
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
   </div>
 
   <style>
-    .container {
-      padding: 20px;
-      max-width: 800px;
+    .dashboard-container {
+      padding: 2rem;
+      max-width: 1000px;
       margin: 0 auto;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
     }
 
-    .form-station {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
+    .dashboard-header {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
       color: white;
+      box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
     }
 
-    .form-group input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #555;
-      border-radius: 5px;
-      background: rgba(255,255,255,0.1);
-      color: white;
-      font-size: 1rem;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .checkbox-group {
+    .header-content {
       display: flex;
+      justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 10px;
+      gap: 1rem;
     }
 
-    .checkbox-label {
+    .title-section {
+      flex: 1;
+    }
+
+    .dashboard-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(45deg, #ffffff, #e8f5e8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dashboard-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .btn-back {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.2s;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    .checkbox-label:hover {
-      background: rgba(255,255,255,0.2);
-    }
-
-    .checkbox-label input[type="checkbox"] {
-      transform: scale(1.2);
-      cursor: pointer;
-    }
-
-    .btn-submit {
-      padding: 12px 24px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1rem;
-    }
-
-    .btn-cancel {
-      padding: 10px 20px;
-      background: #666;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      text-align: center;
-      display: inline-block;
-      font-size: 1rem;
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
     }
 
     .alert {
-      padding: 12px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .alert.error {
-      background: #f44336;
+    .alert-error {
+      background: linear-gradient(135deg, rgba(244, 67, 54, 0.9), rgba(211, 47, 47, 0.9));
       color: white;
     }
 
-    .alert.success {
+    .alert-success {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(69, 160, 73, 0.9));
+      color: white;
+    }
+
+    .alert-icon {
+      font-size: 1.5rem;
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .form-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .form-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .form-subtitle {
+      color: #666;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .label-icon {
+      font-size: 1.1rem;
+    }
+
+    .form-input {
+      padding: 1rem;
+      border: 2px solid #e1e5e9;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      color: #333;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #4CAF50;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    /* Checkboxes */
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .checkbox-input {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #4CAF50;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .checkbox-input:checked {
       background: #4CAF50;
+      border-color: #4CAF50;
+    }
+
+    .checkbox-input:checked::after {
+      content: '✓';
+      position: absolute;
       color: white;
+      font-size: 14px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .checkbox-label {
+      font-size: 0.95rem;
+      color: #333;
+      user-select: none;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 1rem;
+      min-width: 160px;
+      justify-content: center;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-cancel {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-cancel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+    }
+
+    .btn-icon {
+      font-size: 1.1rem;
     }
 
     @media (max-width: 768px) {
-      .form-row {
+      .dashboard-container {
+        padding: 1rem;
+      }
+
+      .dashboard-title {
+        font-size: 2rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .form-grid {
         grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn-submit,
+      .btn-cancel {
+        width: 100%;
+      }
+
+      .checkbox-group {
+        gap: 0.5rem;
+      }
+
+      .checkbox-item {
+        gap: 0.25rem;
+      }
+
+      .checkbox-label {
+        font-size: 0.9rem;
       }
     }
   </style>

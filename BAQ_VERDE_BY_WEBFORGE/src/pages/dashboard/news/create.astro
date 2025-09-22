@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/DashboardLayout.astro';
 import { api } from '../../../lib/api';
+
 export const prerender = false;
 
 const cookieStore = Astro.cookies;
@@ -38,6 +39,7 @@ if (Astro.request.method === 'POST') {
       const mimeType = imageFile.type;
       img_url = `data:${imageFile.type};base64,${base64}`;
     }
+
     console.log(img_url)
 
     const res = await api("/news/", sessionToken, {
@@ -47,7 +49,7 @@ if (Astro.request.method === 'POST') {
         title,
         category,
         content,
-        img_url, 
+        img_url,
       })
     });
 
@@ -65,83 +67,452 @@ if (Astro.request.method === 'POST') {
 ---
 
 <Layout title="Crear Noticia">
-  <div class="container">
-    <h1>📝 Crear Nueva Noticia</h1>
+  <div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1 class="dashboard-title">Crear Nueva Noticia</h1>
+          <p class="dashboard-subtitle">Añade una nueva publicación al Observatorio Ambiental</p>
+        </div>
+        <div class="header-actions">
+          <a href="/dashboard/news" class="btn-back">
+            <span class="btn-icon">⬅️</span>
+            Volver al Panel
+          </a>
+        </div>
+      </div>
+    </div>
 
-    {error && <div class="alert error">{error}</div>}
-    {success && <div class="alert success">{success}</div>}
+    <!-- Alert Messages -->
+    {error && (
+      <div class="alert alert-error">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-content">
+          <strong>Error:</strong> {error}
+        </div>
+      </div>
+    )}
 
-    <form method="post" class="form-noticia" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="title">Título</label>
-        <input type="text" id="title" name="title" required />
+    {success && (
+      <div class="alert alert-success">
+        <div class="alert-icon">✅</div>
+        <div class="alert-content">
+          <strong>Éxito:</strong> {success}
+        </div>
+      </div>
+    )}
+
+    <!-- Form Section -->
+    <div class="form-container">
+      <div class="form-header">
+        <h2 class="form-title">Información de la Noticia</h2>
+        <p class="form-subtitle">Completa todos los campos para crear la publicación</p>
       </div>
 
-      <div class="form-group">
-        <label for="category">Categoría</label>
-        <select id="category" name="category" required>
-          <option value="">Selecciona una categoría</option>
-          <option value="Alertas">Alertas</option>
-          <option value="Comunicados">Comunicados</option>
-          <!-- Añade más según necesites -->
-        </select>
-      </div>
+      <form method="post" class="news-form" enctype="multipart/form-data">
+        <div class="form-grid">
+          <!-- Título -->
+          <div class="form-group full-width">
+            <label for="title" class="form-label">
+              <span class="label-icon">📝</span>
+              Título de la Noticia
+            </label>
+            <input 
+              type="text" 
+              id="title" 
+              name="title" 
+              class="form-input"
+              placeholder="Ingresa el título de la noticia..."
+              required 
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="content">Contenido</label>
-        <textarea id="content" name="content" rows="6" required></textarea>
-      </div>
+          <!-- Categoría -->
+          <div class="form-group">
+            <label for="category" class="form-label">
+              <span class="label-icon">🏷️</span>
+              Categoría
+            </label>
+            <div class="select-wrapper">
+              <select id="category" name="category" class="form-select" required>
+                <option value="">Selecciona una categoría</option>
+                <option value="Alertas">🚨 Alertas</option>
+                <option value="Comunicados">📢 Comunicados</option>
+              </select>
+            </div>
+          </div>
 
-      <div class="form-group">
-        <label for="image">Imagen</label>
-        <input type="file" id="image" name="image" accept="image/*" required />
-      </div>
+          <!-- Imagen -->
+          <div class="form-group">
+            <label for="image" class="form-label">
+              <span class="label-icon">🖼️</span>
+              Imagen Principal
+            </label>
+            <div class="file-upload-wrapper">
+              <input 
+                type="file" 
+                id="image" 
+                name="image" 
+                class="file-input"
+                accept="image/*" 
+                required 
+              />
+              <label for="image" class="file-upload-label">
+                <span class="upload-icon">📁</span>
+                <span class="upload-text">Seleccionar imagen</span>
+              </label>
+            </div>
+          </div>
 
-      <button type="submit" class="btn-submit">💾 Guardar Noticia</button>
-      <a href="/dashboard/news" class="btn-cancel">⬅️ Cancelar</a>
-    </form>
+          <!-- Contenido -->
+          <div class="form-group full-width">
+            <label for="content" class="form-label">
+              <span class="label-icon">📄</span>
+              Contenido de la Noticia
+            </label>
+            <textarea 
+              id="content" 
+              name="content" 
+              rows="8" 
+              class="form-textarea"
+              placeholder="Escribe el contenido completo de la noticia..."
+              required
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            <span class="btn-icon">💾</span>
+            Guardar Noticia
+          </button>
+          <a href="/dashboard/news" class="btn-cancel">
+            <span class="btn-icon">❌</span>
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
   </div>
 
   <style>
-    .container { padding: 20px; max-width: 800px; margin: 0 auto; }
-    .form-noticia { display: flex; flex-direction: column; gap: 20px; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-    .form-group input, .form-group textarea, .form-group select {
+    .dashboard-container {
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    .dashboard-header {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .title-section {
+      flex: 1;
+    }
+
+    .dashboard-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(45deg, #ffffff, #e8f5e8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dashboard-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .btn-back {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .alert {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .alert-error {
+      background: linear-gradient(135deg, rgba(244, 67, 54, 0.9), rgba(211, 47, 47, 0.9));
+      color: white;
+    }
+
+    .alert-success {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(69, 160, 73, 0.9));
+      color: white;
+    }
+
+    .alert-icon {
+      font-size: 1.5rem;
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .form-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .form-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .form-subtitle {
+      color: #666;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .label-icon {
+      font-size: 1.1rem;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      padding: 1rem;
+      border: 2px solid #e1e5e9;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      color: #333;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #4CAF50;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 1rem center;
+      background-repeat: no-repeat;
+      background-size: 1rem;
+      padding-right: 3rem;
+    }
+
+    .file-upload-wrapper {
+      position: relative;
+    }
+
+    .file-input {
+      position: absolute;
+      opacity: 0;
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background: rgba(255,255,255,0.1);
-      color: white;
+      height: 100%;
+      cursor: pointer;
     }
-    .form-group input[type="file"] {
-      color: white;
-      background: transparent;
+
+    .file-upload-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      border: 2px dashed #4CAF50;
+      border-radius: 12px;
+      background: rgba(76, 175, 80, 0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #4CAF50;
+      font-weight: 500;
     }
+
+    .file-upload-label:hover {
+      background: rgba(76, 175, 80, 0.1);
+      border-color: #45a049;
+    }
+
+    .upload-icon {
+      font-size: 1.2rem;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 1rem;
+      min-width: 160px;
+      justify-content: center;
+    }
+
     .btn-submit {
-      padding: 12px 24px;
-      background: #4CAF50;
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
       color: white;
       border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
+      box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
     }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+
     .btn-cancel {
-      padding: 10px 20px;
-      background: #666;
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
       color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      text-align: center;
-      display: inline-block;
+      box-shadow: 0 4px 16px rgba(108, 117, 125, 0.3);
     }
-    .alert {
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 20px;
+
+    .btn-cancel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
     }
-    .alert.error { background: #f44336; color: white; }
-    .alert.success { background: #4CAF50; color: white; }
+
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-container {
+        padding: 1rem;
+      }
+
+      .dashboard-title {
+        font-size: 2rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn-submit,
+      .btn-cancel {
+        width: 100%;
+      }
+    }
   </style>
+    <script>
+    // Actualizar texto del botón de subir imagen cuando se selecciona un archivo
+    const imageInput = document.getElementById('image');
+    const imageLabel = document.querySelector('label[for="image"] .upload-text');
+
+    if (imageInput && imageLabel) {
+      imageInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+          // Opción 1: Mostrar el nombre del archivo
+          imageLabel.textContent = this.files[0].name;
+
+          // Opción 2 (alternativa más visual): Mostrar un check y texto genérico
+          // imageLabel.innerHTML = '<span style="color: #4CAF50;">✅</span> Imagen seleccionada';
+        } else {
+          imageLabel.textContent = 'Seleccionar imagen';
+        }
+      });
+    }
+  </script>
 </Layout>

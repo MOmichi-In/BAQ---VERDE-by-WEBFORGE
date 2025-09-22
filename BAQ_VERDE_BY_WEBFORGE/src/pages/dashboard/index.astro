@@ -4,162 +4,103 @@ import Layout from "../../layouts/DashboardLayout.astro";
 export const prerender = false;
 import "../../styles/global.css";
 const cookieStore = Astro.cookies;
-const sessionToken = cookieStore.get('token')?.value;
+const sessionToken = cookieStore.get("token")?.value;
 if (!sessionToken) {
-  return Astro.redirect('/login');
+    return Astro.redirect("/login");
 }
 
 // Borrar la cookie directamente desde el servidor si se pide
-if (Astro.url.searchParams.get('logout') === 'true') {
-  Astro.cookies.delete('token', { path: '/' });
-  return Astro.redirect('/login');
+if (Astro.url.searchParams.get("logout") === "true") {
+    Astro.cookies.delete("token", { path: "/" });
+    return Astro.redirect("/login");
 }
 ---
-<<<<<<< HEAD
 
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Administrativo - Observatorio Ambiental</title>
-    
-    <!-- Importar estilos globales -->
-    
-    <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-=======
->>>>>>> a5e3e13fb56e28d41ccde08e589e12227fc3ad30
+<Layout title="Panel de Administración">
+    <!-- Welcome Section -->
+     <div class="dashboard-container">
+    <section class="welcome-section">
+        <div class="welcome-content">
+            <h2>Panel de Administración</h2>
+            <p>
+                Gestiona y supervisa todos los aspectos del Observatorio
+                Ambiental de Barranquilla
+            </p>
+
+            <div class="welcome-stats">
+                <div class="stat-item">
+                    <span class="stat-number">0</span>
+                    <div class="stat-label">Noticias publicadas</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">0</span>
+                    <div class="stat-label">Reportes ciudadanos</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">0</span>
+                    <div class="stat-label">Documentos oficiales</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+        <h2 class="section-title">Módulos de Administración</h2>
+        <div class="actions-grid">
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <h3>Gestión de Noticias</h3>
+                <p>
+                    Administra las publicaciones, artículos y comunicados del
+                    observatorio ambiental. Crea, edita y publica contenido
+                    informativo.
+                </p>
+                <a href="/dashboard/news" class="action-link">
+                    Gestionar noticias <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Participación Ciudadana</h3>
+                <p>
+                    Supervisa reportes ciudadanos, comentarios y sugerencias de
+                    la comunidad sobre temas ambientales en Barranquilla.
+                </p>
+                <a href="/dashboard/stake" class="action-link">
+                    Ver participación <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3>Gestión de Datos e Información</h3>
+                <p>
+                    Administra bases de datos ambientales, informes técnicos,
+                    documentos oficiales y archivos del observatorio.
+                </p>
+                <a href="/dashboard/document" class="action-link">
+                    Gestionar datos <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
     <style>
-        body {
-            background-color: var(--color-gris-claro);
-        }
-
-        /* Header */
-        .header {
-            background: var(--color-blanco);
-            border-bottom: 1px solid var(--color-gris-medio);
-            padding: 0 var(--spacing-xl);
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 70px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--color-verde);
-            border-radius: var(--border-radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--color-blanco);
-            font-size: 20px;
-        }
-
-        .logo-text h1 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin: 0;
-            color: var(--color-azul-oscuro);
-        }
-
-        .logo-text p {
-            font-size: 0.85rem;
-            color: var(--color-gris-oscuro);
-            margin: 0;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-lg);
-        }
-
-<<<<<<< HEAD
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: var(--color-gris-claro);
-            border-radius: var(--border-radius-lg);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-=======
-      .main-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 40px;
-        background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
-        background-size: cover;
-        background-position: center;
-        background-color: var(--primary-green);
-        color: var(--text-white);
-        position: relative;
-        height: 70vh;
-      }
->>>>>>> a5e3e13fb56e28d41ccde08e589e12227fc3ad30
-
-        .user-profile:hover {
-            background: var(--color-gris-medio);
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            background: var(--color-verde);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--color-blanco);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .user-info h3 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin: 0;
-            color: var(--color-azul-oscuro);
-        }
-
-        .user-info p {
-            font-size: 0.8rem;
-            color: var(--color-gris-oscuro);
-            margin: 0;
-        }
-
-        /* Main Content */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: var(--spacing-xl);
-        }
-
-        /* Welcome Section */
+          .dashboard-container {
+      padding: 2rem;
+      max-width: 95vw;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+        /* Estilos que antes estaban en <head>, ahora aquí */
         .welcome-section {
             background: var(--color-verde);
             color: var(--color-blanco);
@@ -171,7 +112,7 @@ if (Astro.url.searchParams.get('logout') === 'true') {
         }
 
         .welcome-section::before {
-            content: '';
+            content: "";
             position: absolute;
             top: -50px;
             right: -50px;
@@ -183,7 +124,7 @@ if (Astro.url.searchParams.get('logout') === 'true') {
         }
 
         .welcome-section::after {
-            content: '';
+            content: "";
             position: absolute;
             bottom: -30px;
             left: -30px;
@@ -239,7 +180,6 @@ if (Astro.url.searchParams.get('logout') === 'true') {
             margin-top: var(--spacing-xs);
         }
 
-        /* Quick Actions */
         .quick-actions {
             margin-bottom: var(--spacing-xl);
         }
@@ -320,137 +260,20 @@ if (Astro.url.searchParams.get('logout') === 'true') {
             color: var(--color-verde-secundario);
         }
 
-
         /* Responsive */
         @media (max-width: 768px) {
-            .header-content {
-                padding: 0 var(--spacing-md);
-            }
-            
-            .main-container {
-                padding: var(--spacing-md);
-            }
-            
             .welcome-content h2 {
                 font-size: 2rem;
             }
-            
+
             .actions-grid {
                 grid-template-columns: 1fr;
             }
         }
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-xl); /* Asegura padding lateral */
+        }
     </style>
-<<<<<<< HEAD
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-seedling"></i>
-                </div>
-                <div class="logo-text">
-                    <h1>Observatorio Ambiental</h1>
-                    <p>Panel Administrativo</p>
-                </div>
-            </div>
-            
-            <div class="header-actions">
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        AD
-                    </div>
-                    <div class="user-info">
-                        <h3>Administrador</h3>
-                        <p>Super usuario</p>
-                    </div>
-                    <i class="fas fa-chevron-down" style="color: var(--color-gris-oscuro); font-size: 0.8rem;"></i>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-container">
-        <!-- Welcome Section -->
-        <section class="welcome-section">
-            <div class="welcome-content">
-                <h2>Panel de Administración</h2>
-                <p>Gestiona y supervisa todos los aspectos del Observatorio Ambiental de Barranquilla</p>
-                
-                <div class="welcome-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
-                        <div class="stat-label">Noticias publicadas</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
-                        <div class="stat-label">Reportes ciudadanos</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
-                        <div class="stat-label">Documentos oficiales</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Quick Actions -->
-        <section class="quick-actions">
-            <h2 class="section-title">Módulos de Administración</h2>
-            <div class="actions-grid">
-                <div class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-newspaper"></i>
-                    </div>
-                    <h3>Gestión de Noticias</h3>
-                    <p>Administra las publicaciones, artículos y comunicados del observatorio ambiental. Crea, edita y publica contenido informativo.</p>
-                    <a href="#" class="action-link">
-                        Gestionar noticias <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Participación Ciudadana</h3>
-                    <p>Supervisa reportes ciudadanos, comentarios y sugerencias de la comunidad sobre temas ambientales en Barranquilla.</p>
-                    <a href="#" class="action-link">
-                        Ver participación <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-database"></i>
-                    </div>
-                    <h3>Gestión de Datos e Información</h3>
-                    <p>Administra bases de datos ambientales, informes técnicos, documentos oficiales y archivos del observatorio.</p>
-                    <a href="#" class="action-link">
-                        Gestionar datos <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-    </main>
-</body>
-</html>
-=======
-  <Layout>
-
-
-    <main class="main-content">
-      <div class="content">
-        <h1>Dashboard <span>Observatorio</span></h1>
-        <p>Bienvenido al panel de control del Observatorio Ambiental.</p>
-        <button class="logout-btn" onclick="window.location.href = '?logout=true'">
-          🚫 Cerrar Sesión
-        </button>
-      </div>
-    </main>
-
-  </Layout>
->>>>>>> a5e3e13fb56e28d41ccde08e589e12227fc3ad30
+</Layout>

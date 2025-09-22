@@ -22,35 +22,65 @@ const stations = data || [];
 ---
 
 <Layout title="Gestión de Estaciones">
-  <div class="container">
-    <div class="header">
-      <h1>📡 Gestión de Estaciones</h1>
-      <a href="/dashboard/stations/create" class="btn-primary">+ Crear Estación</a>
+  <div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1 class="dashboard-title">📡 Gestión de Estaciones</h1>
+          <p class="dashboard-subtitle">Administra las estaciones de monitoreo ambiental</p>
+        </div>
+        <div class="header-actions">
+          <a href="/dashboard/stations/create" class="btn-primary">
+            <span class="btn-icon">➕</span>
+            Crear Estación
+          </a>
+        </div>
+      </div>
     </div>
 
+    <!-- Empty State -->
     {stations.length === 0 ? (
       <div class="empty-state">
-        <p>📭 No hay estaciones registradas.</p>
-        <a href="/dashboard/stations/create" class="btn-primary">Crear primera estación</a>
+        <div class="empty-icon">📭</div>
+        <h3 class="empty-title">No hay estaciones registradas</h3>
+        <p class="empty-text">Crea tu primera estación de monitoreo ambiental para comenzar a recopilar datos.</p>
+        <a href="/dashboard/stations/create" class="btn-primary empty-btn">
+          <span class="btn-icon">➕</span>
+          Crear Primera Estación
+        </a>
       </div>
     ) : (
+      <!-- Stations Grid -->
       <div class="stations-grid">
         {stations.map((station) => (
           <div class="station-card">
-            <h3>📍 {station.name}</h3>
-            <p><strong>Lat:</strong> {station.lat}°</p>
-            <p><strong>Lon:</strong> {station.lon}°</p>
-            <div class="charts">
-              <strong>Gráficos permitidos:</strong>
-              <ul>
-                {station.charts_permited.map((chart) => (
-                  <li>{chart}</li>
-                ))}
-              </ul>
+            <div class="station-header">
+              <h3 class="station-title">📍 {station.name}</h3>
             </div>
-            <div class="actions">
-              <a href={`/dashboard/stations/edit/${station._id}`} class="btn-edit">✏️ Editar</a>
-              <button class="btn-delete" data-id={station._id}>🗑️ Eliminar</button>
+            <div class="station-body">
+              <div class="station-coordinates">
+                <p><strong>Latitud:</strong> <span class="coord-value">{station.lat}°</span></p>
+                <p><strong>Longitud:</strong> <span class="coord-value">{station.lon}°</span></p>
+              </div>
+              <div class="station-charts">
+                <h4 class="charts-title">📊 Gráficos permitidos:</h4>
+                <ul class="charts-list">
+                  {station.charts_permited.map((chart) => (
+                    <li class="chart-item">{chart}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div class="station-actions">
+              <a href={`/dashboard/stations/edit/${station._id}`} class="btn-edit">
+                <span class="btn-icon">✏️</span>
+                Editar
+              </a>
+              <button class="btn-delete" data-id={station._id}>
+                <span class="btn-icon">🗑️</span>
+                Eliminar
+              </button>
             </div>
           </div>
         ))}
@@ -59,67 +89,255 @@ const stations = data || [];
   </div>
 
   <style>
-    .container { padding: 20px; }
-    .header {
+    .dashboard-container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    .dashboard-header {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+    }
+
+    .header-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
+
+    .title-section {
+      flex: 1;
+    }
+
+    .dashboard-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(45deg, #ffffff, #e8f5e8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dashboard-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin: 0;
+    }
+
     .btn-primary {
-      padding: 10px 20px;
-      background: #4CAF50;
-      color: white;
+      background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+      color: #212121;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
       text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
     }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+    }
+
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+
+    /* Stations Grid */
     .stations-grid {
       display: grid;
-      gap: 20px;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
     }
-    .station-card {
-      background: rgba(255,255,255,0.1);
-      padding: 20px;
-      border-radius: 10px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .station-card h3 {
-      margin-top: 0;
-      color: #FFC107;
-    }
-    .charts ul {
-      margin: 5px 0;
-      padding-left: 20px;
-    }
-    .charts li {
-      font-size: 0.9rem;
-      color: #ccc;
-    }
-    .actions {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-    }
-    .btn-edit, .btn-delete {
-      padding: 5px 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    .btn-edit { background: #2196F3; color: white; }
-    .btn-delete { background: #f44336; color: white; }
 
+    .station-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .station-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .station-header {
+      margin-bottom: 1.25rem;
+    }
+
+    .station-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #FFC107;
+      margin: 0;
+      word-break: break-word;
+    }
+
+    .station-body {
+      margin-bottom: 1.5rem;
+    }
+
+    .station-coordinates {
+      background: rgba(76, 175, 80, 0.05);
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .coord-value {
+      color: #333;
+      font-weight: 600;
+    }
+
+    .station-charts {
+      background: rgba(255, 193, 7, 0.05);
+      padding: 1rem;
+      border-radius: 12px;
+    }
+
+    .charts-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 0.75rem 0;
+    }
+
+    .charts-list {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .chart-item {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 0.25rem;
+    }
+
+    .station-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-edit,
+    .btn-delete {
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.9rem;
+      min-width: 120px;
+      justify-content: center;
+      border: none;
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+    }
+
+    .btn-edit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+    }
+
+    .btn-delete {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(244, 67, 54, 0.3);
+    }
+
+    .btn-delete:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
+    }
+
+    /* Empty State */
     .empty-state {
       text-align: center;
-      padding: 40px;
-      color: #ccc;
+      padding: 4rem 2rem;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 16px;
+      backdrop-filter: blur(5px);
+      border: 2px dashed #ccc;
+      margin: 2rem 0;
     }
-    .empty-state .btn-primary {
-      margin-top: 20px;
+
+    .empty-icon {
+      font-size: 4rem;
+      color: #aaa;
+      margin-bottom: 1rem;
+    }
+
+    .empty-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #555;
+      margin: 0 0 1rem 0;
+    }
+
+    .empty-text {
+      font-size: 1.1rem;
+      color: #777;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+
+    .empty-btn {
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-container {
+        padding: 1rem;
+      }
+
+      .dashboard-title {
+        font-size: 2rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .stations-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .station-actions {
+        flex-direction: column;
+      }
+
+      .btn-edit,
+      .btn-delete,
+      .btn-primary {
+        width: 100%;
+      }
     }
   </style>
 
@@ -127,20 +345,21 @@ const stations = data || [];
     document.querySelectorAll('.btn-delete').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const id = e.target.dataset.id;
-        if (confirm('¿Eliminar esta estación? Esta acción no se puede deshacer.')) {
+        if (!confirm('¿Eliminar esta estación? Esta acción no se puede deshacer.')) return;
 
-          // Obtener token de cookies
-          const token = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('token='))
-            ?.split('=')[1];
+        // Obtener token de cookies
+        const token = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('token='))
+          ?.split('=')[1];
 
-          if (!token) {
-            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
-            window.location.href = '/login';
-            return;
-          }
+        if (!token) {
+          alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+          window.location.href = '/login';
+          return;
+        }
 
+        try {
           const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/stations/${id}`, {
             method: 'DELETE',
             headers: {
@@ -156,6 +375,9 @@ const stations = data || [];
             const errorData = await res.json().catch(() => ({}));
             alert(`Error al eliminar: ${errorData.detail || 'Error desconocido'}`);
           }
+        } catch (err) {
+          alert('Error de conexión.');
+          console.error(err);
         }
       });
     });
