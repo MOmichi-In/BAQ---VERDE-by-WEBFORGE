@@ -193,7 +193,13 @@
     box-shadow: var(--shadow-sm);
   }
   .switch input:checked + .slider {
-    background-color: var(--bv-verde-primario);
+    background-color: var(--bv-amarillo);
+  }
+  .switch input:checked + .slider.biodiversity-slider {
+    background-color: var(--bv-verde-primario-dark);
+  }
+  .switch input:checked + .slider.soil-slider {
+    background-color: rgba(137, 81, 41, 1); /* Marrón más oscuro al activar */
   }
   .switch input:focus + .slider {
     box-shadow: 0 0 0 4px rgba(55,180,72,0.12);
@@ -416,14 +422,14 @@
         description: 'Estaciones de monitoreo, contaminantes'
       },
       biodiversity: {
-        color: '#279B48', // Verde oficial
-        bgColor: 'rgba(39, 155, 72, 0.1)',
+        color: 'var(--bv-verde-primario-dark)', // Verde oficial
+        bgColor: 'var(--bv-verde-primario-dark)',
         iconClass: 'fas fa-leaf',
         title: 'Biodiversidad',
         description: 'Reservas naturales, corredores'
       },
       soil: {
-        color: '#39A934', // Verde secundario oficial
+        color: 'rgba(137, 81, 41, 1)', // Verde secundario oficial
         bgColor: 'rgba(57, 169, 52, 0.1)',
         iconClass: 'fas fa-mountain',
         title: 'Suelo',
