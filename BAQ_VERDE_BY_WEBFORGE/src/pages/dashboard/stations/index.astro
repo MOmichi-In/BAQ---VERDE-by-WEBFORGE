@@ -90,20 +90,21 @@ const stations = data || [];
 
   <style>
     .dashboard-container {
-      padding: 2rem;
+      padding: var(--spacing-xl);
       max-width: 1200px;
       margin: 0 auto;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
+      max-width: 95vw;
+      background: var(--color-gris-claro);
     }
 
     .dashboard-header {
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      color: white;
-      box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+      background: var(--color-verde);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-xl);
+      color: var(--color-blanco);
+      box-shadow: var(--shadow-lg);
     }
 
     .header-content {
@@ -111,21 +112,16 @@ const stations = data || [];
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: var(--spacing-md);
     }
 
-    .title-section {
-      flex: 1;
-    }
+    .title-section { flex: 1; }
 
     .dashboard-title {
       font-size: 2.5rem;
       font-weight: 700;
-      margin: 0 0 0.5rem 0;
-      background: linear-gradient(45deg, #ffffff, #e8f5e8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      margin: 0 0 var(--spacing-sm) 0;
+      color: var(--color-blanco);
     }
 
     .dashboard-subtitle {
@@ -135,89 +131,89 @@ const stations = data || [];
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
-      color: #212121;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      text-decoration: none;
+      background: var(--color-amarillo);
+      color: var(--color-azul-oscuro);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--border-radius-lg);
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
+      gap: var(--spacing-sm);
+      transition: all 0.3s ease;
+      border: none;
+      text-decoration: none;
+      box-shadow: var(--shadow-md);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+      background: var(--color-verde-secundario);
+      color: var(--color-blanco);
+      box-shadow: var(--shadow-lg);
     }
 
-    .btn-icon {
-      font-size: 1.1rem;
-    }
+    .btn-icon { font-size: 1.1rem; }
 
     /* Stations Grid */
     .stations-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 2rem;
+      gap: var(--spacing-lg);
     }
 
     .station-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      background: var(--color-blanco);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-md);
+      border: 1px solid var(--color-gris-claro);
+      box-shadow: var(--shadow-md);
       transition: all 0.3s ease;
     }
 
     .station-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+      box-shadow: var(--shadow-lg);
     }
 
     .station-header {
-      margin-bottom: 1.25rem;
+      margin-bottom: var(--spacing-md);
     }
 
     .station-title {
       font-size: 1.35rem;
       font-weight: 600;
-      color: #FFC107;
+      color: var(--color-amarillo);
       margin: 0;
       word-break: break-word;
     }
 
     .station-body {
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--spacing-lg);
     }
 
     .station-coordinates {
-      background: rgba(76, 175, 80, 0.05);
-      padding: 1rem;
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
+      background: rgba(var(--color-verde-rgb), 0.05);
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-md);
+      margin-bottom: var(--spacing-lg);
     }
 
     .coord-value {
-      color: #333;
+      color: var(--color-azul-oscuro);
       font-weight: 600;
     }
 
     .station-charts {
-      background: rgba(255, 193, 7, 0.05);
-      padding: 1rem;
-      border-radius: 12px;
+      background: rgba(var(--color-amarillo-rgb), 0.05);
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-md);
     }
 
     .charts-title {
       font-size: 1rem;
       font-weight: 600;
-      color: #333;
-      margin: 0 0 0.75rem 0;
+      color: var(--color-azul-oscuro);
+      margin: 0 0 var(--spacing-sm) 0;
     }
 
     .charts-list {
@@ -227,53 +223,56 @@ const stations = data || [];
 
     .chart-item {
       font-size: 0.9rem;
-      color: #555;
+      color: var(--color-gris-oscuro);
       margin-bottom: 0.25rem;
     }
 
     .station-actions {
       display: flex;
-      gap: 0.75rem;
+      gap: var(--spacing-sm);
       flex-wrap: wrap;
     }
 
     .btn-edit,
     .btn-delete {
       padding: 0.75rem 1.25rem;
-      border-radius: 12px;
+      border-radius: var(--border-radius-md);
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      justify-content: center;
+      gap: var(--spacing-xs);
+      transition: all 0.3s ease;
       cursor: pointer;
       text-decoration: none;
       font-size: 0.9rem;
       min-width: 120px;
-      justify-content: center;
       border: none;
     }
 
     .btn-edit {
-      background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
-      color: white;
-      box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+      background: var(--color-azul-oscuro);
+      color: var(--color-blanco);
+      box-shadow: var(--shadow-sm);
     }
 
     .btn-edit:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+      background: var(--color-verde);
+      box-shadow: var(--shadow-md);
     }
 
     .btn-delete {
-      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-      color: white;
-      box-shadow: 0 4px 16px rgba(244, 67, 54, 0.3);
+      background: var(--color-amarillo);
+      color: var(--color-azul-oscuro);
+      box-shadow: var(--shadow-sm);
     }
 
     .btn-delete:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
+      background: var(--color-verde-secundario);
+      color: var(--color-blanco);
+      box-shadow: var(--shadow-md);
     }
 
     /* Empty State */
@@ -281,64 +280,47 @@ const stations = data || [];
       text-align: center;
       padding: 4rem 2rem;
       background: rgba(255, 255, 255, 0.6);
-      border-radius: 16px;
+      border-radius: var(--border-radius-lg);
       backdrop-filter: blur(5px);
-      border: 2px dashed #ccc;
+      border: 2px dashed var(--color-gris);
       margin: 2rem 0;
     }
 
     .empty-icon {
       font-size: 4rem;
-      color: #aaa;
-      margin-bottom: 1rem;
+      color: var(--color-gris-medio);
+      margin-bottom: var(--spacing-sm);
     }
 
     .empty-title {
       font-size: 1.8rem;
       font-weight: 600;
-      color: #555;
-      margin: 0 0 1rem 0;
+      color: var(--color-gris-oscuro);
+      margin: 0 0 var(--spacing-sm) 0;
     }
 
     .empty-text {
       font-size: 1.1rem;
-      color: #777;
+      color: var(--color-gris);
       max-width: 600px;
-      margin: 0 auto 2rem;
+      margin: 0 auto var(--spacing-md);
     }
 
     .empty-btn {
-      margin-top: 1rem;
+      margin-top: var(--spacing-sm);
     }
 
     @media (max-width: 768px) {
-      .dashboard-container {
-        padding: 1rem;
-      }
-
-      .dashboard-title {
-        font-size: 2rem;
-      }
-
-      .header-content {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .stations-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .station-actions {
-        flex-direction: column;
-      }
-
+      .dashboard-container { padding: var(--spacing-lg); }
+      .dashboard-title { font-size: 2rem; }
+      .header-content { flex-direction: column; text-align: center; }
+      .stations-grid { grid-template-columns: 1fr; }
+      .station-actions { flex-direction: column; }
       .btn-edit,
       .btn-delete,
-      .btn-primary {
-        width: 100%;
-      }
+      .btn-primary { width: 100%; }
     }
+
   </style>
 
   <script>

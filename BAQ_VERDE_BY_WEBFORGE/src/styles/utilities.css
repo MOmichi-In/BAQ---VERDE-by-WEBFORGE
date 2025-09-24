@@ -1,33 +1,97 @@
-/* Colores de texto */
-.text-verde { color: var(--color-verde) !important; }
-.text-verde-sec { color: var(--color-verde-secundario) !important; }
-.text-azul { color: var(--color-azul-oscuro) !important; }
-.text-amarillo { color: var(--color-amarillo) !important; }
-.text-blanco { color: var(--color-blanco) !important; }
-.text-gris { color: var(--color-gris-oscuro) !important; }
+/* -----------------------------------------------------------
+   UTILITIES BASADAS EN tokens.css
+   ----------------------------------------------------------- */
 
-/* Fondos */
-.bg-verde { background-color: var(--color-verde) !important; }
-.bg-verde-sec { background-color: var(--color-verde-secundario) !important; }
-.bg-azul { background-color: var(--color-azul-oscuro) !important; }
-.bg-amarillo { background-color: var(--color-amarillo) !important; }
-.bg-blanco { background-color: var(--color-blanco) !important; }
-.bg-gris-claro { background-color: var(--color-gris-claro) !important; }
+/* ============================
+   COLORES DE TEXTO
+   ============================*/
+.text-verde { color: var(--bv-verde-primario) !important; }
+.text-verde-dark { color: var(--bv-verde-primario-dark) !important; }
+.text-verde-sec { color: var(--bv-verde-secundario) !important; }
+.text-verde-sec-dark { color: var(--bv-verde-secundario-dark) !important; }
+.text-azul { color: var(--bv-azul-oscuro) !important; }
+.text-amarillo { color: var(--bv-amarillo) !important; }
+.text-blanco { color: var(--bv-blanco) !important; }
+.text-gris { color: var(--bv-gris) !important; }
+.text-gris-claro { color: var(--bv-gris-claro) !important; }
 
-/* Padding y márgenes */
+/* ============================
+   FONDOS
+   ============================*/
+.bg-verde { background-color: var(--bv-verde-primario) !important; }
+.bg-verde-dark { background-color: var(--bv-verde-primario-dark) !important; }
+.bg-verde-sec { background-color: var(--bv-verde-secundario) !important; }
+.bg-verde-sec-dark { background-color: var(--bv-verde-secundario-dark) !important; }
+.bg-azul { background-color: var(--bv-azul-oscuro) !important; }
+.bg-amarillo { background-color: var(--bv-amarillo) !important; }
+.bg-blanco { background-color: var(--bv-blanco) !important; }
+.bg-gris { background-color: var(--bv-gris) !important; }
+.bg-gris-claro { background-color: var(--bv-gris-claro) !important; }
+
+/* ============================
+   TIPOGRAFÍA
+   ============================*/
+.font-base { font-family: var(--font-family-base) !important; }
+.font-heading { font-family: var(--font-family-heading) !important; }
+
+.text-xs { font-size: 0.75rem !important; }
+.text-sm { font-size: 0.875rem !important; }
+.text-md { font-size: 1rem !important; }
+.text-lg { font-size: 1.25rem !important; }
+.text-xl { font-size: 1.5rem !important; }
+.text-xxl { font-size: 2rem !important; }
+
+.text-bold { font-weight: 700 !important; }
+.text-semibold { font-weight: 600 !important; }
+.text-regular { font-weight: 400 !important; }
+
+.text-center { text-align: center !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+
+/* ============================
+   ESPACIADO
+   ============================*/
 .p-0 { padding: 0 !important; }
+.p-xs { padding: var(--spacing-xs) !important; }
 .p-sm { padding: var(--spacing-sm) !important; }
 .p-md { padding: var(--spacing-md) !important; }
 .p-lg { padding: var(--spacing-lg) !important; }
+.p-xl { padding: var(--spacing-xl) !important; }
+.p-xxl { padding: var(--spacing-xxl) !important; }
 
 .m-0 { margin: 0 !important; }
+.m-xs { margin: var(--spacing-xs) !important; }
 .m-sm { margin: var(--spacing-sm) !important; }
 .m-md { margin: var(--spacing-md) !important; }
 .m-lg { margin: var(--spacing-lg) !important; }
+.m-xl { margin: var(--spacing-xl) !important; }
+.m-xxl { margin: var(--spacing-xxl) !important; }
 
-/* Otros */
-.text-center { text-align: center !important; }
+/* ============================
+   FLEX Y GRID
+   ============================*/
 .flex { display: flex !important; }
 .flex-col { flex-direction: column !important; }
+.flex-row { flex-direction: row !important; }
 .items-center { align-items: center !important; }
+.items-start { align-items: flex-start !important; }
+.items-end { align-items: flex-end !important; }
 .justify-center { justify-content: center !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-around { justify-content: space-around !important; }
+.justify-end { justify-content: flex-end !important; }
+
+/* ==============================
+   BORDES Y RADIOS
+   ============================== */
+.rounded-sm { border-radius: var(--border-radius-sm) !important; }
+.rounded-md { border-radius: var(--border-radius-md) !important; }
+.rounded-lg { border-radius: var(--border-radius-lg) !important; }
+
+/* ==============================
+   SOMBRAS
+   ============================== */
+.shadow-sm { box-shadow: var(--shadow-sm) !important; }
+.shadow-md { box-shadow: var(--shadow-md) !important; }
+.shadow-lg { box-shadow: var(--shadow-lg) !important; }

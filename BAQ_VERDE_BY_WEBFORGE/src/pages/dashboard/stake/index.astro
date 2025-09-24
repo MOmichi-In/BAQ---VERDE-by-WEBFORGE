@@ -103,43 +103,35 @@ const noticias = noticiasRes
   </div>
 
   <style>
+    /* Dashboard container */
     .dashboard-container {
       padding: 2rem;
-      max-width: 1200px;
       margin: 0 auto;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
+      max-width: 95vw;
+      background: var(--bv-gris-claro);
     }
 
+    /* Header */
     .dashboard-header {
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      border-radius: 16px;
       padding: 2rem;
       margin-bottom: 2rem;
-      color: white;
-      box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+      border-radius: var(--border-radius-lg);
+      background: var(--color-verde);
+      color: var(--color-blanco);
+      box-shadow: var(--shadow-lg);
     }
 
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .title-section {
-      flex: 1;
-    }
+    .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .title-section { flex: 1; }
 
     .dashboard-title {
       font-size: 2.5rem;
       font-weight: 700;
       margin: 0 0 0.5rem 0;
-      background: linear-gradient(45deg, #ffffff, #e8f5e8);
+      background: var(--color-blanco);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
 
     .dashboard-subtitle {
@@ -148,29 +140,25 @@ const noticias = noticiasRes
       margin: 0;
     }
 
+    /* Buttons */
     .btn-create {
-      background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
-      color: #212121;
+      background: var(--color-amarillo);
+      color: var(--color-azul-oscuro);
       padding: 1rem 1.5rem;
-      border-radius: 12px;
-      text-decoration: none;
+      border-radius: var(--border-radius-md);
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
+      transition: all 0.3s ease;
     }
-
     .btn-create:hover {
+      background: lighten(var(--color-amarillo), 10%);
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
     }
+    .btn-icon { font-size: 1.2rem; }
 
-    .btn-icon {
-      font-size: 1.2rem;
-    }
-
+    /* Stats */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -182,48 +170,44 @@ const noticias = noticiasRes
       background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(10px);
       padding: 1.5rem;
-      border-radius: 16px;
+      border-radius: var(--border-radius-md);
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-md);
       transition: transform 0.3s ease;
     }
-
-    .stat-card:hover {
-      transform: translateY(-4px);
-    }
+    .stat-card:hover { transform: translateY(-4px); }
 
     .stat-number {
       font-size: 2.5rem;
       font-weight: 700;
-      color: #4CAF50;
+      color: var(--color-verde);
       margin-bottom: 0.5rem;
     }
 
-    .stat-label {
-      color: #666;
-      font-weight: 500;
-    }
+    .stat-label { color: var(--color-gris-medio); font-weight: 500; }
 
+    /* Content Section */
     .content-section {
       background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(10px);
-      border-radius: 16px;
+      border-radius: var(--border-radius-lg);
       padding: 2rem;
       border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-lg);
     }
 
     .section-title {
       font-size: 1.5rem;
       font-weight: 600;
-      color: #333;
+      color: var(--color-azul-oscuro);
       margin-bottom: 1.5rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid #4CAF50;
+      border-bottom: 2px solid var(--color-verde);
       display: inline-block;
+      padding-bottom: 0.5rem;
     }
 
+    /* Participaciones Grid */
     .participaciones-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -232,56 +216,36 @@ const noticias = noticiasRes
 
     .participacion-card {
       background: rgba(255, 255, 255, 0.95);
-      border-radius: 16px;
+      border-radius: var(--border-radius-lg);
       overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .participacion-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-lg);
     }
 
-    .participacion-image-container {
-      position: relative;
-      height: 200px;
-      overflow: hidden;
-    }
-
-    .participacion-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    .participacion-card:hover .participacion-image {
-      transform: scale(1.05);
-    }
+    .participacion-image-container { position: relative; height: 200px; overflow: hidden; }
+    .participacion-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+    .participacion-card:hover .participacion-image { transform: scale(1.05); }
 
     .category-badge {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: rgba(76, 175, 80, 0.9);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      position: absolute; top: 1rem; right: 1rem;
+      background: var(--color-verde-secundario);
+      color: var(--color-blanco);
+      padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
       backdrop-filter: blur(10px);
     }
 
-    .participacion-content {
-      padding: 1.5rem;
-    }
+    .participacion-content { padding: 1.5rem; }
 
     .participacion-title {
       font-size: 1.2rem;
       font-weight: 600;
-      color: #333;
+      color: var(--color-azul-oscuro);
       margin: 0 0 1rem 0;
       line-height: 1.4;
       display: -webkit-box;
@@ -290,121 +254,65 @@ const noticias = noticiasRes
       overflow: hidden;
     }
 
-    .participacion-actions {
-      display: flex;
-      gap: 0.75rem;
-    }
+    .participacion-actions { display: flex; gap: 0.75rem; }
 
-    .btn-edit,
-    .btn-delete {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      font-size: 0.9rem;
-      cursor: pointer;
-      border: none;
-      text-decoration: none;
+    .btn-edit, .btn-delete {
+      flex: 1; padding: 0.75rem 1rem; border-radius: var(--border-radius-md);
+      font-weight: 500; display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; transition: all 0.3s ease; font-size: 0.9rem; cursor: pointer; border: none; text-decoration: none;
     }
 
     .btn-edit {
-      background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
-      color: white;
+      background: var(--color-verde);
+      color: var(--color-blanco);
     }
-
     .btn-edit:hover {
-      background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+      background: var(--color-verde-secundario);
       transform: translateY(-1px);
     }
 
     .btn-delete {
-      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-      color: white;
+      background: var(--color-amarillo);
+      color: var(--color-azul-oscuro);
     }
-
     .btn-delete:hover {
-      background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+      background: lighten(var(--color-amarillo), 10%);
       transform: translateY(-1px);
     }
 
+    /* Empty State */
     .empty-state {
       grid-column: 1 / -1;
       text-align: center;
       padding: 4rem 2rem;
       background: rgba(76, 175, 80, 0.05);
-      border-radius: 16px;
-      border: 2px dashed rgba(76, 175, 80, 0.3);
+      border-radius: var(--border-radius-lg);
+      border: 2px dashed var(--color-verde-secundario);
     }
 
-    .empty-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      opacity: 0.7;
-    }
-
-    .empty-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #333;
-      margin: 0 0 1rem 0;
-    }
-
-    .empty-description {
-      color: #666;
-      margin-bottom: 2rem;
-      font-size: 1.1rem;
-    }
+    .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.7; }
+    .empty-title { font-size: 1.5rem; font-weight: 600; color: var(--color-azul-oscuro); margin: 0 0 1rem 0; }
+    .empty-description { color: var(--color-gris-medio); margin-bottom: 2rem; font-size: 1.1rem; }
 
     .btn-empty-action {
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      color: white;
+      background: var(--color-verde);
+      color: var(--color-blanco);
       padding: 1rem 2rem;
-      border-radius: 12px;
+      border-radius: var(--border-radius-md);
       text-decoration: none;
       font-weight: 600;
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+      box-shadow: var(--shadow-md);
     }
-
     .btn-empty-action:hover {
+      background: var(--color-verde-secundario);
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+      box-shadow: var(--shadow-lg);
     }
 
-    @media (max-width: 768px) {
-      .dashboard-container {
-        padding: 1rem;
-      }
-
-      .dashboard-title {
-        font-size: 2rem;
-      }
-
-      .header-content {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .participaciones-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .participacion-actions {
-        flex-direction: column;
-      }
-
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-    }
   </style>
 
   <script>

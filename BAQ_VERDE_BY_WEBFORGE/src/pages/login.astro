@@ -7,18 +7,11 @@ let error = "";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Observatorio Ambiental</title>
+    <link rel="stylesheet" href="/src/styles/global.css">
     <style>
-      :root {
-        --primary-green: #4CAF50;
-        --secondary-yellow: #FFC107;
-        --text-white: #FFFFFF;
-        --text-dark: #212121;
-        --bg-overlay: rgba(0, 0, 0, 0.3);
-      }
-
       body {
         margin: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: var(--font-family-base);
         background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
         background-size: cover;
         background-position: center;
@@ -26,7 +19,8 @@ let error = "";
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        color: var(--text-white);
+        color: var(--bv-blanco);
+        position: relative;
       }
 
       body::before {
@@ -36,18 +30,18 @@ let error = "";
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: rgba(6, 27, 50, 0.19); /* azul oscuro con opacidad */
         z-index: 1;
       }
 
       .login-container {
         position: relative;
         z-index: 2;
-        background-color: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        padding: 40px;
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        background-color: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        padding: var(--spacing-xl);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-lg);
         width: 100%;
         max-width: 400px;
         text-align: center;
@@ -57,31 +51,32 @@ let error = "";
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 30px;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
       }
 
       .logo svg {
         width: 40px;
         height: 40px;
+        fill: var(--bv-verde-primario);
       }
 
       .logo-text {
         font-size: 1.5rem;
         font-weight: bold;
-        color: var(--text-white);
+        color: var(--bv-blanco);
       }
 
       .logo-text span {
-        color: var(--secondary-yellow);
+        color: var(--bv-amarillo);
       }
 
       input {
         width: 100%;
-        padding: 12px 16px;
-        margin: 10px 0;
+        padding: var(--spacing-sm) var(--spacing-md);
+        margin: var(--spacing-sm) 0;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--border-radius-md);
         background-color: rgba(255, 255, 255, 0.9);
         font-size: 1rem;
         box-sizing: border-box;
@@ -89,27 +84,27 @@ let error = "";
       }
 
       input:focus {
-        outline: 2px solid var(--primary-green);
-        background-color: white;
+        outline: 2px solid var(--bv-verde-primario);
+        background-color: var(--bv-blanco);
       }
 
       button {
         width: 100%;
-        padding: 14px;
-        margin-top: 20px;
+        padding: var(--spacing-md);
+        margin-top: var(--spacing-md);
         border: none;
-        border-radius: 8px;
-        background-color: var(--secondary-yellow);
-        color: var(--primary-green);
+        border-radius: var(--border-radius-md);
+        background-color: var(--bv-amarillo);
+        color: var(--bv-verde-primario-dark);
         font-size: 1.1rem;
         font-weight: bold;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-md);
       }
 
       button:hover {
-        background-color: #e6b800;
+        background-color: #e6db29; /* variante más oscura del amarillo */
         transform: translateY(-2px);
       }
 
@@ -119,7 +114,7 @@ let error = "";
 
       .error {
         color: #ff6b6b;
-        margin: 15px 0;
+        margin: var(--spacing-md) 0;
         font-weight: bold;
       }
     </style>

@@ -21,17 +21,20 @@ import { cardsData } from "../lib/card_ambiental_data.js";
 
 <style>
 .cards-section {
-  padding: 8rem 0;
-  background-color: #ffffff;
+  padding: var(--spacing-xxl) 0; /* antes 8rem */
+  background-color: var(--bv-blanco);
   background-image: url("/images/svg/flores.svg");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
 }
 
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  gap: var(--spacing-xl); /* antes 2rem */
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 var(--spacing-md);
 }
 </style>

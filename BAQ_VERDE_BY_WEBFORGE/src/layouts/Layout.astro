@@ -2,6 +2,7 @@
 const { title = "Observatorio Ambiental" } = Astro.props; 
 const year = new Date().getFullYear();
 import "../styles/layout.css";
+import "../styles/global.css";
 ---
 
 
@@ -96,3 +97,82 @@ import "../styles/layout.css";
 
 </body>
 </html>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const nav = document.querySelector(".header .nav");
+  const links = nav.querySelectorAll("a");
+
+  const indicator = document.createElement("span");
+  indicator.classList.add("nav-indicator");
+  nav.appendChild(indicator);
+
+  function moveIndicator(el, instant = false) {
+    const rect = el.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+
+    if (instant) {
+      indicator.style.transition = "none"; // ❌ sin animación
+    } else {
+      indicator.style.transition = "width 0.3s ease, transform 0.3s ease"; // ✅ animación normal
+    }
+
+    indicator.style.width = rect.width + "px";
+    indicator.style.transform = `translateX(${rect.left - navRect.left}px)`;
+
+    if (instant) {
+      // 🔥 reactivar transición después de forzar la posición inicial
+      requestAnimationFrame(() => {
+        indicator.style.transition = "width 0.3s ease, transform 0.3s ease";
+      });
+    }
+  }
+
+  function setActiveByPath() {
+    const path = window.location.pathname;
+    let found = false;
+    links.forEach(link => {
+      link.classList.remove("active");
+      if (link.getAttribute("href") === path) {
+        link.classList.add("active");
+        moveIndicator(link, true); // 👈 primera vez instantáneo
+        found = true;
+      }
+    });
+    return found;
+  }
+
+  function onScroll() {
+    const sections = document.querySelectorAll("main section[id]");
+    let current = "";
+    sections.forEach(sec => {
+      const secTop = sec.offsetTop - 100;
+      const secHeight = sec.clientHeight;
+      if (window.scrollY >= secTop && window.scrollY < secTop + secHeight) {
+        current = sec.getAttribute("id");
+      }
+    });
+    links.forEach(link => {
+      link.classList.remove("active");
+      if (link.getAttribute("href") === "#" + current) {
+        link.classList.add("active");
+        moveIndicator(link);
+      }
+    });
+  }
+
+  links.forEach(link => {
+    link.addEventListener("mouseenter", () => moveIndicator(link));
+    link.addEventListener("mouseleave", () => {
+      const active = nav.querySelector("a.active");
+      if (active) moveIndicator(active);
+    });
+  });
+
+  if (!setActiveByPath()) {
+    window.addEventListener("scroll", onScroll);
+    onScroll();
+  }
+});
+
+</script>
