@@ -1,40 +1,40 @@
-
 <div class="search-container">
   <input type="text" placeholder="Buscar Documentos..." class="search-input" />
   <button class="search-button">Buscar</button>
 </div>
 
 <style>
-
-  .search-container {
+.search-container {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
-  gap: 10px;
+  margin: var(--spacing-md) 0;
+  gap: var(--spacing-sm);
 }
 
 .search-input {
-  padding: 12px;
+  padding: 0.75rem; /* aprox 12px */
   width: 300px;
-  border: 2px solid #4CAF50;
-  border-radius: 20px;
-  font-size: 16px;
+  border: 2px solid var(--bv-verde-primario);
+  border-radius: var(--border-radius-xxl);
+  font-size: 1rem; /* 16px */
+  font-family: var(--font-family-base);
   outline: none;
 }
 
 .search-button {
-  padding: 12px 24px;
-  background-color: #4CAF50;
-  color: white;
+  padding: 0.75rem 1.5rem; /* 12px y 24px */
+  background-color: var(--bv-verde-primario);
+  color: var(--bv-blanco);
   border: none;
-  border-radius: 20px;
-  font-size: 16px;
+  border-radius: var(--border-radius-xxl);
+  font-size: 1rem;
+  font-family: var(--font-family-base);
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s ease;
 }
 
 .search-button:hover {
-  background-color: #3e8e3c;
+  background-color: var(--bv-verde-primario-dark);
 }
-
 </style>

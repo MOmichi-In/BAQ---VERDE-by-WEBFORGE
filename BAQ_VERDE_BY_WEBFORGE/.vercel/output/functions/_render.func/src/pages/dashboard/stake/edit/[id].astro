@@ -1,0 +1,509 @@
+---
+// src/pages/dashboard/stake/edit/[id].astro
+
+import Layout from '../../../../layouts/DashboardLayout.astro';
+import { api } from '../../../../lib/api';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+
+// Obtener token
+const cookieStore = Astro.cookies;
+const sessionToken = cookieStore.get('token')?.value;
+
+if (!sessionToken) {
+  return Astro.redirect('/login');
+}
+
+// Obtener la participación actual por ID
+let participacion;
+try {
+  const res = await api(`/news/${id}`, sessionToken); // ← Asegúrate que esta ruta exista en tu backend
+  participacion = res;
+} catch (error) {
+  console.error("Error al cargar la participación:", error);
+  return Astro.redirect('/dashboard/stake?error=participacion_no_encontrada');
+}
+---
+
+<Layout title="Editar Participación">
+  <div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1 class="dashboard-title">✏️ Editar Participación Ciudadana</h1>
+          <p class="dashboard-subtitle">Modifica los datos de la participación seleccionada</p>
+        </div>
+        <div class="header-actions">
+          <a href="/dashboard/stake" class="btn-back">
+            <span class="btn-icon">⬅️</span>
+            Volver al Panel
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-container">
+      <div class="form-header">
+        <h2 class="form-title">Información de la Participación</h2>
+        <p class="form-subtitle">Actualiza los campos según sea necesario</p>
+      </div>
+
+      <form class="news-form" id="edit-form" enctype="multipart/form-data">
+        <input type="hidden" id="participacion-id" value={participacion._id} />
+
+        <div class="form-grid">
+          <!-- Título -->
+          <div class="form-group full-width">
+            <label for="title" class="form-label">
+              <span class="label-icon">📝</span>
+              Título de la Participación
+            </label>
+            <input 
+              type="text" 
+              id="title" 
+              name="title" 
+              class="form-input"
+              value={participacion.title}
+              placeholder="Ingresa el título de la participación..."
+              required 
+            />
+          </div>
+
+          <!-- Imagen Actual -->
+          {participacion.img_url && (
+            <div class="form-group">
+              <label class="form-label">
+                <span class="label-icon">🖼️</span>
+                Imagen Actual
+              </label>
+              <div class="current-image-preview">
+                <img 
+                  src={`${import.meta.env.PUBLIC_URL_SERVER}${participacion.img_url}`} 
+                  alt="Imagen actual" 
+                  class="preview-img-tag"
+                />
+              </div>
+            </div>
+          )}
+
+          <!-- Nueva Imagen (opcional) -->
+          <div class="form-group">
+            <label for="image" class="form-label">
+              <span class="label-icon">📁</span>
+              Cambiar Imagen (opcional)
+            </label>
+            <div class="file-upload-wrapper">
+              <input 
+                type="file" 
+                id="image" 
+                name="image" 
+                class="file-input"
+                accept="image/*" 
+              />
+              <label for="image" class="file-upload-label">
+                <span class="upload-icon">📁</span>
+                <span class="upload-text">Seleccionar nueva imagen</span>
+              </label>
+            </div>
+            <!-- Preview de la imagen seleccionada -->
+            <div id="image-preview" class="selected-image-preview" style="display: none; margin-top: 1rem;">
+              <label>Nueva imagen seleccionada:</label><br>
+              <img id="preview-img-tag" src="" alt="Vista previa" class="preview-img-tag" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            <span class="btn-icon">💾</span>
+            Guardar Cambios
+          </button>
+          <a href="/dashboard/stake" class="btn-cancel">
+            <span class="btn-icon">❌</span>
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    .dashboard-container {
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    .dashboard-header {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .title-section {
+      flex: 1;
+    }
+
+    .dashboard-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(45deg, #ffffff, #e8f5e8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dashboard-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .btn-back {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .form-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .form-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .form-subtitle {
+      color: #666;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .label-icon {
+      font-size: 1.1rem;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      padding: 1rem;
+      border: 2px solid #e1e5e9;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      color: #333;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #4CAF50;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .form-select {
+      appearance: none;
+      background-image: url("image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 1rem center;
+      background-repeat: no-repeat;
+      background-size: 1rem;
+      padding-right: 3rem;
+    }
+
+    .file-upload-wrapper {
+      position: relative;
+    }
+
+    .file-input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-upload-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      border: 2px dashed #4CAF50;
+      border-radius: 12px;
+      background: rgba(76, 175, 80, 0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #4CAF50;
+      font-weight: 500;
+    }
+
+    .file-upload-label:hover {
+      background: rgba(76, 175, 80, 0.1);
+      border-color: #45a049;
+    }
+
+    .upload-icon {
+      font-size: 1.2rem;
+    }
+
+    .current-image-preview,
+    .selected-image-preview {
+      background: rgba(0,0,0,0.05);
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .preview-img-tag {
+      max-width: 100%;
+      height: auto;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-top: 0.5rem;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 1rem;
+      min-width: 160px;
+      justify-content: center;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-cancel {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-cancel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+    }
+
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-container {
+        padding: 1rem;
+      }
+
+      .dashboard-title {
+        font-size: 2rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn-submit,
+      .btn-cancel {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <script>
+    const participacionId = document.getElementById('participacion-id').value;
+
+    // Preview de imagen seleccionada
+    document.getElementById('image').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const previewContainer = document.getElementById('image-preview');
+      const previewImg = document.getElementById('preview-img-tag');
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          previewImg.src = event.target.result;
+          previewContainer.style.display = 'block';
+        };
+        reader.onerror = function() {
+          alert('Error al leer la imagen.');
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewContainer.style.display = 'none';
+      }
+    });
+
+    // Manejar envío del formulario
+    document.getElementById('edit-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {
+        title: formData.get('title')?.toString() || '',
+        // Si tu backend espera más campos, agrégales aquí
+      };
+
+      // Si se seleccionó una nueva imagen, convertirla a base64
+      const imageFile = formData.get('image');
+      if (imageFile && imageFile.size > 0) {
+        try {
+          const base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(imageFile);
+          });
+          data.img_url = base64;
+        } catch (err) {
+          alert('Error al leer la imagen.');
+          console.error(err);
+          return;
+        }
+      }
+
+      // Obtener token de cookies
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
+
+      if (!token) {
+        alert('No estás autenticado.');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/news/${participacionId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          window.location.href = '/dashboard/stake?success=participacion_actualizada';
+        } else {
+          const errorData = await res.json().catch(() => ({}));
+          alert(`Error: ${errorData.detail || 'No se pudo actualizar la participación.'}`);
+        }
+      } catch (err) {
+        alert('Error de conexión.');
+        console.error(err);
+      }
+    });
+  </script>
+</Layout>

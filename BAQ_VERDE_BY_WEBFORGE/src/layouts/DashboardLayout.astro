@@ -1,5 +1,6 @@
 ---
 const { title } = Astro.props;
+import "../styles/global.css";
 ---
 
 <!DOCTYPE html>
@@ -14,22 +15,33 @@ const { title } = Astro.props;
 
   <style>
     :root {
-      --color-blanco: #ffffff;
-      --color-gris-claro: #f5f5f5;
-      --color-gris-medio: #e0e0e0;
-      --color-gris-oscuro: #666666;
-      --color-azul-oscuro: #1a3a5f;
-      --color-verde: #4CAF50;
-      --color-verde-secundario: #388E3C;
-      --color-amarillo: #FFC107;
+      /* --------------------------------------------------
+        COLORES (reemplazados por tokends)
+        -------------------------------------------------- */
+
+      --color-blanco: var(--bv-blanco);
+      --color-gris-claro: var(--bv-gris-claro);
+      --color-gris-medio: var(--bv-gris);
+      --color-gris-oscuro: var(--bv-gris);
+      --color-azul-oscuro: var(--bv-azul-oscuro);
+      --color-verde: var(--bv-verde-primario);
+      --color-verde-secundario: var(--bv-verde-secundario);
+      --color-amarillo: var(--bv-amarillo);
+
+      /* --------------------------------------------------
+        BORDES, ESPACIADOS Y SOMBRAS (mantener los que ya estaban)
+        -------------------------------------------------- */
+
       --border-radius-md: 8px;
       --border-radius-lg: 12px;
+
       --spacing-xs: 4px;
       --spacing-sm: 8px;
       --spacing-md: 16px;
       --spacing-lg: 24px;
       --spacing-xl: 32px;
       --spacing-xxl: 48px;
+
       --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
       --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
       --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
@@ -38,7 +50,7 @@ const { title } = Astro.props;
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--color-gris-claro);
+      /* background-color: var(--color-gris-claro); */
       color: var(--color-azul-oscuro);
       min-height: 100vh;
     }
