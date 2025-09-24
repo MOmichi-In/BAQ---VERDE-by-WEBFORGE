@@ -2,133 +2,47 @@
 const text = 'El Observatorio Ambiental es una plataforma para el monitoreo, análisis y difusión de información ambiental. Nuestro objetivo es brindar datos confiables para la toma de decisiones y la concientización ciudadana.';
 ---
 
-<section class="banner-about">
-  <div class="container">
-    <div class="content">
+<section class="banner-about relative bg-bv-blanco overflow-hidden py-16 min-h-[400px]">
+  <div class="container mx-auto px-4 flex justify-center items-center relative z-10 h-full">
+    <div class="content text-center text-bv-verde-oscuro font-medium leading-relaxed max-w-2xl mx-auto p-8 z-20">
       <p>{text}</p>
     </div>
   </div>
-  
+
   <!-- SVGs decorativos -->
-  <img src="/images/svg/koala.svg" class="koala" alt="Tucán" />
-  <img src="/images/svg/flor_1.svg" class="leaves-right" alt="Hojas derecha" />
+  <img src="/images/svg/koala.svg" class="koala absolute" alt="Tucán" />
+  <img src="/images/svg/flor_1.svg" class="leaves-right absolute" alt="Hojas derecha" />
 </section>
 
 <style>
-  /* Estilos locales solo para este componente */
-.banner-about {
-  position: relative;
-  padding: 4rem 0;
-  background-color: #ffffff;
-  min-height: 400px;
-  overflow: hidden;
-}
-
-.banner-about .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  z-index: 10;
-  height: 100%;
-}
-
-.banner-about .content {
-  text-align: center;
-  color: #2e7d32;
-  font-size: 1.2rem;
-  line-height: 1.6;
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  z-index: 2;
-  font-weight: 500;
-}
-
-.banner-about p {
-  margin: 0;
-}
-
-.banner-about img {
-  position: absolute;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* TUCÁN - Superior izquierda */
-.banner-about .koala{
+.koala {
   top: 0;
-  left: -1%; 
+  left: -1%;
   width: 300px;
   height: auto;
-  transform: rotate(0deg);
 }
-
-/* HOJAS DERECHA - Al lado del camaleón */
-.banner-about .leaves-right {
+.leaves-right {
   bottom: -5%;
-  right: 5%; 
+  right: 5%;
   width: 250px;
   height: auto;
   transform: rotate(3deg);
 }
 
-/* Responsive Design */
+/* 📱 Responsive */
 @media (max-width: 1024px) {
-  .banner-about .koala{
-    width: 130px;
-    top: 8%;
-    left: 3%;
-  }
-
-  .banner-about .leaves-right {
-    width: 110px;
-    bottom: 4%;
-    right: 2%;
-  }
+  .koala { width: 130px; top: 8%; left: 3%; }
+  .leaves-right { width: 110px; bottom: 4%; right: 2%; }
 }
-
 @media (max-width: 768px) {
-  .banner-about {
-    padding: 3rem 0;
-    min-height: 300px;
-  }
-
-  .banner-about .content {
-    font-size: 1.1rem;
-    max-width: 90%;
-    padding: 1.5rem 1rem;
-  }
-
-  .banner-about .koala{
-    width: 100px;
-    top: 5%;
-    left: 2%;
-  }
-
-  .banner-about .leaves-right {
-    width: 90px;
-    bottom: 2%;
-    right: 1%;
-  }
+  .banner-about { min-height: 300px; }
+  .content { font-size: 1.1rem; max-width: 90%; padding: 1.5rem 1rem; }
+  .koala { width: 100px; top: 5%; left: 2%; }
+  .leaves-right { width: 90px; bottom: 2%; right: 1%; }
 }
-
 @media (max-width: 480px) {
-  .banner-about {
-    padding: 2rem 0;
-    min-height: 250px;
-  }
-
-  .banner-about .content {
-    font-size: 1rem;
-    padding: 1rem;
-  }
-
-  .banner-about .leaves-right {
-    opacity: 0.6;
-  }
+  .banner-about { min-height: 250px; }
+  .content { font-size: 1rem; padding: 1rem; }
+  .leaves-right { opacity: 0.6; }
 }
 </style>
