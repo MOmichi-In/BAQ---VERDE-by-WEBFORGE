@@ -1,0 +1,279 @@
+---
+import Layout from "../../layouts/DashboardLayout.astro";
+
+export const prerender = false;
+import "../../styles/global.css";
+const cookieStore = Astro.cookies;
+const sessionToken = cookieStore.get("token")?.value;
+if (!sessionToken) {
+    return Astro.redirect("/login");
+}
+
+// Borrar la cookie directamente desde el servidor si se pide
+if (Astro.url.searchParams.get("logout") === "true") {
+    Astro.cookies.delete("token", { path: "/" });
+    return Astro.redirect("/login");
+}
+---
+
+<Layout title="Panel de Administración">
+    <!-- Welcome Section -->
+     <div class="dashboard-container">
+    <section class="welcome-section">
+        <div class="welcome-content">
+            <h2>Panel de Administración</h2>
+            <p>
+                Gestiona y supervisa todos los aspectos del Observatorio
+                Ambiental de Barranquilla
+            </p>
+
+            <div class="welcome-stats">
+                <div class="stat-item">
+                    <span class="stat-number">0</span>
+                    <div class="stat-label">Noticias publicadas</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">0</span>
+                    <div class="stat-label">Reportes ciudadanos</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">0</span>
+                    <div class="stat-label">Documentos oficiales</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+        <h2 class="section-title">Módulos de Administración</h2>
+        <div class="actions-grid">
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <h3>Gestión de Noticias</h3>
+                <p>
+                    Administra las publicaciones, artículos y comunicados del
+                    observatorio ambiental. Crea, edita y publica contenido
+                    informativo.
+                </p>
+                <a href="/dashboard/news" class="action-link">
+                    Gestionar noticias <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Participación Ciudadana</h3>
+                <p>
+                    Supervisa reportes ciudadanos, comentarios y sugerencias de
+                    la comunidad sobre temas ambientales en Barranquilla.
+                </p>
+                <a href="/dashboard/stake" class="action-link">
+                    Ver participación <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3>Gestión de Datos e Información</h3>
+                <p>
+                    Administra bases de datos ambientales, informes técnicos,
+                    documentos oficiales y archivos del observatorio.
+                </p>
+                <a href="/dashboard/document" class="action-link">
+                    Gestionar datos <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+    <style>
+          .dashboard-container {
+      padding: 2rem;
+      max-width: 95vw;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+        /* Estilos que antes estaban en <head>, ahora aquí */
+        .welcome-section {
+            background: var(--color-verde);
+            color: var(--color-blanco);
+            padding: var(--spacing-xxl) var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: var(--color-verde-secundario);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        .welcome-section::after {
+            content: "";
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 120px;
+            height: 120px;
+            background: var(--color-amarillo);
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-content h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-blanco);
+        }
+
+        .welcome-content p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            color: var(--color-blanco);
+        }
+
+        .welcome-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+        }
+
+        .stat-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-amarillo);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--color-blanco);
+            margin-top: var(--spacing-xs);
+        }
+
+        .quick-actions {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-azul-oscuro);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--spacing-xl);
+            max-width: 1100px;
+        }
+
+        .action-card {
+            background: var(--color-blanco);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid var(--color-gris-medio);
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-verde);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--color-verde);
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-blanco);
+            font-size: 24px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .action-card:nth-child(2n) .action-icon {
+            background: var(--color-verde-secundario);
+        }
+
+        .action-card:nth-child(3n) .action-icon {
+            background: var(--color-azul-oscuro);
+        }
+
+        .action-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-azul-oscuro);
+        }
+
+        .action-card p {
+            color: var(--color-gris-oscuro);
+            font-size: 0.9rem;
+        }
+
+        .action-link {
+            color: var(--color-verde);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            transition: color 0.2s ease;
+        }
+
+        .action-link:hover {
+            color: var(--color-verde-secundario);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-content h2 {
+                font-size: 2rem;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-xl); /* Asegura padding lateral */
+        }
+    </style>
+</Layout>
