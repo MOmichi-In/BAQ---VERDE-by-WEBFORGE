@@ -30,10 +30,64 @@ import "../styles/global.css";
     </div>
   </header>
 
-  <section class="hero">
-    <div class="hero-content">
-        <h1>{title}</h1> 
+  <section class="hero-carousel">
+    <div class="carousel-container">
+      <div class="carousel-slide active">
+        <img src="/images/hero-bg-1.webp" alt="Observatorio Ambiental 1" />
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>{title}</h1>
+          <p>Monitoreando el medio ambiente para un futuro sostenible</p>
+        </div>
+      </div>
+      
+      <div class="carousel-slide">
+        <img src="/images/hero-bg-2.webp" alt="Observatorio Ambiental 2" />
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>Protección Ambiental</h1>
+          <p>Datos precisos para decisiones informadas</p>
+        </div>
+      </div>
+      
+      <div class="carousel-slide">
+        <img src="/images/hero-bg-3.webp" alt="Observatorio Ambiental 3" />
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>Innovación Verde</h1>
+          <p>Tecnología al servicio del medio ambiente</p>
+        </div>
+      </div>
+
+      <div class="carousel-slide">
+        <img src="/images/hero-bg-4.webp" alt="Observatorio Ambiental 3" />
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1>Entre bigotes y hojas</h1>
+          <p>Observamos la naturaleza con precisión y pasión.</p>
+        </div>
+      </div>
     </div>
+
+    <!-- Indicadores -->
+    <div class="carousel-indicators">
+      <button class="indicator active" data-slide="0"></button>
+      <button class="indicator" data-slide="1"></button>
+      <button class="indicator" data-slide="2"></button>
+      <button class="indicator" data-slide="3"></button>
+    </div>
+
+    <!-- Controles de navegación -->
+    <button class="carousel-control prev" id="prevBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="carousel-control next" id="nextBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
   </section>
 
   <main>
@@ -175,4 +229,144 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// Carrusel automático
+    class HeroCarousel {
+      constructor() {
+        this.currentSlide = 0;
+        this.slides = document.querySelectorAll('.carousel-slide');
+        this.indicators = document.querySelectorAll('.indicator');
+        this.totalSlides = this.slides.length;
+        this.autoPlayInterval = 5000; // 5 segundos
+        this.isAutoPlaying = true;
+
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.startAutoPlay();
+      }
+
+      setupEventListeners() {
+        // Botones de navegación
+        document.getElementById('prevBtn')?.addEventListener('click', () => {
+          this.prevSlide();
+        });
+
+        document.getElementById('nextBtn')?.addEventListener('click', () => {
+          this.nextSlide();
+        });
+
+        // Indicadores
+        this.indicators.forEach((indicator, index) => {
+          indicator.addEventListener('click', () => {
+            this.goToSlide(index);
+          });
+        });
+
+        // Pausar autoplay al hacer hover
+        const carousel = document.querySelector('.hero-carousel');
+        carousel?.addEventListener('mouseenter', () => {
+          this.pauseAutoPlay();
+        });
+
+        carousel?.addEventListener('mouseleave', () => {
+          this.resumeAutoPlay();
+        });
+      }
+
+      goToSlide(index) {
+        // Remover clase active de slide actual
+        this.slides[this.currentSlide]?.classList.remove('active');
+        this.indicators[this.currentSlide]?.classList.remove('active');
+
+        // Actualizar índice
+        this.currentSlide = index;
+
+        // Agregar clase active al nuevo slide
+        this.slides[this.currentSlide]?.classList.add('active');
+        this.indicators[this.currentSlide]?.classList.add('active');
+      }
+
+      nextSlide() {
+        const next = (this.currentSlide + 1) % this.totalSlides;
+        this.goToSlide(next);
+      }
+
+      prevSlide() {
+        const prev = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+        this.goToSlide(prev);
+      }
+
+      startAutoPlay() {
+        this.autoPlayTimer = setInterval(() => {
+          if (this.isAutoPlaying) {
+            this.nextSlide();
+          }
+        }, this.autoPlayInterval);
+      }
+
+      pauseAutoPlay() {
+        this.isAutoPlaying = false;
+      }
+
+      resumeAutoPlay() {
+        this.isAutoPlaying = true;
+      }
+    }
+
+    // Inicializar carrusel cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', () => {
+      new HeroCarousel();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const slides = document.querySelectorAll(".carousel-slide");
+    const indicators = document.querySelectorAll(".indicator");
+    let currentIndex = 0;
+    const intervalTime = 6000; // ⏰ cada 6 segundos
+    let slideInterval;
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle("active", i === index);
+        indicators[i]?.classList.toggle("active", i === index);
+      });
+      currentIndex = index;
+    }
+
+    function nextSlide() {
+      let newIndex = (currentIndex + 1) % slides.length;
+      showSlide(newIndex);
+    }
+
+    // Auto play
+    slideInterval = setInterval(nextSlide, intervalTime);
+
+    // Indicadores clicables
+    indicators.forEach((indicator, i) => {
+      indicator.addEventListener("click", () => {
+        showSlide(i);
+        clearInterval(slideInterval);
+        slideInterval = setInterval(nextSlide, intervalTime);
+      });
+    });
+
+    // Controles prev/next
+    document.querySelector(".carousel-control.prev")?.addEventListener("click", () => {
+      let newIndex = (currentIndex - 1 + slides.length) % slides.length;
+      showSlide(newIndex);
+      clearInterval(slideInterval);
+      slideInterval = setInterval(nextSlide, intervalTime);
+    });
+
+    document.querySelector(".carousel-control.next")?.addEventListener("click", () => {
+      nextSlide();
+      clearInterval(slideInterval);
+      slideInterval = setInterval(nextSlide, intervalTime);
+    });
+
+    // mostrar el primero al inicio
+    showSlide(0);
+  });
 </script>

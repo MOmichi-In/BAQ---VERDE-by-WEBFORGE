@@ -105,39 +105,182 @@ body {
   z-index: -1;
 }
 
-/* HERO */
-.hero {
+/* ===== HERO CAROUSEL ===== */
+.hero-carousel {
   position: relative;
-  height: 100vh;
-  background: url('/images/hero-bg.webp') no-repeat center center;
-  background-size: cover;
+  height: 600px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--bv-blanco);
+  color: white;
   text-align: center;
-  z-index: 1;
 }
 
-/* ✅ Filtro verde translúcido */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(55, 180, 72, 0.55); /* bv-verde-primario con transparencia */
-  z-index: 1;
-}
-
-.hero h1 {
-  position: relative;
+.carousel-slide.active {
+  opacity: 1;
   z-index: 2;
+}
+
+.carousel-slide img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* .slide-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(34, 139, 34, 0.5);
+  z-index: 2;
+} */
+
+.slide-content {
+  position: relative;
+  z-index: 3;
+  max-width: 800px;
+  padding: 0 1rem;
+  animation: fadeInUp 1s ease-out;
+}
+
+.slide-content h1 {
   font-size: 3rem;
-  margin: 0;
+  margin: 0 0 1rem 0;
   font-weight: 700;
   letter-spacing: -0.5px;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
-  max-width: 800px;
-  padding: 0 var(--spacing-md);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  line-height: 1.2;
+}
+
+.slide-content p {
+  font-size: 1.25rem;
+  margin: 0;
+  font-weight: 400;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+  opacity: 0.95;
+}
+
+/* Indicadores */
+.carousel-indicators {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.indicator:hover {
+  border-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.indicator.active {
+  background: white;
+  border-color: white;
+  transform: scale(1.2);
+}
+
+/* Controles de navegación */
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.carousel-control:hover {
+  background: rgba(0, 0, 0, 0.6);
+  border-color: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-control.prev {
+  left: 30px;
+}
+
+.carousel-control.next {
+  right: 30px;
+}
+
+.carousel-control svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efecto de zoom suave en las imágenes */
+.carousel-slide.active img {
+  animation: zoomIn 8s ease-out;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 /* MAIN */
@@ -214,13 +357,43 @@ main {
 
 /* 📱 Responsive */
 @media (max-width: 768px) {
-  .hero {
-    height: 400px;
+  .hero-carousel {
+    height: 500px;
   }
 
-  .hero h1 {
+  .slide-content h1 {
     font-size: 2rem;
-    padding: 0 var(--spacing-md);
+  }
+
+  .slide-content p {
+    font-size: 1rem;
+  }
+
+  .carousel-control {
+    width: 40px;
+    height: 40px;
+  }
+
+  .carousel-control svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .carousel-control.prev {
+    left: 15px;
+  }
+
+  .carousel-control.next {
+    right: 15px;
+  }
+
+  .carousel-indicators {
+    bottom: 20px;
+  }
+
+  .indicator {
+    width: 10px;
+    height: 10px;
   }
 
   .header .container {
@@ -243,5 +416,19 @@ main {
 
   .footer-col {
     margin-bottom: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-carousel {
+    height: 400px;
+  }
+
+  .slide-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .slide-content p {
+    font-size: 0.9rem;
   }
 }
