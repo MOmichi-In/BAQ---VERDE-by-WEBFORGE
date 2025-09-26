@@ -111,6 +111,9 @@ body {
   height: 600px;
   overflow: hidden;
   z-index: 1;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 .carousel-container {

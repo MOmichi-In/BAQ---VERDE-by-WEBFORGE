@@ -11,6 +11,9 @@ import "../styles/global.css";
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Preload de la primera imagen (ya lo tenías, mantenlo) -->
+  <link rel="preload" as="image" href="/images/hero-bg-01.webp">
+
   <title>{title}</title>
 </head>
 <body>
@@ -30,10 +33,10 @@ import "../styles/global.css";
     </div>
   </header>
 
-  <section class="hero-carousel">
+  <section class="hero-carousel" style="background-image: url('/images/hero-bg-01.webp'); background-size: cover; background-position: center;">
     <div class="carousel-container">
-      <div class="carousel-slide active">
-        <img src="/images/hero-bg-1.webp" alt="Observatorio Ambiental 1" />
+      <div class="carousel-slide active" aria-hidden="false">
+        <img src="/images/hero-bg-01.webp" alt="Observatorio Ambiental 1" loading="eager" fetchpriority="high" decoding="sync"/>
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <h1>{title}</h1>
@@ -42,7 +45,7 @@ import "../styles/global.css";
       </div>
       
       <div class="carousel-slide">
-        <img src="/images/hero-bg-2.webp" alt="Observatorio Ambiental 2" />
+        <img src="/images/hero-bg-02.webp" alt="Observatorio Ambiental 2" loading="lazy" />
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <h1>Protección Ambiental</h1>
@@ -51,7 +54,7 @@ import "../styles/global.css";
       </div>
       
       <div class="carousel-slide">
-        <img src="/images/hero-bg-3.webp" alt="Observatorio Ambiental 3" />
+        <img src="/images/hero-bg-03.webp" alt="Observatorio Ambiental 3" loading="lazy" />
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <h1>Innovación Verde</h1>
@@ -60,7 +63,7 @@ import "../styles/global.css";
       </div>
 
       <div class="carousel-slide">
-        <img src="/images/hero-bg-4.webp" alt="Observatorio Ambiental 3" />
+        <img src="/images/hero-bg-04.webp" alt="Observatorio Ambiental 4" loading="lazy" />
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <h1>Entre bigotes y hojas</h1>
@@ -324,7 +327,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const slides = document.querySelectorAll(".carousel-slide");
     const indicators = document.querySelectorAll(".indicator");
     let currentIndex = 0;
-    const intervalTime = 6000; // ⏰ cada 6 segundos
+    const intervalTime = 4000;
     let slideInterval;
 
     function showSlide(index) {
