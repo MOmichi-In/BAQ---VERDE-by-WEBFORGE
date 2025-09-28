@@ -18,19 +18,34 @@ import "../styles/global.css";
 </head>
 <body>
 
-  <header class="header">
-    <div class="container">
-      <div class="logo">
-        <img src="/images/logo.png" alt="Observatorio Ambiental" />
-      </div>
-      <nav class="nav">
-        <a href="/">Home</a>
-        <a href="/participation">Participation</a>
-        <a href="/maps">Maps</a>
-        <a href="/news">News</a>
-        <a href="/documents">Documents</a>
-      </nav>
-    </div>
+  <header> 
+    <!-- Barra 1: GOV.CO --> 
+    <div class="top-bar gov-bar"> 
+      <a href="https://www.gov.co" target="_blank"> 
+        <img src="/logos/govco.png" alt="Logo GOV.CO" /> 
+      </a> 
+    </div> 
+    
+    <!-- Barra 2: Alcaldía --> 
+    <div class="top-bar alcaldia-bar"> 
+      <a href="https://www.barranquilla.gov.co" target="_blank"> 
+        <img src="/logos/alcaldia.png" alt="Logo Alcaldía de Barranquilla" /> 
+      </a> 
+    </div> 
+    
+    <div class="header" id="mainNav"> 
+      <div class="container"> 
+        <div class="logo"> 
+          <img src="/images/logo.png" alt="Observatorio Ambiental" /> 
+        </div> 
+        <nav class="nav"> 
+          <a href="/">Home</a> 
+          <a href="/participation">Participation</a> 
+          <a href="/maps">Maps</a> <a href="/news">News</a> 
+          <a href="/documents">Documents</a> 
+        </nav> 
+      </div> 
+    </div> 
   </header>
 
   <section class="hero-carousel" style="background-image: url('/images/hero-bg-01.webp'); background-size: cover; background-position: center;">
@@ -156,220 +171,115 @@ import "../styles/global.css";
 </html>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const nav = document.querySelector(".header .nav");
-  const links = nav.querySelectorAll("a");
+  document.addEventListener("DOMContentLoaded", () => {
+  const header = document.querySelector(".header");
 
-  const indicator = document.createElement("span");
-  indicator.classList.add("nav-indicator");
-  nav.appendChild(indicator);
-
-  function moveIndicator(el, instant = false) {
-    const rect = el.getBoundingClientRect();
-    const navRect = nav.getBoundingClientRect();
-
-    if (instant) {
-      indicator.style.transition = "none"; // ❌ sin animación
+  function updateHeader() {
+    if (window.scrollY > 0) {
+      header.classList.add("scrolled");
+      header.classList.remove("at-top");
     } else {
-      indicator.style.transition = "width 0.3s ease, transform 0.3s ease"; // ✅ animación normal
-    }
-
-    indicator.style.width = rect.width + "px";
-    indicator.style.transform = `translateX(${rect.left - navRect.left}px)`;
-
-    if (instant) {
-      // 🔥 reactivar transición después de forzar la posición inicial
-      requestAnimationFrame(() => {
-        indicator.style.transition = "width 0.3s ease, transform 0.3s ease";
-      });
+      header.classList.remove("scrolled");
+      header.classList.add("at-top");
     }
   }
 
-  function setActiveByPath() {
-    const path = window.location.pathname;
-    let found = false;
-    links.forEach(link => {
-      link.classList.remove("active");
-      if (link.getAttribute("href") === path) {
-        link.classList.add("active");
-        moveIndicator(link, true); // 👈 primera vez instantáneo
-        found = true;
-      }
-    });
-    return found;
-  }
+  // Detectar scroll
+  window.addEventListener("scroll", updateHeader);
 
-  function onScroll() {
-    const sections = document.querySelectorAll("main section[id]");
-    let current = "";
-    sections.forEach(sec => {
-      const secTop = sec.offsetTop - 100;
-      const secHeight = sec.clientHeight;
-      if (window.scrollY >= secTop && window.scrollY < secTop + secHeight) {
-        current = sec.getAttribute("id");
-      }
-    });
-    links.forEach(link => {
-      link.classList.remove("active");
-      if (link.getAttribute("href") === "#" + current) {
-        link.classList.add("active");
-        moveIndicator(link);
-      }
-    });
-  }
-
-  links.forEach(link => {
-    link.addEventListener("mouseenter", () => moveIndicator(link));
-    link.addEventListener("mouseleave", () => {
-      const active = nav.querySelector("a.active");
-      if (active) moveIndicator(active);
-    });
-  });
-
-  if (!setActiveByPath()) {
-    window.addEventListener("scroll", onScroll);
-    onScroll();
-  }
+  // Estado inicial
+  updateHeader();
 });
 
-// Carrusel automático
-    class HeroCarousel {
-      constructor() {
-        this.currentSlide = 0;
-        this.slides = document.querySelectorAll('.carousel-slide');
-        this.indicators = document.querySelectorAll('.indicator');
-        this.totalSlides = this.slides.length;
-        this.autoPlayInterval = 5000; // 5 segundos
-        this.isAutoPlaying = true;
+// =========================
+// 2. Carrusel automático
+// =========================
+class HeroCarousel {
+  constructor() {
+    this.currentSlide = 0;
+    this.slides = document.querySelectorAll('.carousel-slide');
+    this.indicators = document.querySelectorAll('.indicator');
+    this.totalSlides = this.slides.length;
+    this.autoPlayInterval = 5000; // 5 segundos
+    this.isAutoPlaying = true;
 
-        this.init();
-      }
+    this.init();
+  }
 
-      init() {
-        this.setupEventListeners();
-        this.startAutoPlay();
-      }
+  init() {
+    this.setupEventListeners();
+    this.startAutoPlay();
+  }
 
-      setupEventListeners() {
-        // Botones de navegación
-        document.getElementById('prevBtn')?.addEventListener('click', () => {
-          this.prevSlide();
-        });
-
-        document.getElementById('nextBtn')?.addEventListener('click', () => {
-          this.nextSlide();
-        });
-
-        // Indicadores
-        this.indicators.forEach((indicator, index) => {
-          indicator.addEventListener('click', () => {
-            this.goToSlide(index);
-          });
-        });
-
-        // Pausar autoplay al hacer hover
-        const carousel = document.querySelector('.hero-carousel');
-        carousel?.addEventListener('mouseenter', () => {
-          this.pauseAutoPlay();
-        });
-
-        carousel?.addEventListener('mouseleave', () => {
-          this.resumeAutoPlay();
-        });
-      }
-
-      goToSlide(index) {
-        // Remover clase active de slide actual
-        this.slides[this.currentSlide]?.classList.remove('active');
-        this.indicators[this.currentSlide]?.classList.remove('active');
-
-        // Actualizar índice
-        this.currentSlide = index;
-
-        // Agregar clase active al nuevo slide
-        this.slides[this.currentSlide]?.classList.add('active');
-        this.indicators[this.currentSlide]?.classList.add('active');
-      }
-
-      nextSlide() {
-        const next = (this.currentSlide + 1) % this.totalSlides;
-        this.goToSlide(next);
-      }
-
-      prevSlide() {
-        const prev = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
-        this.goToSlide(prev);
-      }
-
-      startAutoPlay() {
-        this.autoPlayTimer = setInterval(() => {
-          if (this.isAutoPlaying) {
-            this.nextSlide();
-          }
-        }, this.autoPlayInterval);
-      }
-
-      pauseAutoPlay() {
-        this.isAutoPlaying = false;
-      }
-
-      resumeAutoPlay() {
-        this.isAutoPlaying = true;
-      }
-    }
-
-    // Inicializar carrusel cuando el DOM esté listo
-    document.addEventListener('DOMContentLoaded', () => {
-      new HeroCarousel();
+  setupEventListeners() {
+    // Botón anterior
+    document.getElementById('prevBtn')?.addEventListener('click', () => {
+      this.prevSlide();
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-    const slides = document.querySelectorAll(".carousel-slide");
-    const indicators = document.querySelectorAll(".indicator");
-    let currentIndex = 0;
-    const intervalTime = 4000;
-    let slideInterval;
-
-    function showSlide(index) {
-      slides.forEach((slide, i) => {
-        slide.classList.toggle("active", i === index);
-        indicators[i]?.classList.toggle("active", i === index);
-      });
-      currentIndex = index;
-    }
-
-    function nextSlide() {
-      let newIndex = (currentIndex + 1) % slides.length;
-      showSlide(newIndex);
-    }
-
-    // Auto play
-    slideInterval = setInterval(nextSlide, intervalTime);
+    // Botón siguiente
+    document.getElementById('nextBtn')?.addEventListener('click', () => {
+      this.nextSlide();
+    });
 
     // Indicadores clicables
-    indicators.forEach((indicator, i) => {
-      indicator.addEventListener("click", () => {
-        showSlide(i);
-        clearInterval(slideInterval);
-        slideInterval = setInterval(nextSlide, intervalTime);
+    this.indicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => {
+        this.goToSlide(index);
       });
     });
 
-    // Controles prev/next
-    document.querySelector(".carousel-control.prev")?.addEventListener("click", () => {
-      let newIndex = (currentIndex - 1 + slides.length) % slides.length;
-      showSlide(newIndex);
-      clearInterval(slideInterval);
-      slideInterval = setInterval(nextSlide, intervalTime);
+    // Pausar autoplay al hacer hover
+    const carousel = document.querySelector('.hero-carousel');
+    carousel?.addEventListener('mouseenter', () => {
+      this.pauseAutoPlay();
     });
-
-    document.querySelector(".carousel-control.next")?.addEventListener("click", () => {
-      nextSlide();
-      clearInterval(slideInterval);
-      slideInterval = setInterval(nextSlide, intervalTime);
+    carousel?.addEventListener('mouseleave', () => {
+      this.resumeAutoPlay();
     });
+  }
 
-    // mostrar el primero al inicio
-    showSlide(0);
-  });
+  goToSlide(index) {
+    this.slides[this.currentSlide]?.classList.remove('active');
+    this.indicators[this.currentSlide]?.classList.remove('active');
+
+    this.currentSlide = index;
+
+    this.slides[this.currentSlide]?.classList.add('active');
+    this.indicators[this.currentSlide]?.classList.add('active');
+  }
+
+  nextSlide() {
+    const next = (this.currentSlide + 1) % this.totalSlides;
+    this.goToSlide(next);
+  }
+
+  prevSlide() {
+    const prev = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+    this.goToSlide(prev);
+  }
+
+  startAutoPlay() {
+    this.autoPlayTimer = setInterval(() => {
+      if (this.isAutoPlaying) {
+        this.nextSlide();
+      }
+    }, this.autoPlayInterval);
+  }
+
+  pauseAutoPlay() {
+    this.isAutoPlaying = false;
+  }
+
+  resumeAutoPlay() {
+    this.isAutoPlaying = true;
+  }
+}
+
+// =========================
+// 3. Inicializar carrusel cuando el DOM esté listo
+// =========================
+document.addEventListener('DOMContentLoaded', () => {
+  new HeroCarousel();
+});
 </script>

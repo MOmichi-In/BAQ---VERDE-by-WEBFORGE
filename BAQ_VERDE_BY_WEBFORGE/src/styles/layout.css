@@ -23,33 +23,64 @@ body {
   min-height: 100vh;
 }
 
+/* --- TOP BARS --- */
+.top-bar {
+  width: 100%;
+  padding: 0.3rem 1rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background: #fff; /* fondo sólido */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.top-bar img {
+  height: 28px;
+}
+
+/* GOV bar */
+.gov-bar {
+  background: #2f64d6; /* azul */
+}
+
+/* Alcaldía bar */
+.alcaldia-bar {
+  background: #1d8c3f; /* verde */
+}
+
 /* NAV - Glassmorphism */
 .header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-
+  position: relative;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 3.5rem;
 
-  /* altura fija */
-  height: 4rem;
+  background: transparent; /* Al inicio transparente */
+  transition: all 0.3s ease-in-out;
+  z-index: 999;  
+}
 
-  /* 🔮 efecto glass */
-  background: linear-gradient(
-    90deg,
-    rgba(34, 139, 34, 0.5) 0%,
-    rgba(10, 25, 47, 0.6) 100%
-  );
-  backdrop-filter: blur(12px) saturate(180%);
+/* Estado inicial: transparente, relative */
+.header.at-top {
+  position: fixed;
+  background: transparent;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Estado cuando se hace scroll */
+.header.scrolled {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 128, 0, 0.355); /* verde translúcido */
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-
-  padding: 0 var(--spacing-md);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(6px); /* opcional, queda elegante */
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
 }
 
 /* Contenedor */
@@ -77,7 +108,7 @@ body {
 
 /* enlaces */
 .header .nav a {
-  position: relative;
+  /* position: relative; */
   color: var(--bv-blanco);
   text-decoration: none;
   font-size: 1rem;
@@ -85,24 +116,6 @@ body {
   padding: 0.5rem 0;
   transition: color 0.3s ease;
   z-index: 2; /* por encima del indicador */
-}
-
-/* indicador glass dinámico */
-.nav-indicator {
-  position: absolute;
-  top: 19%; 
-  left: 0;
-  
-  height: 2rem;
-  border-radius: 12px;
-
-  background: rgba(255, 255, 255, 0.259);
-  backdrop-filter: blur(8px) saturate(180%);
-  -webkit-backdrop-filter: blur(8px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-
-  transition: width 0.3s ease, transform 0.3s ease;
-  z-index: -1;
 }
 
 /* ===== HERO CAROUSEL ===== */
@@ -399,17 +412,13 @@ main {
     height: 10px;
   }
 
+  .header {
+    height: 5rem;
+  }
+
   .header .container {
     flex-direction: column;
     text-align: center;
-  }
-
-  .header .nav {
-    margin-top: var(--spacing-sm);
-  }
-
-  .header .nav a {
-    margin: 0 var(--spacing-xs);
   }
 
   .footer-grid {
