@@ -54,14 +54,17 @@ if (Astro.request.method === "POST") {
       charts_permited: chartsSelected,
     };
 
-    const res = await updateStation(id, payload, sessionToken);
+    // ✅ SOLUCIÓN: Envolver la llamada en un try...catch
+    try {
+      const res = await updateStation(id, payload, sessionToken);
 
-    if (res) {
-      success = "Estación actualizada con éxito";
-      return Astro.redirect("/dashboard/stations?successUpdate=true");
-    } else {
-      error =
-        "Error al actualizar la estación. Revisa los datos e intenta de nuevo.";
+      if (res) {
+        success = "Estación actualizada con éxito";
+        return Astro.redirect("/dashboard/stations?successUpdate=true");
+      }
+    } catch (e) {
+      // Atrapa el error de la API y muestra su mensaje
+      error = e.message;
     }
   }
 }
@@ -152,7 +155,7 @@ if (Astro.request.method === "POST") {
               min="-90"
               max="90"
               step="any"
-              placeholder="Ej: 4.6097"
+              placeholder="Ej: 4.60971"
               value={station.lat}
               required
             />
@@ -171,7 +174,7 @@ if (Astro.request.method === "POST") {
               min="-180"
               max="180"
               step="any"
-              placeholder="Ej: -74.0817"
+              placeholder="Ej: -74.08175"
               value={station.lon}
               required
             />
