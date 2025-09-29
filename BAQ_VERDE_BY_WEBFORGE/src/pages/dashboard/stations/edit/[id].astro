@@ -1,6 +1,7 @@
 ---
-import Layout from "../../../layouts/DashboardLayout.astro";
-import { api } from "../../../lib/api";
+import Layout from "../../../../layouts/DashboardLayout.astro";
+import { api } from "../../../../lib/api";
+import { getStationById, updateStation } from "../../../../lib/stationsService"; // Asumiendo que moviste tus funciones de api a un servicio dedicado
 
 export const prerender = false;
 
@@ -11,9 +12,17 @@ if (!sessionToken) {
   return Astro.redirect("/login");
 }
 
-if (Astro.url.searchParams.get("logout") === "true") {
-  Astro.cookies.delete("token", { path: "/" });
-  return Astro.redirect("/login");
+const { id } = Astro.params;
+
+if (!id) {
+  return new Response("ID de estación no proporcionado", { status: 400 });
+}
+
+// Obtener los datos actuales de la estación para pre-rellenar el formulario
+const station = await getStationById(id, sessionToken);
+
+if (!station) {
+  return new Response("Estación no encontrada", { status: 404 });
 }
 
 let error = null;
@@ -25,7 +34,6 @@ if (Astro.request.method === "POST") {
   const lat = formData.get("lat")?.toString();
   const lon = formData.get("lon")?.toString();
 
-  // Obtener checkboxes seleccionados
   const chartsSelected = [];
   const allCharts = ["PM10", "PM2.5", "CO", "O3", "SO2", "ICA"];
   for (const chart of allCharts) {
@@ -34,7 +42,6 @@ if (Astro.request.method === "POST") {
     }
   }
 
-  // Validación
   if (!name || !lat || !lon) {
     error = "Nombre, latitud y longitud son requeridos";
   } else if (chartsSelected.length === 0) {
@@ -47,32 +54,31 @@ if (Astro.request.method === "POST") {
       charts_permited: chartsSelected,
     };
 
-    const res = await api("/stations", sessionToken, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    // ✅ SOLUCIÓN: Envolver la llamada en un try...catch
+    try {
+      const res = await updateStation(id, payload, sessionToken);
 
-    if (res) {
-      success = "Estación creada con éxito";
-      return Astro.redirect("/dashboard/stations?success=true");
-    } else {
-      error =
-        "Error al crear la estación. Revisa los datos e intenta de nuevo.";
+      if (res) {
+        success = "Estación actualizada con éxito";
+        return Astro.redirect("/dashboard/stations?successUpdate=true");
+      }
+    } catch (e) {
+      // Atrapa el error de la API y muestra su mensaje
+      error = e.message;
     }
   }
 }
 ---
 
-<Layout title="Crear Estación">
+<Layout title="Editar Estación">
   <div class="dashboard-container">
     <!-- Header Section -->
     <div class="dashboard-header">
       <div class="header-content">
         <div class="title-section">
-          <h1 class="dashboard-title">📡 Crear Nueva Estación</h1>
+          <h1 class="dashboard-title">✏️ Editar Estación</h1>
           <p class="dashboard-subtitle">
-            Registra una nueva estación de monitoreo ambiental
+            Actualiza los detalles de la estación de monitoreo
           </p>
         </div>
         <div class="header-actions">
@@ -112,7 +118,7 @@ if (Astro.request.method === "POST") {
       <div class="form-header">
         <h2 class="form-title">Información de la Estación</h2>
         <p class="form-subtitle">
-          Completa todos los campos obligatorios para registrar la estación
+          Modifica los campos necesarios para actualizar la estación
         </p>
       </div>
 
@@ -130,6 +136,7 @@ if (Astro.request.method === "POST") {
               name="name"
               class="form-input"
               placeholder="Ej: Estación Norte"
+              value={station.name}
               required
             />
           </div>
@@ -149,6 +156,7 @@ if (Astro.request.method === "POST") {
               max="90"
               step="any"
               placeholder="Ej: 4.60971"
+              value={station.lat}
               required
             />
           </div>
@@ -167,6 +175,7 @@ if (Astro.request.method === "POST") {
               max="180"
               step="any"
               placeholder="Ej: -74.08175"
+              value={station.lon}
               required
             />
           </div>
@@ -186,6 +195,7 @@ if (Astro.request.method === "POST") {
                       name={`chart_${chart}`}
                       value={chart}
                       class="checkbox-input"
+                      checked={station.charts_permited.includes(chart)}
                     />
                     <span class="checkbox-label">{chart}</span>
                   </label>
@@ -199,7 +209,7 @@ if (Astro.request.method === "POST") {
         <div class="form-actions">
           <button type="submit" class="btn-submit">
             <span class="btn-icon">💾</span>
-            Crear Estación
+            Guardar Cambios
           </button>
           <a href="/dashboard/stations" class="btn-cancel">
             <span class="btn-icon">❌</span>
@@ -211,6 +221,7 @@ if (Astro.request.method === "POST") {
   </div>
 
   <style>
+    /* Estilos copiados de tu página de creación para mantener la consistencia */
     .dashboard-container {
       padding: var(--spacing-xl);
       max-width: 95vw;
@@ -273,7 +284,6 @@ if (Astro.request.method === "POST") {
       transform: translateY(-2px);
     }
 
-    /* Alerts */
     .alert {
       display: flex;
       align-items: center;
@@ -298,12 +308,10 @@ if (Astro.request.method === "POST") {
     .alert-icon {
       font-size: 1.5rem;
     }
-
     .alert-content {
       flex: 1;
     }
 
-    /* Form */
     .form-container {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
@@ -378,7 +386,6 @@ if (Astro.request.method === "POST") {
       box-shadow: 0 0 0 3px rgba(var(--color-verde-rgb), 0.1);
     }
 
-    /* Checkboxes */
     .checkbox-group {
       display: flex;
       flex-wrap: wrap;
