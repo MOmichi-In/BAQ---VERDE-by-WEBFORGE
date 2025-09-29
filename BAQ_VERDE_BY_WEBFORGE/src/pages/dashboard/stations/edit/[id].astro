@@ -1,15 +1,15 @@
 ---
-import Layout from '../../../../layouts/DashboardLayout.astro';
-import { api } from '../../../../lib/api';
-import { getStationById, updateStation } from '../../../../lib/stationsService'; // Asumiendo que moviste tus funciones de api a un servicio dedicado
+import Layout from "../../../../layouts/DashboardLayout.astro";
+import { api } from "../../../../lib/api";
+import { getStationById, updateStation } from "../../../../lib/stationsService"; // Asumiendo que moviste tus funciones de api a un servicio dedicado
 
 export const prerender = false;
 
 const cookieStore = Astro.cookies;
-const sessionToken = cookieStore.get('token')?.value;
+const sessionToken = cookieStore.get("token")?.value;
 
 if (!sessionToken) {
-  return Astro.redirect('/login');
+  return Astro.redirect("/login");
 }
 
 const { id } = Astro.params;
@@ -28,14 +28,14 @@ if (!station) {
 let error = null;
 let success = null;
 
-if (Astro.request.method === 'POST') {
+if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-  const name = formData.get('name')?.toString().trim();
-  const lat = formData.get('lat')?.toString();
-  const lon = formData.get('lon')?.toString();
+  const name = formData.get("name")?.toString().trim();
+  const lat = formData.get("lat")?.toString();
+  const lon = formData.get("lon")?.toString();
 
   const chartsSelected = [];
-  const allCharts = ['PM10', 'PM2.5', 'CO', 'O3', 'SO2', 'ICA'];
+  const allCharts = ["PM10", "PM2.5", "CO", "O3", "SO2", "ICA"];
   for (const chart of allCharts) {
     if (formData.get(`chart_${chart}`)) {
       chartsSelected.push(chart);
@@ -43,24 +43,25 @@ if (Astro.request.method === 'POST') {
   }
 
   if (!name || !lat || !lon) {
-    error = 'Nombre, latitud y longitud son requeridos';
+    error = "Nombre, latitud y longitud son requeridos";
   } else if (chartsSelected.length === 0) {
-    error = 'Debes seleccionar al menos un gráfico permitido';
+    error = "Debes seleccionar al menos un gráfico permitido";
   } else {
     const payload = {
       name,
-      lat: parseInt(lat),
-      lon: parseInt(lon),
+      lat: parseFloat(lat),
+      lon: parseFloat(lon),
       charts_permited: chartsSelected,
     };
 
     const res = await updateStation(id, payload, sessionToken);
 
     if (res) {
-      success = 'Estación actualizada con éxito';
-      return Astro.redirect('/dashboard/stations?successUpdate=true');
+      success = "Estación actualizada con éxito";
+      return Astro.redirect("/dashboard/stations?successUpdate=true");
     } else {
-      error = 'Error al actualizar la estación. Revisa los datos e intenta de nuevo.';
+      error =
+        "Error al actualizar la estación. Revisa los datos e intenta de nuevo.";
     }
   }
 }
@@ -73,7 +74,9 @@ if (Astro.request.method === 'POST') {
       <div class="header-content">
         <div class="title-section">
           <h1 class="dashboard-title">✏️ Editar Estación</h1>
-          <p class="dashboard-subtitle">Actualiza los detalles de la estación de monitoreo</p>
+          <p class="dashboard-subtitle">
+            Actualiza los detalles de la estación de monitoreo
+          </p>
         </div>
         <div class="header-actions">
           <a href="/dashboard/stations" class="btn-back">
@@ -85,29 +88,35 @@ if (Astro.request.method === 'POST') {
     </div>
 
     <!-- Alert Messages -->
-    {error && (
-      <div class="alert alert-error">
-        <div class="alert-icon">⚠️</div>
-        <div class="alert-content">
-          <strong>Error:</strong> {error}
+    {
+      error && (
+        <div class="alert alert-error">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <strong>Error:</strong> {error}
+          </div>
         </div>
-      </div>
-    )}
+      )
+    }
 
-    {success && (
-      <div class="alert alert-success">
-        <div class="alert-icon">✅</div>
-        <div class="alert-content">
-          <strong>Éxito:</strong> {success}
+    {
+      success && (
+        <div class="alert alert-success">
+          <div class="alert-icon">✅</div>
+          <div class="alert-content">
+            <strong>Éxito:</strong> {success}
+          </div>
         </div>
-      </div>
-    )}
+      )
+    }
 
     <!-- Form Section -->
     <div class="form-container">
       <div class="form-header">
         <h2 class="form-title">Información de la Estación</h2>
-        <p class="form-subtitle">Modifica los campos necesarios para actualizar la estación</p>
+        <p class="form-subtitle">
+          Modifica los campos necesarios para actualizar la estación
+        </p>
       </div>
 
       <form method="post" class="news-form">
@@ -118,14 +127,14 @@ if (Astro.request.method === 'POST') {
               <span class="label-icon">📍</span>
               Nombre de la Estación *
             </label>
-            <input 
-              type="text" 
-              id="name" 
-              name="name" 
+            <input
+              type="text"
+              id="name"
+              name="name"
               class="form-input"
               placeholder="Ej: Estación Norte"
               value={station.name}
-              required 
+              required
             />
           </div>
 
@@ -135,17 +144,17 @@ if (Astro.request.method === 'POST') {
               <span class="label-icon">🧭</span>
               Latitud * (-90 a 90)
             </label>
-            <input 
-              type="number" 
-              id="lat" 
-              name="lat" 
+            <input
+              type="number"
+              id="lat"
+              name="lat"
               class="form-input"
-              min="-90" 
-              max="90" 
-              step="1" 
-              placeholder="Ej: 4"
+              min="-90"
+              max="90"
+              step="any"
+              placeholder="Ej: 4.6097"
               value={station.lat}
-              required 
+              required
             />
           </div>
 
@@ -154,17 +163,17 @@ if (Astro.request.method === 'POST') {
               <span class="label-icon">🧭</span>
               Longitud * (-180 a 180)
             </label>
-            <input 
-              type="number" 
-              id="lon" 
-              name="lon" 
+            <input
+              type="number"
+              id="lon"
+              name="lon"
               class="form-input"
-              min="-180" 
-              max="180" 
-              step="1" 
-              placeholder="Ej: -74"
+              min="-180"
+              max="180"
+              step="any"
+              placeholder="Ej: -74.0817"
               value={station.lon}
-              required 
+              required
             />
           </div>
 
@@ -175,18 +184,20 @@ if (Astro.request.method === 'POST') {
               Gráficos Permitidos * (Selecciona al menos uno)
             </label>
             <div class="checkbox-group">
-              {['PM10', 'PM2.5', 'CO', 'O3', 'SO2', 'ICA'].map((chart) => (
-                <label class="checkbox-item">
-                  <input 
-                    type="checkbox" 
-                    name={`chart_${chart}`} 
-                    value={chart} 
-                    class="checkbox-input"
-                    checked={station.charts_permited.includes(chart)}
-                  />
-                  <span class="checkbox-label">{chart}</span>
-                </label>
-              ))}
+              {
+                ["PM10", "PM2.5", "CO", "O3", "SO2", "ICA"].map((chart) => (
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      name={`chart_${chart}`}
+                      value={chart}
+                      class="checkbox-input"
+                      checked={station.charts_permited.includes(chart)}
+                    />
+                    <span class="checkbox-label">{chart}</span>
+                  </label>
+                ))
+              }
             </div>
           </div>
         </div>
@@ -208,265 +219,297 @@ if (Astro.request.method === 'POST') {
 
   <style>
     /* Estilos copiados de tu página de creación para mantener la consistencia */
-  .dashboard-container {
-    padding: var(--spacing-xl);
-    max-width: 95vw;
-    margin: 0 auto;
-    background: var(--color-gris-claro);
-    min-height: 100vh;
-  }
+    .dashboard-container {
+      padding: var(--spacing-xl);
+      max-width: 95vw;
+      margin: 0 auto;
+      background: var(--color-gris-claro);
+      min-height: 100vh;
+    }
 
-  .dashboard-header {
-    background: var(--color-verde);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
-    color: var(--color-blanco);
-    box-shadow: var(--shadow-lg);
-  }
+    .dashboard-header {
+      background: var(--color-verde);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-xl);
+      color: var(--color-blanco);
+      box-shadow: var(--shadow-lg);
+    }
 
-  .header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
-  }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
 
-  .title-section { flex: 1; }
+    .title-section {
+      flex: 1;
+    }
 
-  .dashboard-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin: 0 0 var(--spacing-sm) 0;
-    color: var(--color-blanco);
-  }
+    .dashboard-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 var(--spacing-sm) 0;
+      color: var(--color-blanco);
+    }
 
-  .dashboard-subtitle {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    margin: 0;
-  }
+    .dashboard-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin: 0;
+    }
 
-  .btn-back {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    color: var(--color-blanco);
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-radius: var(--border-radius-md);
-    text-decoration: none;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
+    .btn-back {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: var(--color-blanco);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
 
-  .btn-back:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-  }
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
 
-  .alert {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-radius: var(--border-radius-md);
-    margin-bottom: var(--spacing-xl);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
+    .alert {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      margin-bottom: var(--spacing-xl);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-  .alert-error {
-    background: var(--color-rojo-gradiente);
-    color: var(--color-blanco);
-  }
+    .alert-error {
+      background: var(--color-rojo-gradiente);
+      color: var(--color-blanco);
+    }
 
-  .alert-success {
-    background: var(--color-verde-gradiente);
-    color: var(--color-blanco);
-  }
+    .alert-success {
+      background: var(--color-verde-gradiente);
+      color: var(--color-blanco);
+    }
 
-  .alert-icon { font-size: 1.5rem; }
-  .alert-content { flex: 1; }
+    .alert-icon {
+      font-size: 1.5rem;
+    }
+    .alert-content {
+      flex: 1;
+    }
 
-  .form-container {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-xl);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: var(--shadow-lg);
-  }
+    .form-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: var(--shadow-lg);
+    }
 
-  .form-header {
-    margin-bottom: var(--spacing-xl);
-    text-align: center;
-  }
+    .form-header {
+      margin-bottom: var(--spacing-xl);
+      text-align: center;
+    }
 
-  .form-title {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: var(--color-azul-oscuro);
-    margin: 0 0 var(--spacing-sm) 0;
-  }
+    .form-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--color-azul-oscuro);
+      margin: 0 0 var(--spacing-sm) 0;
+    }
 
-  .form-subtitle {
-    color: var(--color-gris);
-    font-size: 1rem;
-    margin: 0;
-  }
+    .form-subtitle {
+      color: var(--color-gris);
+      font-size: 1rem;
+      margin: 0;
+    }
 
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
-  }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
 
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
 
-  .form-group.full-width { grid-column: 1 / -1; }
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
 
-  .form-label {
-    font-weight: 600;
-    color: var(--color-azul-oscuro);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    font-size: 0.95rem;
-  }
+    .form-label {
+      font-weight: 600;
+      color: var(--color-azul-oscuro);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: 0.95rem;
+    }
 
-  .label-icon { font-size: 1.1rem; }
+    .label-icon {
+      font-size: 1.1rem;
+    }
 
-  .form-input {
-    padding: var(--spacing-md);
-    border: 2px solid var(--color-gris-claro);
-    border-radius: var(--border-radius-md);
-    background: rgba(255, 255, 255, 0.8);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    color: var(--color-azul-oscuro);
-  }
+    .form-input {
+      padding: var(--spacing-md);
+      border: 2px solid var(--color-gris-claro);
+      border-radius: var(--border-radius-md);
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      color: var(--color-azul-oscuro);
+    }
 
-  .form-input:focus {
-    outline: none;
-    border-color: var(--color-verde);
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 0 0 3px rgba(var(--color-verde-rgb), 0.1);
-  }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-verde);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 0 0 3px rgba(var(--color-verde-rgb), 0.1);
+    }
 
-  .checkbox-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
-    margin-top: 0.5rem;
-  }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+      margin-top: 0.5rem;
+    }
 
-  .checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    cursor: pointer;
-  }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      cursor: pointer;
+    }
 
-  .checkbox-input {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--color-verde);
-    border-radius: 6px;
-    background: white;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-  }
+    .checkbox-input {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--color-verde);
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
 
-  .checkbox-input:checked {
-    background: var(--color-verde);
-    border-color: var(--color-verde);
-  }
+    .checkbox-input:checked {
+      background: var(--color-verde);
+      border-color: var(--color-verde);
+    }
 
-  .checkbox-input:checked::after {
-    content: '✓';
-    position: absolute;
-    color: white;
-    font-size: 14px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+    .checkbox-input:checked::after {
+      content: "✓";
+      position: absolute;
+      color: white;
+      font-size: 14px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
 
-  .checkbox-label {
-    font-size: 0.95rem;
-    color: var(--color-azul-oscuro);
-    user-select: none;
-  }
+    .checkbox-label {
+      font-size: 0.95rem;
+      color: var(--color-azul-oscuro);
+      user-select: none;
+    }
 
-  .form-actions {
-    display: flex;
-    gap: var(--spacing-md);
-    justify-content: center;
-    flex-wrap: wrap;
-  }
+    .form-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
 
-  .btn-submit,
-  .btn-cancel {
-    padding: var(--spacing-md) var(--spacing-xl);
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 1rem;
-    min-width: 160px;
-    justify-content: center;
-  }
+    .btn-submit,
+    .btn-cancel {
+      padding: var(--spacing-md) var(--spacing-xl);
+      border-radius: var(--border-radius-md);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 1rem;
+      min-width: 160px;
+      justify-content: center;
+    }
 
-  .btn-submit {
-    background: var(--color-verde);
-    color: var(--color-blanco);
-    border: none;
-    box-shadow: var(--shadow-sm);
-  }
+    .btn-submit {
+      background: var(--color-verde);
+      color: var(--color-blanco);
+      border: none;
+      box-shadow: var(--shadow-sm);
+    }
 
-  .btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
 
-  .btn-cancel {
-    background: var(--color-gris-oscuro);
-    color: var(--color-blanco);
-    box-shadow: var(--shadow-sm);
-  }
+    .btn-cancel {
+      background: var(--color-gris-oscuro);
+      color: var(--color-blanco);
+      box-shadow: var(--shadow-sm);
+    }
 
-  .btn-cancel:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
+    .btn-cancel:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
 
-  .btn-icon { font-size: 1.1rem; }
+    .btn-icon {
+      font-size: 1.1rem;
+    }
 
-  @media (max-width: 768px) {
-    .dashboard-container { padding: var(--spacing-lg); }
-    .dashboard-title { font-size: 2rem; }
-    .header-content { flex-direction: column; text-align: center; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-actions { flex-direction: column; }
-    .btn-submit, .btn-cancel { width: 100%; }
-    .checkbox-group { gap: var(--spacing-xs); }
-    .checkbox-item { gap: 0.25rem; }
-    .checkbox-label { font-size: 0.9rem; }
-  }
+    @media (max-width: 768px) {
+      .dashboard-container {
+        padding: var(--spacing-lg);
+      }
+      .dashboard-title {
+        font-size: 2rem;
+      }
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-actions {
+        flex-direction: column;
+      }
+      .btn-submit,
+      .btn-cancel {
+        width: 100%;
+      }
+      .checkbox-group {
+        gap: var(--spacing-xs);
+      }
+      .checkbox-item {
+        gap: 0.25rem;
+      }
+      .checkbox-label {
+        font-size: 0.9rem;
+      }
+    }
   </style>
 </Layout>
