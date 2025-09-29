@@ -1,15 +1,34 @@
 ---
-// Función mejorada para crear iconos de marcador
-    function createCustomMarkerIcon(color, number) {      
-      return L.divIcon({
-        className: 'custom-marker-icon',
-        html: `<div style="background-color: ${color};" class="marker-bubble">${number}</div>`,
-        iconSize: [36, 48],
-        iconAnchor: [18, 42],
-        popupAnchor: [0, -42]
-      });
-    }
+import { getStations } from "../../lib/stationsService";
+
+const cookieStore = Astro.cookies;
+const sessionToken = cookieStore.get("token")?.value || null;
+
+console.log("👉 Token de sesión leído en .astro:", sessionToken);
+
+let stations = [];
+try {
+  const data = await getStations(sessionToken);
+
+  console.log("👉 Respuesta cruda de la API en .astro:", data);
+
+  if (Array.isArray(data)) {
+    // Caso 1: la API devuelve directamente un array
+    stations = data;
+  } else if (data && Array.isArray(data.stations)) {
+    // Caso 2: la API devuelve un objeto con clave stations
+    stations = data.stations;
+  } else {
+    console.warn("⚠️ La API no devolvió un array ni un objeto con stations");
+  }
+} catch (error) {
+  console.error("❌ Error al obtener las estaciones:", error);
+}
+
+console.log("✅ Estaciones obtenidas en el servidor:", stations);
 ---
+
+
 <!-- Estilos de Leaflet -->
 <link 
   rel="stylesheet" 
@@ -55,7 +74,7 @@
     background: linear-gradient(135deg, var(--bv-verde-primario) 0%, var(--bv-verde-primario-dark) 100%);
     color: var(--bv-blanco);
     position: relative;
-    flex-shrink: 0;   /* nunca se reduce */
+    flex-shrink: 0;
   }
 
   .sidebar-header h3 {
@@ -156,7 +175,7 @@
     line-height: 1.4;
   }
 
-  /* Switch moderno (estilos basados en tokens) */
+  /* Switch moderno */
   .switch {
     position: relative;
     display: inline-block;
@@ -164,11 +183,7 @@
     height: 28px;
     flex-shrink: 0;
   }
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
+  .switch input { opacity: 0; width: 0; height: 0; }
   .slider {
     position: absolute;
     cursor: pointer;
@@ -192,37 +207,21 @@
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
   }
-  .switch input:checked + .slider {
-    background-color: var(--bv-amarillo);
-  }
-  .switch input:checked + .slider.biodiversity-slider {
-    background-color: var(--bv-verde-primario-dark);
-  }
-  .switch input:checked + .slider.soil-slider {
-    background-color: rgba(137, 81, 41, 1); /* Marrón más oscuro al activar */
-  }
-  .switch input:focus + .slider {
-    box-shadow: 0 0 0 4px rgba(55,180,72,0.12);
-  }
-  .switch input:checked + .slider:before {
-    transform: translateX(20px);
-  }
-
-  /* Sliders por categoría (usar var tokens) */
-  .slider.airQuality-slider { }
-  .slider.biodiversity-slider { }
-  .slider.soil-slider { }
+  .switch input:checked + .slider { background-color: var(--bv-amarillo); }
+  .switch input:checked + .slider.biodiversity-slider { background-color: var(--bv-verde-primario-dark); }
+  .switch input:checked + .slider.soil-slider { background-color: rgba(137, 81, 41, 1); }
+  .switch input:focus + .slider { box-shadow: 0 0 0 4px rgba(55,180,72,0.12); }
+  .switch input:checked + .slider:before { transform: translateX(20px); }
 
   /* Mapa */
   #map {
     flex: 1;
     height: 100%;
-    height: 100%;
     position: relative;
     background-color: var(--bv-gris-claro);
   }
 
-  /* Popups Leaflet estilizados */
+  /* Popups y marcadores */
   .leaflet-popup-content-wrapper {
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-lg);
@@ -230,7 +229,6 @@
     padding: 0;
     overflow: hidden;
   }
-
   .leaflet-popup-content {
     font-family: var(--font-family-base);
     color: var(--bv-azul-oscuro);
@@ -239,7 +237,6 @@
     padding: var(--spacing-md);
     background: var(--bv-blanco);
   }
-
   .leaflet-popup-content h4 {
     color: var(--bv-verde-primario);
     margin: 0 0 var(--spacing-sm) 0;
@@ -247,51 +244,16 @@
     font-weight: 600;
     font-family: var(--font-family-heading);
   }
-
   .leaflet-popup-content p {
     margin: var(--spacing-xs) 0 0 0;
     color: var(--bv-gris);
     font-size: 0.8125rem;
     line-height: 1.4;
   }
-
-  .leaflet-popup-tip {
-    background: var(--bv-blanco);
-    border: none;
-    box-shadow: var(--shadow-md);
-  }
-
-  /* Controles del mapa */
-  .leaflet-control-zoom {
-    border: none;
-    box-shadow: var(--shadow-md);
-  }
-
-  .leaflet-control-zoom a {
-    background: var(--bv-blanco);
-    color: var(--bv-azul-oscuro);
-    border: none;
-    border-radius: var(--border-radius-md) !important;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    font-size: 18px;
-    font-weight: 600;
-    margin: 2px;
-    transition: all 0.18s ease;
-  }
-
-  .leaflet-control-zoom a:hover {
-    background: var(--bv-gris-claro);
-    color: var(--bv-verde-primario);
-  }
-
-  /* Marcadores custom */
   .custom-marker-icon {
     background: transparent !important;
     border: none !important;
   }
-
   .marker-bubble {
     width: 36px;
     height: 36px;
@@ -307,7 +269,6 @@
     position: relative;
     transform: translateY(-50%);
   }
-
   .marker-bubble::after {
     content: '';
     position: absolute;
@@ -319,48 +280,31 @@
     border-top: 6px solid var(--bv-blanco);
   }
 
-  /* Responsive: en pantallas pequeñas apilar */
+  /* Responsive */
   @media (max-width: 1024px) {
     .map-app-container { flex-direction: column; }
-    .sidebar {
-      width: 100%;
-      border-right: none;
-      border-bottom: 1px solid var(--bv-gris-claro);
-      max-height: 40%;
-    }
-    #map { height: calc(100% - var(--sidebar-max-height, 40%)); }
-  }
-  /* pequeños ajustes para móviles */
-  @media (max-width: 768px) {
-    .sidebar { max-height: 35%; }
-    #map { height: calc(100% - 35%); }
-  }
-
-  /* Si por alguna razón algo hace overflow, aseguramos que map siempre se vea */
-  .map-hidden-fallback {
-    min-height: 300px !important;
+    .sidebar { width: 100%; max-height: 40%; }
+    #map { height: 60%; }
   }
 </style>
 
 <!-- Contenido principal -->
 <div class="map-app-container">
-  <!-- Sidebar izquierdo -->
   <div class="sidebar" role="region" aria-label="Filtros de mapas">
     <div class="sidebar-header">
       <h3>Datos Ambientales</h3>
       <div class="sidebar-subtitle">Barranquilla, Colombia</div>
     </div>
-    
     <div class="sidebar-content">
-      <!-- Grupo 1: Calidad del Aire -->
+
+      <!-- Grupo 1: Calidad del Aire (Conectado a la API) -->
       <div class="filter-group">
         <div class="filter-item" data-category="airQuality">
-          <div class="filter-item-icon" style="background-color: rgba(255, 234, 0, 0.1); color: #FFEA00;">
-            <i class="fas fa-wind"></i>
-          </div>
+          <div class="filter-item-icon" style="background-color: rgba(255, 234, 0, 0.1); color: #FFEA00;"><i class="fas fa-wind"></i></div>
           <div class="filter-item-content">
-            <div class="filter-item-title">Calidad del aire <span class="category-count">(0)</span></div>
-            <div class="filter-item-description">Estaciones de monitoreo, contaminantes</div>
+            <!-- PASO 2: CONTADOR DINÁMICO -->
+            <div class="filter-item-title">Calidad del aire <span class="category-count">({stations.length})</span></div>
+            <div class="filter-item-description">Estaciones de monitoreo</div>
           </div>
           <label class="switch">
             <input type="checkbox" checked data-category="airQuality">
@@ -369,12 +313,10 @@
         </div>
       </div>
 
-      <!-- Grupo 2: Biodiversidad -->
+      <!-- Grupo 2: Biodiversidad (Vacío) -->
       <div class="filter-group">
         <div class="filter-item" data-category="biodiversity">
-          <div class="filter-item-icon" style="background-color: rgba(39, 155, 72, 0.1); color: #279B48;">
-            <i class="fas fa-leaf"></i>
-          </div>
+          <div class="filter-item-icon" style="background-color: rgba(39, 155, 72, 0.1); color: #279B48;"><i class="fas fa-leaf"></i></div>
           <div class="filter-item-content">
             <div class="filter-item-title">Biodiversidad <span class="category-count">(0)</span></div>
             <div class="filter-item-description">Reservas naturales, corredores</div>
@@ -386,12 +328,10 @@
         </div>
       </div>
 
-      <!-- Grupo 3: Suelo -->
+      <!-- Grupo 3: Suelo (Vacío) -->
       <div class="filter-group">
         <div class="filter-item" data-category="soil">
-          <div class="filter-item-icon" style="background-color: rgba(57, 169, 52, 0.1); color: #39A934;">
-            <i class="fas fa-mountain"></i>
-          </div>
+          <div class="filter-item-icon" style="background-color: rgba(57, 169, 52, 0.1); color: #39A934;"><i class="fas fa-mountain"></i></div>
           <div class="filter-item-content">
             <div class="filter-item-title">Suelo <span class="category-count">(0)</span></div>
             <div class="filter-item-description">Calidad, erosión, uso de tierra</div>
@@ -402,67 +342,56 @@
           </label>
         </div>
       </div>
+
     </div>
   </div>
-
-  <!-- Mapa -->
   <div id="map" role="application" aria-label="Mapa Interactivo"></div>
 </div>
 
-<script>
+<!-- PASO 3: PASAR DATOS DEL SERVIDOR AL SCRIPT -->
+<script define:vars={{ stationsFromServer: stations }}>
   // Solo se ejecuta en el navegador
   if (typeof window !== "undefined") {
-    // Configuración de categorías y colores actualizados
+    
     const categoriesConfig = {
-      airQuality: {
-        color: '#FFEA00', // Amarillo oficial
-        bgColor: 'rgba(255, 234, 0, 0.1)',
-        iconClass: 'fas fa-wind',
-        title: 'Calidad del aire',
-        description: 'Estaciones de monitoreo, contaminantes'
-      },
-      biodiversity: {
-        color: 'var(--bv-verde-primario-dark)', // Verde oficial
-        bgColor: 'var(--bv-verde-primario-dark)',
-        iconClass: 'fas fa-leaf',
-        title: 'Biodiversidad',
-        description: 'Reservas naturales, corredores'
-      },
-      soil: {
-        color: 'rgba(137, 81, 41, 1)', // Verde secundario oficial
-        bgColor: 'rgba(57, 169, 52, 0.1)',
-        iconClass: 'fas fa-mountain',
-        title: 'Suelo',
-        description: 'Calidad, erosión, uso de tierra'
-      }
+      airQuality: { color: '#FFEA00' },
+      biodiversity: { color: 'var(--bv-verde-primario-dark)' },
+      soil: { color: 'rgba(137, 81, 41, 1)' }
     };
 
-    // Datos de ejemplo mejorados
+    // --- Normalizamos estaciones para que siempre tengan "lng" ---
+    const normalizedStations = stationsFromServer.map(station => ({
+      ...station,
+      lng: station.lon, // ✅ convertimos aquí de una vez
+    }));
+
+    // 1. Convertimos las estaciones normalizadas al formato del mapa
+    const airQualityMarkers = normalizedStations.map(station => ({
+      id: station._id,
+      lat: station.lat,
+      lng: station.lng, // ya viene convertido
+      category: 'airQuality',
+      popupContent: `<h4>${station.name}</h4>
+                     <p><b>Gráficos:</b> ${station.charts_permited.join(', ')}</p>`
+    }));
+
+    // 2. Unificamos todas las categorías
     const allMarkersData = [
-      { id: 'aq1', lat: 11.0203, lng: -74.8079, category: 'airQuality', popupContent: '<h4>Estación A</h4><p>Lat: 11.0203<br>Lng: -74.8079</p>' },
-      { id: 'aq2', lat: 11.0193, lng: -74.8504, category: 'airQuality', popupContent: '<h4>Estación B</h4><p>Lat: 11.0193<br>Lng: -74.8504</p>' },
-      { id: 'aq3', lat: 10.9558, lng: -74.8933, category: 'airQuality', popupContent: '<h4>Estación C</h4><p>Lat: 10.9558<br>Lng: -74.8933</p>' },
-      { id: 'aq4', lat: 10.9822, lng: -74.7883, category: 'airQuality', popupContent: '<h4>Estación D</h4><p>Lat: 10.9822<br>Lng: -74.7883</p>' },
-      { id: 'b1', lat: 10.970, lng: -74.800, category: 'biodiversity', popupContent: '<h4>Reserva Natural Ciénaga</h4><p>Especies de aves: 150<br>Área protegida: 45 ha</p>' },
-      { id: 'b2', lat: 10.960, lng: -74.815, category: 'biodiversity', popupContent: '<h4>Corredor Ecológico</h4><p>Flora y fauna diversa<br>Conectividad: Alta</p>' },
-      { id: 's1', lat: 10.950, lng: -74.790, category: 'soil', popupContent: '<h4>Zona de Reforestación</h4><p>Tipo de suelo: Arcilloso<br>pH: 6.5</p>' },
-      { id: 's2', lat: 10.940, lng: -74.805, category: 'soil', popupContent: '<h4>Muestra de Suelo</h4><p>Riesgo de erosión: Bajo<br>Materia orgánica: 3.2%</p>' },
-      { id: 's3', lat: 10.930, lng: -74.800, category: 'soil', popupContent: '<h4>Análisis de Suelo</h4><p>Uso agrícola<br>Fertilidad: Buena</p>' },
+      ...airQualityMarkers,
+      // En el futuro puedes meter aquí biodiversity o soil
     ];
 
     let map;
-    let currentMarkers = {}; 
+    let currentMarkers = {};
 
-    // Función mejorada para crear iconos de marcador
+    // Función para crear iconos personalizados
     function createCustomMarkerIcon(color, number) {
-      // Necesitamos obtener el valor real del color si es una variable CSS
       let actualColor = color;
       if (color.startsWith('var(')) {
         const rootStyles = getComputedStyle(document.documentElement);
         const colorName = color.replace('var(', '').replace(')', '');
         actualColor = rootStyles.getPropertyValue(colorName).trim();
       }
-      
       return L.divIcon({
         className: 'custom-marker-icon',
         html: `<div style="background-color: ${actualColor};" class="marker-bubble">${number}</div>`,
@@ -472,66 +401,41 @@
       });
     }
 
-    // Función principal para renderizar/actualizar los marcadores en el mapa
+    // Renderizado dinámico de marcadores
     function renderMarkers() {
-      // Elimina todos los marcadores existentes del mapa
+      // Limpiar markers actuales
       for (const category in currentMarkers) {
-        currentMarkers[category].forEach(marker => {
-          map.removeLayer(marker);
-        });
+        currentMarkers[category].forEach(marker => map.removeLayer(marker));
       }
       currentMarkers = {};
 
-      // Obtiene las categorías que están activas
+      // Categorías activas desde los checkboxes
       const activeCategories = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked'))
-                                    .map(input => input.dataset.category);
+        .map(input => input.dataset.category);
 
-      const categoryCounts = {};
-
-      // Actualizar estados visuales de los items
       document.querySelectorAll('.filter-item').forEach(item => {
-        const category = item.dataset.category;
-        const isActive = activeCategories.includes(category);
-        item.classList.toggle('active', isActive);
+        item.classList.toggle('active', activeCategories.includes(item.dataset.category));
       });
 
+      // Renderizar por categoría
       activeCategories.forEach(activeCat => {
-        let categoryMarkerCount = 0;
         currentMarkers[activeCat] = [];
+        const markersForCategory = allMarkersData.filter(data => data.category === activeCat);
 
-        allMarkersData.filter(data => data.category === activeCat)
-                      .forEach((markerData, index) => {
-          categoryMarkerCount++;
+        markersForCategory.forEach((markerData, index) => {
           const color = categoriesConfig[activeCat].color;
-          const markerIcon = createCustomMarkerIcon(color, categoryMarkerCount);
+          const markerIcon = createCustomMarkerIcon(color, index + 1);
           const marker = L.marker([markerData.lat, markerData.lng], { icon: markerIcon })
-                          .addTo(map)
-                          .bindPopup(markerData.popupContent);
+            .addTo(map)
+            .bindPopup(markerData.popupContent);
           currentMarkers[activeCat].push(marker);
         });
-        categoryCounts[activeCat] = categoryMarkerCount;
-      });
-
-      // Actualiza los contadores en la barra lateral
-      document.querySelectorAll('.sidebar .filter-item').forEach(item => {
-        const category = item.dataset.category;
-        const countSpan = item.querySelector('.category-count');
-        if (countSpan) {
-          countSpan.textContent = `(${categoryCounts[category] || 0})`;
-        }
       });
     }
 
-    // Función para cargar Leaflet e inicializar el mapa
+    // Inicialización del mapa
     const loadLeaflet = () => {
-      map = L.map("map", {
-        center: [10.9877, -74.8055],
-        zoom: 13,
-        zoomControl: false,
-        attributionControl: true
-      });
-
-      // Capa base de OpenStreetMap
+      map = L.map("map", { center: [10.9877, -74.8055], zoom: 13, zoomControl: false });
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors",
         maxZoom: 19
@@ -539,13 +443,12 @@
 
       renderMarkers();
 
-      // Event listeners
       document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('change', renderMarkers);
       });
     };
 
-    // Carga Leaflet e inicializa
+    // Cargar Leaflet solo si no está cargado
     if (window.L) {
       loadLeaflet();
     } else {
@@ -556,21 +459,18 @@
     }
   }
 
+  // Script de auto-scroll
   document.addEventListener("DOMContentLoaded", () => {
-  const mapaSection = document.querySelector(".map-app-container");
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Ajusta el scroll para que el mapa quede perfectamente posicionado
-        window.scrollTo({
-          top: mapaSection.offsetTop - 64, // 64px = 4rem (altura del nav)
-          behavior: "smooth"
-        });
-      }
-    });
-  }, { threshold: 0.5 });
-
-  observer.observe(mapaSection);
-});
+    const mapaSection = document.querySelector(".map-app-container");
+    if (!mapaSection) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          window.scrollTo({ top: mapaSection.offsetTop - 64, behavior: "smooth" });
+          observer.unobserve(mapaSection);
+        }
+      });
+    }, { threshold: 0.5 });
+    observer.observe(mapaSection);
+  });
 </script>
