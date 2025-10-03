@@ -77,6 +77,11 @@ const stations = data || [];
                 <span class="btn-icon">✏️</span>
                 Editar
               </a>
+              {/* ===== BOTÓN AÑADIDO PARA ABRIR EL MODAL ===== */}
+              <button class="btn-upload" data-id={station._id} data-name={station.name}>
+                <span class="btn-icon">📄</span>
+                Cargar
+              </button>
               <button class="btn-delete" data-id={station._id}>
                 <span class="btn-icon">🗑️</span>
                 Eliminar
@@ -87,6 +92,46 @@ const stations = data || [];
       </div>
     )}
   </div>
+
+  {/* ===== MODAL AÑADIDO PARA LA CARGA DE EXCEL ===== */}
+  <div id="excelModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Cargar Datos para <span id="modalStationName" class="station-name-highlight"></span></h3>
+        <button id="closeModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Selecciona un archivo Excel (.xlsx, .xls) para cargar los datos de
+          mediciones de esta estación.
+        </p>
+        <form id="excelUploadForm">
+          <input type="hidden" id="modalStationId" name="stationId" />
+          <div class="form-group">
+            <label for="excelFile" class="form-label">
+              <span class="label-icon">📁</span>
+              Archivo Excel
+            </label>
+            <input
+              type="file"
+              id="excelFile"
+              name="excelFile"
+              class="form-input-file"
+              accept=".xlsx, .xls"
+              required
+            />
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn-submit">
+              <span class="btn-icon">🚀</span>
+              Subir Archivo
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 
   <style>
     .dashboard-container {
@@ -168,6 +213,8 @@ const stations = data || [];
       border: 1px solid var(--color-gris-claro);
       box-shadow: var(--shadow-md);
       transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
     }
 
     .station-card:hover {
@@ -175,9 +222,7 @@ const stations = data || [];
       box-shadow: var(--shadow-lg);
     }
 
-    .station-header {
-      margin-bottom: var(--spacing-md);
-    }
+    .station-header { margin-bottom: var(--spacing-md); }
 
     .station-title {
       font-size: 1.35rem;
@@ -189,6 +234,7 @@ const stations = data || [];
 
     .station-body {
       margin-bottom: var(--spacing-lg);
+      flex-grow: 1;
     }
 
     .station-coordinates {
@@ -228,14 +274,17 @@ const stations = data || [];
     }
 
     .station-actions {
-      display: flex;
+      /* ===== ESTILO MODIFICADO PARA ACOMODAR 3 BOTONES ===== */
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
       gap: var(--spacing-sm);
-      flex-wrap: wrap;
+      margin-top: auto;
     }
 
     .btn-edit,
-    .btn-delete {
-      padding: 0.75rem 1.25rem;
+    .btn-delete,
+    .btn-upload { /* ===== SELECTOR .btn-upload AÑADIDO ===== */
+      padding: 0.75rem 1rem;
       border-radius: var(--border-radius-md);
       font-weight: 600;
       display: flex;
@@ -246,8 +295,8 @@ const stations = data || [];
       cursor: pointer;
       text-decoration: none;
       font-size: 0.9rem;
-      min-width: 120px;
       border: none;
+      width: 100%;
     }
 
     .btn-edit {
@@ -260,6 +309,18 @@ const stations = data || [];
       transform: translateY(-2px);
       background: var(--color-verde);
       box-shadow: var(--shadow-md);
+    }
+
+    /* ===== ESTILOS AÑADIDOS PARA EL BOTÓN DE CARGA ===== */
+    .btn-upload {
+      background: #3a4b6d;
+      color: var(--color-blanco);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-upload:hover {
+       transform: translateY(-2px);
+       background: #4f6a9c;
+       box-shadow: var(--shadow-md);
     }
 
     .btn-delete {
@@ -286,81 +347,159 @@ const stations = data || [];
       margin: 2rem 0;
     }
 
-    .empty-icon {
-      font-size: 4rem;
-      color: var(--color-gris-medio);
-      margin-bottom: var(--spacing-sm);
-    }
+    .empty-icon { font-size: 4rem; color: var(--color-gris-medio); margin-bottom: var(--spacing-sm); }
+    .empty-title { font-size: 1.8rem; font-weight: 600; color: var(--color-gris-oscuro); margin: 0 0 var(--spacing-sm) 0; }
+    .empty-text { font-size: 1.1rem; color: var(--color-gris); max-width: 600px; margin: 0 auto var(--spacing-md); }
+    .empty-btn { margin-top: var(--spacing-sm); }
 
-    .empty-title {
-      font-size: 1.8rem;
-      font-weight: 600;
-      color: var(--color-gris-oscuro);
-      margin: 0 0 var(--spacing-sm) 0;
+    /* ===== ESTILOS AÑADIDOS PARA EL MODAL ===== */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
     }
-
-    .empty-text {
-      font-size: 1.1rem;
-      color: var(--color-gris);
-      max-width: 600px;
-      margin: 0 auto var(--spacing-md);
+    .modal-content {
+      background: white; padding: var(--spacing-xl);
+      border-radius: var(--border-radius-lg); box-shadow: var(--shadow-xl);
+      width: 90%; max-width: 500px; animation: fadeIn 0.3s ease-out;
     }
-
-    .empty-btn {
-      margin-top: var(--spacing-sm);
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--color-gris-claro);
+      padding-bottom: var(--spacing-md); margin-bottom: var(--spacing-lg);
     }
+    .modal-title { font-size: 1.5rem; color: var(--color-azul-oscuro); margin: 0; }
+    .station-name-highlight { color: var(--color-verde); font-weight: bold; }
+    .modal-close-btn { background: transparent; border: none; font-size: 2rem; cursor: pointer; color: var(--color-gris-oscuro); }
+    .modal-body .form-group { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+    .modal-body .form-label { font-weight: 600; color: var(--color-azul-oscuro); display: flex; align-items: center; gap: var(--spacing-xs); font-size: 0.95rem; }
+    .modal-body p { margin-bottom: var(--spacing-lg); color: var(--color-gris); }
+    .form-input-file { padding: var(--spacing-sm); border: 2px dashed var(--color-gris-claro); border-radius: var(--border-radius-md); width: 100%; cursor: pointer; }
+    .form-input-file:hover { border-color: var(--color-verde); }
+    .modal-actions { display: flex; justify-content: flex-end; margin-top: var(--spacing-lg); }
+    .btn-submit {
+      padding: var(--spacing-md) var(--spacing-xl); border-radius: var(--border-radius-md);
+      font-weight: 600; display: flex; align-items: center; gap: var(--spacing-xs);
+      transition: all 0.3s ease; cursor: pointer; text-decoration: none; font-size: 1rem;
+      background: var(--color-verde); color: var(--color-blanco); border: none; box-shadow: var(--shadow-sm);
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
     @media (max-width: 768px) {
       .dashboard-container { padding: var(--spacing-lg); }
       .dashboard-title { font-size: 2rem; }
       .header-content { flex-direction: column; text-align: center; }
       .stations-grid { grid-template-columns: 1fr; }
-      .station-actions { flex-direction: column; }
-      .btn-edit,
-      .btn-delete,
+      .station-actions { grid-template-columns: 1fr; }
       .btn-primary { width: 100%; }
     }
-
   </style>
 
   <script>
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const id = e.target.dataset.id;
-        if (!confirm('¿Eliminar esta estación? Esta acción no se puede deshacer.')) return;
+    document.addEventListener('DOMContentLoaded', () => {
 
-        // Obtener token de cookies
-        const token = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('token='))
-          ?.split('=')[1];
+      // --- Lógica para el Modal de Carga de Excel ---
+      const modal = document.getElementById('excelModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const uploadForm = document.getElementById('excelUploadForm');
+      const modalStationIdInput = document.getElementById('modalStationId');
+      const modalStationNameSpan = document.getElementById('modalStationName');
+      
+      const openModal = (id, name) => {
+        if (!modal) return;
+        modalStationIdInput.value = id;
+        modalStationNameSpan.textContent = name;
+        modal.style.display = 'flex';
+      };
 
-        if (!token) {
-          alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
-          window.location.href = '/login';
-          return;
-        }
+      const closeModal = () => {
+        if (!modal) return;
+        modal.style.display = 'none';
+        uploadForm.reset();
+      };
 
-        try {
-          const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/stations/${id}`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
+      document.querySelectorAll('.btn-upload').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.dataset.id;
+          const name = e.currentTarget.dataset.name;
+          openModal(id, name);
+        });
+      });
 
-          if (res.ok) {
-            alert('Estación eliminada con éxito');
-            location.reload();
-          } else {
-            const errorData = await res.json().catch(() => ({}));
-            alert(`Error al eliminar: ${errorData.detail || 'Error desconocido'}`);
+      if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+      window.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal();
+      });
+
+      if(uploadForm) {
+        uploadForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const stationId = modalStationIdInput.value;
+          const formData = new FormData(uploadForm);
+          const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+
+          if (!token) {
+            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+            return;
           }
-        } catch (err) {
-          alert('Error de conexión.');
-          console.error(err);
-        }
+
+          try {
+            const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/stations/upload/${stationId}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            });
+
+            if (res.ok) {
+                alert('Archivo subido con éxito.');
+                closeModal();
+            } else {
+                const errorData = await res.json().catch(() => ({}));
+                alert(`Error al subir el archivo: ${errorData.detail || 'Error desconocido'}`);
+            }
+          } catch(err) {
+            alert('Error de conexión al subir el archivo.');
+            console.error(err);
+          }
+        });
+      }
+
+      // --- Lógica existente para el botón de Eliminar ---
+      document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = e.currentTarget.dataset.id;
+          if (!confirm('¿Eliminar esta estación? Esta acción no se puede deshacer.')) return;
+
+          const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+
+          if (!token) {
+            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+            window.location.href = '/login';
+            return;
+          }
+
+          try {
+            const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/stations/${id}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+              alert('Estación eliminada con éxito');
+              location.reload();
+            } else {
+              const errorData = await res.json().catch(() => ({}));
+              alert(`Error al eliminar: ${errorData.detail || 'Error desconocido'}`);
+            }
+          } catch (err) {
+            alert('Error de conexión.');
+            console.error(err);
+          }
+        });
       });
     });
   </script>
