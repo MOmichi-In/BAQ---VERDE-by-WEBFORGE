@@ -528,6 +528,7 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
       chartSelect.disabled = true;
       viewBtn.disabled = true;
 
+      
       try {
         // Gráficos
         if (Array.isArray(stationData.charts_permited) && stationData.charts_permited.length > 0) {
@@ -581,7 +582,28 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         yearSelect.innerHTML = '<option value="">Error al cargar</option>';
         chartSelect.innerHTML = '<option value="">Error al cargar</option>';
       }
+
+      
+        const periods = currentStationData?._periods || {};
+
+        if (yearSelect.value && periods[yearSelect.value]) {
+          monthSelect.disabled = false;
+          periods[yearSelect.value].forEach(month => {
+            const opt = document.createElement('option');
+            opt.selected = true;
+            opt.value = month;
+            opt.textContent = month.charAt(0).toUpperCase() + month.slice(1);
+            monthSelect.appendChild(opt);
+          });
+        } else {
+          monthSelect.disabled = true;
+          monthSelect.innerHTML = '<option value="">Seleccione un año</option>';
+        }
+        updateViewButtonState();
+
     }
+
+    
 
     function updateViewButtonState() {
       const year = document.getElementById('yearSelect').value;
@@ -651,8 +673,9 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
       document.querySelector('.modal-close').addEventListener('click', closeStationModal);
       document.getElementById('stationModal').addEventListener('click', (e) => {
         if (e.target === document.getElementById('stationModal')) closeStationModal();
+        
       });
-
+      
       // Cambio de año → llenar meses
       document.getElementById('yearSelect').addEventListener('change', function() {
         const monthSelect = document.getElementById('monthSelect');
@@ -660,9 +683,9 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
         if (this.value && periods[this.value]) {
           monthSelect.disabled = false;
-          monthSelect.innerHTML = '<option value="">Todos</option>';
           periods[this.value].forEach(month => {
             const opt = document.createElement('option');
+            opt.selected = true;
             opt.value = month;
             opt.textContent = month.charAt(0).toUpperCase() + month.slice(1);
             monthSelect.appendChild(opt);

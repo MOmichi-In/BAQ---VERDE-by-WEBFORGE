@@ -435,38 +435,77 @@ const stations = data || [];
         if (event.target === modal) closeModal();
       });
 
-      if(uploadForm) {
-        uploadForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const stationId = modalStationIdInput.value;
-          const formData = new FormData(uploadForm);
-          const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+     if (uploadForm) {
+  uploadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-          if (!token) {
-            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
-            return;
-          }
+    const stationId = modalStationIdInput.value;
+    const fileInput = document.getElementById('excelFile');
+    const file = fileInput.files[0];
 
-          try {
-            const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/stations/upload/${stationId}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formData
-            });
+    if (!file) {
+      alert('Por favor, selecciona un archivo.');
+      return;
+    }
 
-            if (res.ok) {
-                alert('Archivo subido con éxito.');
-                closeModal();
-            } else {
-                const errorData = await res.json().catch(() => ({}));
-                alert(`Error al subir el archivo: ${errorData.detail || 'Error desconocido'}`);
-            }
-          } catch(err) {
-            alert('Error de conexión al subir el archivo.');
-            console.error(err);
-          }
-        });
+    // Validar extensión
+    const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+    if (!validTypes.includes(file.type)) {
+      alert('Solo se permiten archivos .xlsx o .xls');
+      return;
+    }
+
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+    if (!token) {
+      alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+      return;
+    }
+
+    // Convertir archivo a base64
+    const toBase64 = file => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // FileReader da data:...;base64,<contenido>
+        // Necesitamos solo la parte después de la coma
+        const base64 = reader.result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+    });
+
+    try {
+      const fileBase64 = await toBase64(file);
+
+      const payload = {
+        station_id: stationId,
+        file_base64: fileBase64,
+        filename: file.name
+      };
+
+      const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/upload-station-data`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        alert('Archivo subido con éxito.');
+        closeModal();
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        const msg = errorData.detail || 'Error desconocido al subir el archivo.';
+        alert(`Error: ${typeof msg === 'string' ? msg : JSON.stringify(msg)}`);
       }
+    } catch (err) {
+      console.error('Error al procesar el archivo:', err);
+      alert('Error al leer o enviar el archivo.');
+    }
+  });
+  }
 
       // --- Lógica existente para el botón de Eliminar ---
       document.querySelectorAll('.btn-delete').forEach(btn => {
