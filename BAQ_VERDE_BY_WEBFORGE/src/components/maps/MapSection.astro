@@ -9,14 +9,11 @@ console.log("👉 Token de sesión leído en .astro:", sessionToken);
 let stations = [];
 try {
   const data = await getStations(sessionToken);
-
   console.log("👉 Respuesta cruda de la API en .astro:", data);
 
   if (Array.isArray(data)) {
-    // Caso 1: la API devuelve directamente un array
     stations = data;
   } else if (data && Array.isArray(data.stations)) {
-    // Caso 2: la API devuelve un objeto con clave stations
     stations = data.stations;
   } else {
     console.warn("⚠️ La API no devolvió un array ni un objeto con stations");
@@ -25,20 +22,21 @@ try {
   console.error("❌ Error al obtener las estaciones:", error);
 }
 
-console.log("✅ Estaciones obtenidas en el servidor:", stations);
+// Filtramos estaciones con coordenadas válidas para evitar errores en el mapa
+const validStations = stations.filter(s => 
+  typeof s.lat === 'number' && 
+  typeof s.lon === 'number' && 
+  !isNaN(s.lat) && 
+  !isNaN(s.lon)
+);
+
+console.log("✅ Estaciones válidas para el mapa:", validStations);
 ---
 
-
 <!-- Estilos de Leaflet -->
-<link 
-  rel="stylesheet" 
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
-/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <!-- Font Awesome -->
-<link 
-  rel="stylesheet" 
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
-/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -56,9 +54,10 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
     border-radius: var(--border-radius-md);
   }
 
+  
+
   /* Sidebar izquierdo */
   .sidebar {
-    display: flex;
     width: 320px;
     display: flex;
     flex-direction: column;
@@ -208,8 +207,8 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
     box-shadow: var(--shadow-sm);
   }
   .switch input:checked + .slider { background-color: var(--bv-amarillo); }
-  .switch input:checked + .slider.biodiversity-slider { background-color: var(--bv-verde-primario-dark); }
-  .switch input:checked + .slider.soil-slider { background-color: rgba(137, 81, 41, 1); }
+  .switch input:checked + .slider[data-category="biodiversity"] { background-color: var(--bv-verde-primario-dark); }
+  .switch input:checked + .slider[data-category="soil"] { background-color: rgba(137, 81, 41, 1); }
   .switch input:focus + .slider { box-shadow: 0 0 0 4px rgba(55,180,72,0.12); }
   .switch input:checked + .slider:before { transform: translateX(20px); }
 
@@ -288,7 +287,6 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
   }
 </style>
 
-<!-- Contenido principal -->
 <div class="map-app-container">
   <div class="sidebar" role="region" aria-label="Filtros de mapas">
     <div class="sidebar-header">
@@ -296,24 +294,22 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
       <div class="sidebar-subtitle">Barranquilla, Colombia</div>
     </div>
     <div class="sidebar-content">
-
-      <!-- Grupo 1: Calidad del Aire (Conectado a la API) -->
+      <!-- Grupo 1: Calidad del Aire -->
       <div class="filter-group">
         <div class="filter-item" data-category="airQuality">
           <div class="filter-item-icon" style="background-color: rgba(255, 234, 0, 0.1); color: #FFEA00;"><i class="fas fa-wind"></i></div>
           <div class="filter-item-content">
-            <!-- PASO 2: CONTADOR DINÁMICO -->
-            <div class="filter-item-title">Calidad del aire <span class="category-count">({stations.length})</span></div>
+            <div class="filter-item-title">Calidad del aire <span class="category-count">({validStations.length})</span></div>
             <div class="filter-item-description">Estaciones de monitoreo</div>
           </div>
           <label class="switch">
             <input type="checkbox" checked data-category="airQuality">
-            <span class="slider airQuality-slider"></span>
+            <span class="slider" data-category="airQuality"></span>
           </label>
         </div>
       </div>
 
-      <!-- Grupo 2: Biodiversidad (Vacío) -->
+      <!-- Grupo 2: Biodiversidad -->
       <div class="filter-group">
         <div class="filter-item" data-category="biodiversity">
           <div class="filter-item-icon" style="background-color: rgba(39, 155, 72, 0.1); color: #279B48;"><i class="fas fa-leaf"></i></div>
@@ -323,12 +319,12 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
           </div>
           <label class="switch">
             <input type="checkbox" data-category="biodiversity">
-            <span class="slider biodiversity-slider"></span>
+            <span class="slider" data-category="biodiversity"></span>
           </label>
         </div>
       </div>
 
-      <!-- Grupo 3: Suelo (Vacío) -->
+      <!-- Grupo 3: Suelo -->
       <div class="filter-group">
         <div class="filter-item" data-category="soil">
           <div class="filter-item-icon" style="background-color: rgba(57, 169, 52, 0.1); color: #39A934;"><i class="fas fa-mountain"></i></div>
@@ -338,59 +334,61 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
           </div>
           <label class="switch">
             <input type="checkbox" data-category="soil">
-            <span class="slider soil-slider"></span>
+            <span class="slider" data-category="soil"></span>
           </label>
         </div>
       </div>
-
     </div>
   </div>
   <div id="map" role="application" aria-label="Mapa Interactivo"></div>
 </div>
 
-<!-- PASO 3: PASAR DATOS DEL SERVIDOR AL SCRIPT -->
-<script define:vars={{ stationsFromServer: stations }}>
-  // Solo se ejecuta en el navegador
+<script define:vars={{ stationsFromServer: validStations }}>
+  // Función básica de sanitización para prevenir XSS
+  function escapeHtml(unsafe) {
+    if (typeof unsafe !== 'string') return String(unsafe);
+    return unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "<")
+      .replace(/>/g, ">")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
   if (typeof window !== "undefined") {
-    
     const categoriesConfig = {
       airQuality: { color: '#FFEA00' },
       biodiversity: { color: 'var(--bv-verde-primario-dark)' },
       soil: { color: 'rgba(137, 81, 41, 1)' }
     };
 
-    // --- Normalizamos estaciones para que siempre tengan "lng" ---
+    // Normalizamos y aseguramos que todas tengan lng
     const normalizedStations = stationsFromServer.map(station => ({
       ...station,
-      lng: station.lon, // ✅ convertimos aquí de una vez
+      lng: station.lon
     }));
 
-    // 1. Convertimos las estaciones normalizadas al formato del mapa
     const airQualityMarkers = normalizedStations.map(station => ({
       id: station._id,
       lat: station.lat,
-      lng: station.lng, // ya viene convertido
+      lng: station.lng,
       category: 'airQuality',
-      popupContent: `<h4>${station.name}</h4>
-                     <p><b>Gráficos:</b> ${station.charts_permited.join(', ')}</p>`
+      popupContent: `<h4>${escapeHtml(station.name)}</h4>
+                     <p><b>Gráficos:</b> ${Array.isArray(station.charts_permited)
+                       ? station.charts_permited.map(escapeHtml).join(', ')
+                       : 'N/A'}</p>`
     }));
 
-    // 2. Unificamos todas las categorías
-    const allMarkersData = [
-      ...airQualityMarkers,
-      // En el futuro puedes meter aquí biodiversity o soil
-    ];
-
+    const allMarkersData = [...airQualityMarkers];
     let map;
     let currentMarkers = {};
 
-    // Función para crear iconos personalizados
     function createCustomMarkerIcon(color, number) {
       let actualColor = color;
       if (color.startsWith('var(')) {
         const rootStyles = getComputedStyle(document.documentElement);
-        const colorName = color.replace('var(', '').replace(')', '');
-        actualColor = rootStyles.getPropertyValue(colorName).trim();
+        const varName = color.match(/var\(([^,)]+)/)?.[1] || '';
+        actualColor = rootStyles.getPropertyValue(varName).trim() || color;
       }
       return L.divIcon({
         className: 'custom-marker-icon',
@@ -401,23 +399,21 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
       });
     }
 
-    // Renderizado dinámico de marcadores
     function renderMarkers() {
-      // Limpiar markers actuales
+      // Limpiar marcadores actuales
       for (const category in currentMarkers) {
-        currentMarkers[category].forEach(marker => map.removeLayer(marker));
+        (currentMarkers[category] || []).forEach(marker => map.removeLayer(marker));
       }
       currentMarkers = {};
 
-      // Categorías activas desde los checkboxes
-      const activeCategories = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked'))
-        .map(input => input.dataset.category);
+      const activeCategories = Array.from(
+        document.querySelectorAll('.sidebar input[type="checkbox"]:checked')
+      ).map(input => input.dataset.category);
 
       document.querySelectorAll('.filter-item').forEach(item => {
         item.classList.toggle('active', activeCategories.includes(item.dataset.category));
       });
 
-      // Renderizar por categoría
       activeCategories.forEach(activeCat => {
         currentMarkers[activeCat] = [];
         const markersForCategory = allMarkersData.filter(data => data.category === activeCat);
@@ -433,11 +429,15 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
       });
     }
 
-    // Inicialización del mapa
-    const loadLeaflet = () => {
-      map = L.map("map", { center: [10.9877, -74.8055], zoom: 13, zoomControl: false });
+    function loadLeaflet() {
+      map = L.map("map", { 
+        center: [10.9877, -74.8055], 
+        zoom: 13, 
+        zoomControl: false 
+      });
+
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
+        attribution: "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
         maxZoom: 19
       }).addTo(map);
 
@@ -446,9 +446,8 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
       document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('change', renderMarkers);
       });
-    };
+    }
 
-    // Cargar Leaflet solo si no está cargado
     if (window.L) {
       loadLeaflet();
     } else {
@@ -459,7 +458,8 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
     }
   }
 
-  // Script de auto-scroll
+  // Opcional: auto-scroll al mapa (comentado por defecto)
+  /*
   document.addEventListener("DOMContentLoaded", () => {
     const mapaSection = document.querySelector(".map-app-container");
     if (!mapaSection) return;
@@ -473,4 +473,5 @@ console.log("✅ Estaciones obtenidas en el servidor:", stations);
     }, { threshold: 0.5 });
     observer.observe(mapaSection);
   });
+  */
 </script>

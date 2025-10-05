@@ -30,3 +30,5 @@ export async function updateStation(stationId, payload, token) {
 export async function deleteStation(stationId, token) {
   return api(`/stations/${stationId}`, token, { method: "DELETE" });
 }
+
+
