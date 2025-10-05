@@ -22,7 +22,7 @@ try {
   console.error("❌ Error al obtener las estaciones:", error);
 }
 
-// Filtramos estaciones con coordenadas válidas para evitar errores en el mapa
+// Solo filtramos por coordenadas válidas
 const validStations = stations.filter(s => 
   typeof s.lat === 'number' && 
   typeof s.lon === 'number' && 
@@ -54,8 +54,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     border-radius: var(--border-radius-md);
   }
 
-  
-
   /* Sidebar izquierdo */
   .sidebar {
     width: 320px;
@@ -67,7 +65,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     overflow: auto;
   }
 
-  /* Header del sidebar */
   .sidebar-header {
     padding: var(--spacing-lg) var(--spacing-md);
     background: linear-gradient(135deg, var(--bv-verde-primario) 0%, var(--bv-verde-primario-dark) 100%);
@@ -91,7 +88,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     margin-top: var(--spacing-xs);
   }
 
-  /* Contenido del sidebar */
   .sidebar-content {
     flex: 1;
     padding: var(--spacing-md);
@@ -99,12 +95,10 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     background: var(--bv-gris-claro);
   }
 
-  /* Grupo de filtros */
   .filter-group {
     margin-bottom: var(--spacing-md);
   }
 
-  /* Items de filtro */
   .filter-item {
     display: flex;
     align-items: center;
@@ -174,7 +168,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     line-height: 1.4;
   }
 
-  /* Switch moderno */
   .switch {
     position: relative;
     display: inline-block;
@@ -212,7 +205,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
   .switch input:focus + .slider { box-shadow: 0 0 0 4px rgba(55,180,72,0.12); }
   .switch input:checked + .slider:before { transform: translateX(20px); }
 
-  /* Mapa */
   #map {
     flex: 1;
     height: 100%;
@@ -220,35 +212,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     background-color: var(--bv-gris-claro);
   }
 
-  /* Popups y marcadores */
-  .leaflet-popup-content-wrapper {
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-lg);
-    border: none;
-    padding: 0;
-    overflow: hidden;
-  }
-  .leaflet-popup-content {
-    font-family: var(--font-family-base);
-    color: var(--bv-azul-oscuro);
-    font-size: 14px;
-    margin: 0;
-    padding: var(--spacing-md);
-    background: var(--bv-blanco);
-  }
-  .leaflet-popup-content h4 {
-    color: var(--bv-verde-primario);
-    margin: 0 0 var(--spacing-sm) 0;
-    font-size: 1rem;
-    font-weight: 600;
-    font-family: var(--font-family-heading);
-  }
-  .leaflet-popup-content p {
-    margin: var(--spacing-xs) 0 0 0;
-    color: var(--bv-gris);
-    font-size: 0.8125rem;
-    line-height: 1.4;
-  }
   .custom-marker-icon {
     background: transparent !important;
     border: none !important;
@@ -279,11 +242,111 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     border-top: 6px solid var(--bv-blanco);
   }
 
-  /* Responsive */
   @media (max-width: 1024px) {
     .map-app-container { flex-direction: column; }
     .sidebar { width: 100%; max-height: 40%; }
     #map { height: 60%; }
+  }
+
+  /* Modal personalizado */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: var(--bv-blanco);
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+    overflow-y: auto;
+    position: relative;
+    font-family: var(--font-family-base);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--bv-gris);
+    font-weight: bold;
+  }
+
+  .modal-close:hover {
+    color: var(--bv-azul-oscuro);
+  }
+
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 600;
+    color: var(--bv-azul-oscuro);
+    font-family: var(--font-family-heading);
+  }
+
+  .form-group select {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--bv-gris-claro);
+    border-radius: var(--border-radius-md);
+    background: var(--bv-blanco);
+    font-size: 0.9375rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: var(--bv-verde-primario);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--bv-verde-primario-dark);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Gráfica */
+  .chart-container {
+    margin-top: var(--spacing-md);
+    height: 200px;
+    position: relative;
+  }
+
+  .chart-title {
+    font-size: 0.875rem;
+    color: var(--bv-gris);
+    text-align: center;
+    margin-top: var(--spacing-xs);
+    font-weight: 500;
   }
 </style>
 
@@ -294,7 +357,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
       <div class="sidebar-subtitle">Barranquilla, Colombia</div>
     </div>
     <div class="sidebar-content">
-      <!-- Grupo 1: Calidad del Aire -->
       <div class="filter-group">
         <div class="filter-item" data-category="airQuality">
           <div class="filter-item-icon" style="background-color: rgba(255, 234, 0, 0.1); color: #FFEA00;"><i class="fas fa-wind"></i></div>
@@ -309,7 +371,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         </div>
       </div>
 
-      <!-- Grupo 2: Biodiversidad -->
       <div class="filter-group">
         <div class="filter-item" data-category="biodiversity">
           <div class="filter-item-icon" style="background-color: rgba(39, 155, 72, 0.1); color: #279B48;"><i class="fas fa-leaf"></i></div>
@@ -324,7 +385,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         </div>
       </div>
 
-      <!-- Grupo 3: Suelo -->
       <div class="filter-group">
         <div class="filter-item" data-category="soil">
           <div class="filter-item-icon" style="background-color: rgba(57, 169, 52, 0.1); color: #39A934;"><i class="fas fa-mountain"></i></div>
@@ -343,8 +403,48 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
   <div id="map" role="application" aria-label="Mapa Interactivo"></div>
 </div>
 
-<script define:vars={{ stationsFromServer: validStations }}>
-  // Función básica de sanitización para prevenir XSS
+<!-- Modal personalizado -->
+<div id="stationModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <button class="modal-close" aria-label="Cerrar">&times;</button>
+    <h3 id="modalStationTitle"></h3>
+    <div class="modal-form">
+      <div class="form-group">
+        <label for="yearSelect">Año</label>
+        <select id="yearSelect" disabled>
+          <option value="">Cargando...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="monthSelect">Mes</label>
+        <select id="monthSelect" disabled>
+          <option value="">Seleccione un año</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="chartSelect">Gráfico</label>
+        <select id="chartSelect" disabled>
+          <option value="">Cargando...</option>
+        </select>
+      </div>
+      <button id="viewChartBtn" class="btn-primary" disabled>Ver gráfico</button>
+    </div>
+    <!-- Canvas para la gráfica -->
+    <div class="chart-container">
+      <canvas id="chartCanvas"></canvas>
+      <div class="chart-title" id="chartTitle">Selecciona un gráfico para verlo</div>
+    </div>
+  </div>
+</div>
+
+<!-- Datos para el frontend -->
+<div id="station-data" style="display:none;" data-stations={JSON.stringify(validStations)}></div>
+
+<!-- Cargar Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Función básica de sanitización
   function escapeHtml(unsafe) {
     if (typeof unsafe !== 'string') return String(unsafe);
     return unsafe
@@ -356,13 +456,24 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
   }
 
   if (typeof window !== "undefined") {
+    // Obtener estaciones desde el DOM
+    const stationDataEl = document.getElementById('station-data');
+    const stationsFromServer = stationDataEl 
+      ? JSON.parse(stationDataEl.dataset.stations) 
+      : [];
+
+    // Obtener la URL base desde la variable de entorno pública
+    const API_BASE_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+
+    let currentStationData = null;
+    let chartInstance = null; // Para reutilizar o destruir la gráfica
+
     const categoriesConfig = {
       airQuality: { color: '#FFEA00' },
       biodiversity: { color: 'var(--bv-verde-primario-dark)' },
       soil: { color: 'rgba(137, 81, 41, 1)' }
     };
 
-    // Normalizamos y aseguramos que todas tengan lng
     const normalizedStations = stationsFromServer.map(station => ({
       ...station,
       lng: station.lon
@@ -370,13 +481,11 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
     const airQualityMarkers = normalizedStations.map(station => ({
       id: station._id,
+      name: station.name,
       lat: station.lat,
       lng: station.lng,
       category: 'airQuality',
-      popupContent: `<h4>${escapeHtml(station.name)}</h4>
-                     <p><b>Gráficos:</b> ${Array.isArray(station.charts_permited)
-                       ? station.charts_permited.map(escapeHtml).join(', ')
-                       : 'N/A'}</p>`
+      charts_permited: station.charts_permited || []
     }));
 
     const allMarkersData = [...airQualityMarkers];
@@ -399,8 +508,99 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
       });
     }
 
+    async function openStationModal(stationData) {
+      currentStationData = stationData;
+      const modal = document.getElementById('stationModal');
+      modal.style.display = 'flex';
+
+      document.getElementById('modalStationTitle').textContent = stationData.name;
+
+      const yearSelect = document.getElementById('yearSelect');
+      const monthSelect = document.getElementById('monthSelect');
+      const chartSelect = document.getElementById('chartSelect');
+      const viewBtn = document.getElementById('viewChartBtn');
+
+      yearSelect.innerHTML = '<option value="">Cargando años...</option>';
+      monthSelect.innerHTML = '<option value="">Seleccione un año</option>';
+      chartSelect.innerHTML = '<option value="">Cargando gráficos...</option>';
+      yearSelect.disabled = true;
+      monthSelect.disabled = true;
+      chartSelect.disabled = true;
+      viewBtn.disabled = true;
+
+      try {
+        // Gráficos
+        if (Array.isArray(stationData.charts_permited) && stationData.charts_permited.length > 0) {
+          chartSelect.innerHTML = '';
+          stationData.charts_permited.forEach(chart => {
+            const opt = document.createElement('option');
+            opt.value = chart;
+            opt.textContent = chart;
+            chartSelect.appendChild(opt);
+          });
+          chartSelect.disabled = false;
+        } else {
+          chartSelect.innerHTML = '<option value="">No hay gráficos</option>';
+        }
+
+        // Token
+        const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
+        const token = tokenMatch ? tokenMatch[2] : '';
+
+        // Llamar al endpoint con la URL base
+        const response = await fetch(`${API_BASE_URL}/station-data/available-periods?station_id=${encodeURIComponent(stationData.id)}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          }
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const periods = await response.json();
+        currentStationData._periods = periods;
+
+        const years = Object.keys(periods).sort((a, b) => parseInt(b) - parseInt(a));
+        if (years.length > 0) {
+          yearSelect.innerHTML = '';
+          years.forEach(year => {
+            const opt = document.createElement('option');
+            opt.value = year;
+            opt.textContent = year;
+            yearSelect.appendChild(opt);
+          });
+          yearSelect.disabled = false;
+        } else {
+          yearSelect.innerHTML = '<option value="">No hay datos</option>';
+        }
+
+        updateViewButtonState();
+      } catch (error) {
+        console.error("Error al cargar periodos:", error);
+        yearSelect.innerHTML = '<option value="">Error al cargar</option>';
+        chartSelect.innerHTML = '<option value="">Error al cargar</option>';
+      }
+    }
+
+    function updateViewButtonState() {
+      const year = document.getElementById('yearSelect').value;
+      const chart = document.getElementById('chartSelect').value;
+      document.getElementById('viewChartBtn').disabled = !(year && chart);
+    }
+
+    function closeStationModal() {
+      document.getElementById('stationModal').style.display = 'none';
+      currentStationData = null;
+      // Destruir gráfica si existe
+      if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+      }
+      document.getElementById('chartTitle').textContent = 'Selecciona un gráfico para verlo';
+    }
+
     function renderMarkers() {
-      // Limpiar marcadores actuales
       for (const category in currentMarkers) {
         (currentMarkers[category] || []).forEach(marker => map.removeLayer(marker));
       }
@@ -423,7 +623,7 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
           const markerIcon = createCustomMarkerIcon(color, index + 1);
           const marker = L.marker([markerData.lat, markerData.lng], { icon: markerIcon })
             .addTo(map)
-            .bindPopup(markerData.popupContent);
+            .on('click', () => openStationModal(markerData));
           currentMarkers[activeCat].push(marker);
         });
       });
@@ -446,6 +646,199 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
       document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('change', renderMarkers);
       });
+
+      // Eventos del modal
+      document.querySelector('.modal-close').addEventListener('click', closeStationModal);
+      document.getElementById('stationModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('stationModal')) closeStationModal();
+      });
+
+      // Cambio de año → llenar meses
+      document.getElementById('yearSelect').addEventListener('change', function() {
+        const monthSelect = document.getElementById('monthSelect');
+        const periods = currentStationData?._periods || {};
+
+        if (this.value && periods[this.value]) {
+          monthSelect.disabled = false;
+          monthSelect.innerHTML = '<option value="">Todos</option>';
+          periods[this.value].forEach(month => {
+            const opt = document.createElement('option');
+            opt.value = month;
+            opt.textContent = month.charAt(0).toUpperCase() + month.slice(1);
+            monthSelect.appendChild(opt);
+          });
+        } else {
+          monthSelect.disabled = true;
+          monthSelect.innerHTML = '<option value="">Seleccione un año</option>';
+        }
+        updateViewButtonState();
+      });
+
+      document.getElementById('chartSelect').addEventListener('change', updateViewButtonState);
+
+      document.getElementById('viewChartBtn').addEventListener('click', async () => {
+        const year = document.getElementById('yearSelect').value;
+        const month = document.getElementById('monthSelect').value || 'all';
+        const chart = document.getElementById('chartSelect').value;
+        const stationId = currentStationData.id;
+
+        if (!year || !chart) return;
+
+        // Limpiar gráfica anterior
+        if (chartInstance) {
+          chartInstance.destroy();
+          chartInstance = null;
+        }
+
+        try {
+          const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
+          const token = tokenMatch ? tokenMatch[2] : '';
+
+          const url = `${API_BASE_URL}/station-data/hourly-by-month?station_id=${encodeURIComponent(stationId)}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}&variable=${encodeURIComponent(chart)}`;
+
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            }
+          });
+
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const data = await response.json();
+
+          if (!data.y || !Array.isArray(data.y)) {
+            throw new Error('Respuesta inválida: no contiene arreglo "y"');
+          }
+
+          // ... dentro del try, después de obtener `data.y`
+
+// Crear etiquetas para el eje X: 0, 1, 2, ...
+const xLabels = data.y.map((_, i) => i);
+
+// Configurar el título
+const titleText = `${month.charAt(0).toUpperCase() + month.slice(1)} (horas)`;
+document.getElementById('chartTitle').textContent = titleText;
+
+// Obtener el canvas
+const ctx = document.getElementById('chartCanvas').getContext('2d');
+
+// Limpiar gráfica anterior
+if (chartInstance) {
+  chartInstance.destroy();
+}
+
+// Crear gradiente
+const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, 'rgba(255, 234, 0, 0.6)');
+gradient.addColorStop(1, 'rgba(255, 234, 0, 0.05)');
+
+// Configurar datos
+const chartData = {
+  labels: xLabels,
+  datasets: [{
+    label: chart,
+    data: data.y,
+    borderColor: '#FFD700', // Dorado brillante
+    backgroundColor: gradient,
+    borderWidth: 3,
+    pointRadius: 0,
+    pointHoverRadius: 6,
+    pointHoverBackgroundColor: '#FFD700',
+    pointHoverBorderColor: '#fff',
+    pointHoverBorderWidth: 2,
+    fill: true,
+    tension: 0.4, // Curva suave
+    cubicInterpolationMode: 'monotone'
+  }]
+};
+
+// Opciones avanzadas
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  animation: {
+    duration: 1000,
+    easing: 'easeOutQuart'
+  },
+  plugins: {
+    legend: {
+      display: false
+    },
+    tooltip: {
+      enabled: true,
+      backgroundColor: 'rgba(25, 25, 35, 0.9)',
+      titleFont: {
+        family: "'Inter', sans-serif",
+        size: 14,
+        weight: '600'
+      },
+      bodyFont: {
+        family: "'Inter', sans-serif",
+        size: 13
+      },
+      padding: 12,
+      cornerRadius: 12,
+      displayColors: false,
+      callbacks: {
+        title: () => `Hora ${xLabels[tooltipItem.dataIndex]}`,
+        label: (tooltipItem) => `${chart}: ${tooltipItem.raw.toFixed(2)}`
+      }
+    }
+  },
+  scales: {
+    x: {
+      display: false,
+      grid: {
+        display: false
+      }
+    },
+    y: {
+      beginAtZero: false,
+      grid: {
+        color: 'rgba(0, 0, 0, 0.05)',
+        drawBorder: false
+      },
+      ticks: {
+        font: {
+          family: "'Inter', sans-serif",
+          size: 12
+        },
+        callback: function(value) {
+          return value.toLocaleString();
+        }
+      },
+      title: {
+        display: true,
+        text: chart,
+        font: {
+          family: "'Inter', sans-serif",
+          size: 13,
+          weight: '600'
+        },
+        color: '#4B5563'
+      }
+    }
+  },
+  interaction: {
+    intersect: false,
+    mode: 'index'
+  }
+};
+
+// Crear la gráfica
+chartInstance = new Chart(ctx, {
+  type: 'line',
+  data: chartData,
+  options: chartOptions
+});
+
+        } catch (error) {
+          console.error("Error al cargar la gráfica:", error);
+          alert("Error al cargar la gráfica. Por favor, inténtalo de nuevo.");
+        }
+      });
     }
 
     if (window.L) {
@@ -457,21 +850,4 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
       document.head.appendChild(script);
     }
   }
-
-  // Opcional: auto-scroll al mapa (comentado por defecto)
-  /*
-  document.addEventListener("DOMContentLoaded", () => {
-    const mapaSection = document.querySelector(".map-app-container");
-    if (!mapaSection) return;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          window.scrollTo({ top: mapaSection.offsetTop - 64, behavior: "smooth" });
-          observer.unobserve(mapaSection);
-        }
-      });
-    }, { threshold: 0.5 });
-    observer.observe(mapaSection);
-  });
-  */
 </script>
