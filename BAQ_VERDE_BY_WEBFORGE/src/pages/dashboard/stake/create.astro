@@ -47,7 +47,7 @@ if (Astro.request.method === 'POST') {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title,
-        category: "Participacion",
+        category,
         content,
         img_url,
       })
@@ -167,7 +167,20 @@ if (Astro.request.method === 'POST') {
             ></textarea>
           </div>
         </div>
-
+<div class="form-group">
+            <label for="category" class="form-label">
+              <span class="label-icon">🏷️</span>
+              Categoría
+            </label>
+            <div class="select-wrapper">
+              <select id="category" name="category" class="form-select" required>
+                <option value="">Selecciona una categoría</option>
+                <option value="Participacion - Localidades">Participacion - Localidades</option>
+                <option value="Participacion - Ciudadana">Participacion - Ciudadana</option>
+                <option value="Participacion - Regionales">Participacion - Regionales</option>
+              </select>
+            </div>
+          </div>
         <!-- Form Actions -->
         <div class="form-actions">
           <button type="submit" class="btn-submit">
