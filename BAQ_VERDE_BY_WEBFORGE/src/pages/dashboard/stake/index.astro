@@ -18,10 +18,13 @@ if (Astro.url.searchParams.get('logout') === 'true') {
   return Astro.redirect('/login');
 }
 
-const data = await api("/news/?category=Participacion", sessionToken)
+const data = await api("/news/?category=Participacion - Localidades", sessionToken)
+const data2 = await api("/news/?category=Participacion - Ciudadana", sessionToken)
+const data3 = await api("/news/?category=Participacion - Regionales", sessionToken)
+
 
 // Obtener noticias desde la API
-const noticiasRes = data
+const noticiasRes = [...data, ...data2, ...data3]
 const noticias = noticiasRes
 ---
 
