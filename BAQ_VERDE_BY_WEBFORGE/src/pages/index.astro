@@ -13,10 +13,40 @@ import { cardsData } from "../lib/card_ambiental_data.js";
   <section class="cards-section">
     <div class="cards-grid">
       {cardsData.map((card) => (
-        <Card title={card.title} />
+        <Card title={card.title} description={card.description} />
       ))}
     </div>
   </section>
+
+  <!-- ✅ Modal global -->
+  <div id="global-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close">✕</button>
+      <h2 id="modal-title" class="modal-title"></h2>
+      <p id="modal-description" class="modal-description"></p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('global-modal');
+      const titleEl = document.getElementById('modal-title');
+      const descEl = document.getElementById('modal-description');
+      const closeBtn = document.getElementById('modal-close');
+
+      // Abrir desde cualquier botón con data-description
+      document.querySelectorAll('[data-description]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          titleEl.textContent = btn.dataset.title;
+          descEl.textContent = btn.dataset.description;
+          modal.style.display = 'flex';
+        });
+      });
+
+      closeBtn.onclick = () => modal.style.display = 'none';
+      modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+    });
+  </script>
 </Layout>
 
 <style>

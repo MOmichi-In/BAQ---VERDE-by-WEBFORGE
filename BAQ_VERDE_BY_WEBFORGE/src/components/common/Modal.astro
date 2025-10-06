@@ -1,0 +1,15 @@
+---
+const { isOpen, title, description, onClose } = Astro.props;
+---
+
+{isOpen && (
+  <div class="modal-overlay" on:click={onClose}>
+    <div class="modal-content" on:click={(e) => e.stopPropagation()}>
+      <button class="modal-close" aria-label="Cerrar" on:click={onClose}>
+        ✕
+      </button>
+      <h2 class="modal-title">{title}</h2>
+      <p class="modal-description">{description}</p>
+    </div>
+  </div>
+)}
