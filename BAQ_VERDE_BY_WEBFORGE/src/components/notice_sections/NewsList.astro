@@ -4,7 +4,9 @@ import "../../styles/common/carousel.css";
 import { api } from "../../lib/api.js";
 
 const category = Astro.props.category || null;
+
 let url = '/news';
+
 if (category) {
   url += `?category=${encodeURIComponent(category)}`;
 }

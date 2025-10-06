@@ -33,7 +33,7 @@ ParticipationsData = response;
             description={item.content?.substring(0, 100) + "..."}
             text={item.content}
             id={item._id}
-            href={`/news/${item._id}`}
+            href={`/participations/#{item._id}`}
           />
         </div>
       ))
