@@ -1,285 +1,325 @@
 ---
-const { title = "Observatorio Ambiental" } = Astro.props; 
+const { title = "Observatorio Ambiental" } = Astro.props;
 const year = new Date().getFullYear();
 import "../styles/layout.css";
 import "../styles/global.css";
 ---
 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Preload de la primera imagen (ya lo tenías, mantenlo) -->
-  <link rel="preload" as="image" href="/images/hero-bg-01.webp">
-
-  <title>{title}</title>
-</head>
-<body>
-
-  <header> 
-    <!-- Barra 1: GOV.CO --> 
-    <div class="top-bar gov-bar"> 
-      <a href="https://www.gov.co" target="_blank"> 
-        <img src="/logos/govco.png" alt="Logo GOV.CO" /> 
-      </a> 
-    </div> 
-    
-    <!-- Barra 2: Alcaldía --> 
-    <div class="top-bar alcaldia-bar"> 
-      <a href="https://www.barranquilla.gov.co" target="_blank"> 
-        <img src="/logos/alcaldia.png" alt="Logo Alcaldía de Barranquilla" /> 
-      </a> 
-    </div> 
-    
-    <div class="header" id="mainNav"> 
-      <div class="container"> 
-        <div class="logo"> 
-          <img src="/images/logo.png" alt="Observatorio Ambiental" /> 
-        </div> 
-        <nav class="nav"> 
-          <a href="/">Home</a> 
-          <a href="/participation">Participation</a> 
-          <a href="/maps">Maps</a> <a href="/news">News</a> 
-          <a href="/documents">Documents</a> 
-        </nav> 
-      </div> 
-    </div> 
-  </header>
-
-  <section class="hero-carousel" style="background-image: url('/images/hero-bg-01.webp'); background-size: cover; background-position: center;">
-    <div class="carousel-container">
-      <div class="carousel-slide active" aria-hidden="false">
-        <img src="/images/hero-bg-01.webp" alt="Observatorio Ambiental 1" loading="eager" fetchpriority="high" decoding="sync"/>
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <h1>{title}</h1>
-          <p>Monitoreando el medio ambiente para un futuro sostenible</p>
-        </div>
-      </div>
-      
-      <div class="carousel-slide">
-        <img src="/images/hero-bg-02.webp" alt="Observatorio Ambiental 2" loading="lazy" />
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <h1>Protección Ambiental</h1>
-          <p>Datos precisos para decisiones informadas</p>
-        </div>
-      </div>
-      
-      <div class="carousel-slide">
-        <img src="/images/hero-bg-03.webp" alt="Observatorio Ambiental 3" loading="lazy" />
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <h1>Innovación Verde</h1>
-          <p>Tecnología al servicio del medio ambiente</p>
-        </div>
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" as="image" href="/images/hero-bg-01.webp" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header>
+      <!-- Barra 1: GOV.CO -->
+      <div class="top-bar gov-bar">
+        <a href="https://www.gov.co" target="_blank">
+          <img src="/images/govco.webp" alt="Logo GOV.CO" />
+        </a>
       </div>
 
-      <div class="carousel-slide">
-        <img src="/images/hero-bg-04.webp" alt="Observatorio Ambiental 4" loading="lazy" />
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <h1>Entre bigotes y hojas</h1>
-          <p>Observamos la naturaleza con precisión y pasión.</p>
-        </div>
+      <!-- Barra 2: Alcaldía -->
+      <div class="top-bar alcaldia-bar">
+        <a href="https://www.barranquilla.gov.co" target="_blank">
+          <img src="/images/alcaldia.png" alt="Logo Alcaldía de Barranquilla" />
+        </a>
       </div>
-    </div>
 
-    <!-- Indicadores -->
-    <div class="carousel-indicators">
-      <button class="indicator active" data-slide="0"></button>
-      <button class="indicator" data-slide="1"></button>
-      <button class="indicator" data-slide="2"></button>
-      <button class="indicator" data-slide="3"></button>
-    </div>
-
-    <!-- Controles de navegación -->
-    <button class="carousel-control prev" id="prevBtn">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <button class="carousel-control next" id="nextBtn">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-  </section>
-
-  <main>
-    <slot />
-  </main>
-
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-col">
-          <div class="logo-footer">
-            <img src="/images/logo-footer.png" alt="Logo Observatorio Ambiental" />
+      <!-- Barra 3: Navegación principal -->
+      <div class="header" id="mainNav">
+        <div class="container">
+          <div class="logo">
+            <img src="/images/logo.png" alt="Observatorio Ambiental" />
           </div>
-          <p>
-            Observatorio Ambiental<br />
-            Av. 9 de Julio 1234, Ciudad<br />
-            info@observatorioambiental.org
-          </p>
-          <div class="social-links">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
+          <nav class="nav">
+            <a href="/">Inicio</a>
+            <a href="/participation">Participacion</a>
+            <a href="/maps">Mapa</a>
+            <a href="/news">Noticias</a>
+            <a href="/documents">Documentos</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <section
+      class="hero-carousel"
+      style="background-image: url('/images/hero-bg-01.webp'); background-size: cover; background-position: center;"
+    >
+      <div class="carousel-container">
+        <div class="carousel-slide active" aria-hidden="false">
+          <img
+            src="/images/hero-bg-01.webp"
+            alt="Observatorio Ambiental 1"
+            loading="eager"
+            fetchpriority="high"
+            decoding="sync"
+          />
+          <div class="slide-overlay"></div>
+          <div class="slide-content">
+            <h1>{title}</h1>
+            <p>Monitoreando el medio ambiente para un futuro sostenible</p>
           </div>
         </div>
 
-        <div class="footer-col">
-          <h4>Secciones</h4>
-          <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/participation">Participation</a></li>
-            <li><a href="/maps">Maps</a></li>
-            <li><a href="/news">News</a></li>
-            <li><a href="/documents">Documents</a></li>
-          </ul>
+        <div class="carousel-slide">
+          <img
+            src="/images/hero-bg-02.webp"
+            alt="Observatorio Ambiental 2"
+            loading="lazy"
+          />
+          <div class="slide-overlay"></div>
+          <div class="slide-content">
+            <h1>Protección Ambiental</h1>
+            <p>Datos precisos para decisiones informadas</p>
+          </div>
         </div>
 
-        <div class="footer-col">
-          <h4>Recursos</h4>
-          <ul>
-            <li><a href="#">Descargas</a></li>
-            <li><a href="#">API</a></li>
-            <li><a href="#">Reportes</a></li>
-            <li><a href="#">Sistema</a></li>
-          </ul>
+        <div class="carousel-slide">
+          <img
+            src="/images/hero-bg-03.webp"
+            alt="Observatorio Ambiental 3"
+            loading="lazy"
+          />
+          <div class="slide-overlay"></div>
+          <div class="slide-content">
+            <h1>Innovación Verde</h1>
+            <p>Tecnología al servicio del medio ambiente</p>
+          </div>
         </div>
 
-        <div class="footer-col">
-          <h4>Contacto</h4>
-          <ul>
-            <li>Email: contacto@observatorioambiental.org</li>
-            <li>Tel: +54 11 1234-5678</li>
-            <li>Horario: L-V 9:00 - 18:00</li>
-          </ul>
+        <div class="carousel-slide">
+          <img
+            src="/images/hero-bg-04.webp"
+            alt="Observatorio Ambiental 4"
+            loading="lazy"
+          />
+          <div class="slide-overlay"></div>
+          <div class="slide-content">
+            <h1>Entre bigotes y hojas</h1>
+            <p>Observamos la naturaleza con precisión y pasión.</p>
+          </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; {year} Observatorio Ambiental. Todos los derechos reservados.</p>
+
+      <div class="carousel-indicators">
+        <button
+          class="indicator active"
+          data-slide="0"
+          aria-label="Ir a slide 1"></button>
+        <button class="indicator" data-slide="1" aria-label="Ir a slide 2"
+        ></button>
+        <button class="indicator" data-slide="2" aria-label="Ir a slide 3"
+        ></button>
+        <button class="indicator" data-slide="3" aria-label="Ir a slide 4"
+        ></button>
+      </div>
+
+      <button class="carousel-control prev" id="prevBtn" aria-label="Anterior">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M15 18L9 12L15 6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+      <button class="carousel-control next" id="nextBtn" aria-label="Siguiente">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M9 18L15 12L9 6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+    </section>
+
+    <main>
+      <slot />
+    </main>
+
+   <footer class="footer">
+  <div class="container">
+    <!-- Logos institucionales superiores -->
+    <div class="footer-institutional-bar">
+      <a href="https://www.gov.co" target="_blank" rel="noopener">
+        <img src="/images/govco.webp" alt="Logo GOV.CO" />
+      </a>
+      <a href="https://www.barranquilla.gov.co" target="_blank" rel="noopener">
+        <img src="/images/alcaldia.png" alt="Logo Alcaldía de Barranquilla" />
+      </a>
+    </div>
+
+    <!-- Contenido principal del footer -->
+    <div class="footer-grid">
+      <div class="footer-col logo-col">
+        <div class="logo-footer">
+          <img src="/images/logo.png" alt="Observatorio Ambiental" />
+        </div>
+        <p>
+          Observatorio Ambiental<br />
+          Barranquilla, Colombia<br />
+          info@observatorioambiental.gov.co
+        </p>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Secciones</h4>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/participation">Participación</a></li>
+          <li><a href="/maps">Mapas</a></li>
+          <li><a href="/news">Noticias</a></li>
+          <li><a href="/documents">Documentos</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Recursos</h4>
+        <ul>
+          <li><a href="https://www.gov.co" target="_blank" rel="noopener">Certificados (GOV.CO)</a></li>
+          <li><a href="#">API Ambiental</a></li>
+          <li><a href="#">Reportes públicos</a></li>
+          <li><a href="#">Documentación técnica</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <ul>
+          <li>Email: contacto@observatorioambiental.gov.co</li>
+          <li>Tel: (605) 311 2470</li>
+          <li>Horario: L–V, 8:00 – 17:00</li>
+          <li>
+            <a href="https://www.gov.co" target="_blank" rel="noopener">
+              Líneas de emergencia (GOV.CO)
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
-  </footer>
 
-</body>
+    <!-- Pie legal -->
+    <div class="footer-bottom">
+      <p>
+        &copy; {year} Observatorio Ambiental – Alcaldía de Barranquilla. Todos los derechos reservados.
+      </p>
+    </div>
+  </div>
+</footer>
+  </body>
 </html>
 
 <script>
+  // Script mejorado para el header con scroll
   document.addEventListener("DOMContentLoaded", () => {
-  const header = document.querySelector(".header");
+    const header = document.querySelector(".header");
+    const scrollThreshold = 150; // Umbral de scroll en píxeles
 
-  function updateHeader() {
-    if (window.scrollY > 0) {
-      header.classList.add("scrolled");
-      header.classList.remove("at-top");
-    } else {
-      header.classList.remove("scrolled");
-      header.classList.add("at-top");
+    function updateHeader() {
+      if (window.scrollY > scrollThreshold) {
+        header?.classList.add("scrolled");
+        header?.classList.remove("at-top");
+      } else {
+        header?.classList.remove("scrolled");
+        header?.classList.add("at-top");
+      }
+    }
+
+    window.addEventListener("scroll", updateHeader);
+    updateHeader();
+  });
+
+  // Carrusel automático
+  class HeroCarousel {
+    constructor() {
+      this.currentSlide = 0;
+      this.slides = document.querySelectorAll(".carousel-slide");
+      this.indicators = document.querySelectorAll(".indicator");
+      this.totalSlides = this.slides.length;
+      this.autoPlayInterval = 5000;
+      this.isAutoPlaying = true;
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.startAutoPlay();
+    }
+
+    setupEventListeners() {
+      document.getElementById("prevBtn")?.addEventListener("click", () => {
+        this.prevSlide();
+      });
+
+      document.getElementById("nextBtn")?.addEventListener("click", () => {
+        this.nextSlide();
+      });
+
+      this.indicators.forEach((indicator, index) => {
+        indicator.addEventListener("click", () => {
+          this.goToSlide(index);
+        });
+      });
+
+      const carousel = document.querySelector(".hero-carousel");
+      carousel?.addEventListener("mouseenter", () => {
+        this.pauseAutoPlay();
+      });
+      carousel?.addEventListener("mouseleave", () => {
+        this.resumeAutoPlay();
+      });
+    }
+
+    goToSlide(index) {
+      this.slides[this.currentSlide]?.classList.remove("active");
+      this.indicators[this.currentSlide]?.classList.remove("active");
+      this.currentSlide = index;
+      this.slides[this.currentSlide]?.classList.add("active");
+      this.indicators[this.currentSlide]?.classList.add("active");
+    }
+
+    nextSlide() {
+      const next = (this.currentSlide + 1) % this.totalSlides;
+      this.goToSlide(next);
+    }
+
+    prevSlide() {
+      const prev =
+        (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+      this.goToSlide(prev);
+    }
+
+    startAutoPlay() {
+      this.autoPlayTimer = setInterval(() => {
+        if (this.isAutoPlaying) {
+          this.nextSlide();
+        }
+      }, this.autoPlayInterval);
+    }
+
+    pauseAutoPlay() {
+      this.isAutoPlaying = false;
+    }
+
+    resumeAutoPlay() {
+      this.isAutoPlaying = true;
     }
   }
 
-  // Detectar scroll
-  window.addEventListener("scroll", updateHeader);
-
-  // Estado inicial
-  updateHeader();
-});
-
-// =========================
-// 2. Carrusel automático
-// =========================
-class HeroCarousel {
-  constructor() {
-    this.currentSlide = 0;
-    this.slides = document.querySelectorAll('.carousel-slide');
-    this.indicators = document.querySelectorAll('.indicator');
-    this.totalSlides = this.slides.length;
-    this.autoPlayInterval = 5000; // 5 segundos
-    this.isAutoPlaying = true;
-
-    this.init();
-  }
-
-  init() {
-    this.setupEventListeners();
-    this.startAutoPlay();
-  }
-
-  setupEventListeners() {
-    // Botón anterior
-    document.getElementById('prevBtn')?.addEventListener('click', () => {
-      this.prevSlide();
-    });
-
-    // Botón siguiente
-    document.getElementById('nextBtn')?.addEventListener('click', () => {
-      this.nextSlide();
-    });
-
-    // Indicadores clicables
-    this.indicators.forEach((indicator, index) => {
-      indicator.addEventListener('click', () => {
-        this.goToSlide(index);
-      });
-    });
-
-    // Pausar autoplay al hacer hover
-    const carousel = document.querySelector('.hero-carousel');
-    carousel?.addEventListener('mouseenter', () => {
-      this.pauseAutoPlay();
-    });
-    carousel?.addEventListener('mouseleave', () => {
-      this.resumeAutoPlay();
-    });
-  }
-
-  goToSlide(index) {
-    this.slides[this.currentSlide]?.classList.remove('active');
-    this.indicators[this.currentSlide]?.classList.remove('active');
-
-    this.currentSlide = index;
-
-    this.slides[this.currentSlide]?.classList.add('active');
-    this.indicators[this.currentSlide]?.classList.add('active');
-  }
-
-  nextSlide() {
-    const next = (this.currentSlide + 1) % this.totalSlides;
-    this.goToSlide(next);
-  }
-
-  prevSlide() {
-    const prev = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
-    this.goToSlide(prev);
-  }
-
-  startAutoPlay() {
-    this.autoPlayTimer = setInterval(() => {
-      if (this.isAutoPlaying) {
-        this.nextSlide();
-      }
-    }, this.autoPlayInterval);
-  }
-
-  pauseAutoPlay() {
-    this.isAutoPlaying = false;
-  }
-
-  resumeAutoPlay() {
-    this.isAutoPlaying = true;
-  }
-}
-
-// =========================
-// 3. Inicializar carrusel cuando el DOM esté listo
-// =========================
-document.addEventListener('DOMContentLoaded', () => {
-  new HeroCarousel();
-});
+  document.addEventListener("DOMContentLoaded", () => {
+    new HeroCarousel();
+  });
 </script>

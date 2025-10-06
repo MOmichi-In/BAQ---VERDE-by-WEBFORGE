@@ -1,19 +1,19 @@
 ---
-const { title } = Astro.props;
+const { title, description } = Astro.props;
 ---
-
 <div class="card-container">
-  <!-- Tarjeta principal -->
   <div class="card">
     <h3>{title}</h3>
-    <button class="btn">Ver más</button>
-    
+    <button class="btn" data-title={title} data-description={description}>
+      Ver más
+    </button>
     <img src="/images/svg/arbol_1.svg" class="tree-left" alt="Árbol izquierdo" />
     <img src="/images/svg/arbol_2.svg" class="tree-right" alt="Árbol derecho" />
   </div>
 </div>
 
 <style>
+/* (tu CSS actual permanece igual) */
 .card-container {
   display: flex;
   justify-content: center;
@@ -57,11 +57,10 @@ const { title } = Astro.props;
 }
 
 .btn:hover {
-  background-color: #FFC107; /* amarillo más oscuro para hover */
+  background-color: #FFC107;
   transform: translateY(-1px);
 }
 
-/* Árboles pegados a la tarjeta */
 .tree-left {
   position: absolute;
   top: -93px;
@@ -80,7 +79,6 @@ const { title } = Astro.props;
   z-index: 11;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .card {
     width: 250px;
