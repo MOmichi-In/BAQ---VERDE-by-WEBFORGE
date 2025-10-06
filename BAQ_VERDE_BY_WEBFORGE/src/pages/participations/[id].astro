@@ -4,64 +4,65 @@ import { api } from "../../lib/api.js";
 import "../../styles/global.css";
 
 export async function getStaticPaths() {
-  // Por ahora no generamos rutas estáticas, las resolvemos dinámicamente
   return [];
 }
 
 const { id } = Astro.params;
-let noticia = null;
+let participation = null;
 
 try {
+  // Usa el mismo endpoint de noticias (ya que participaciones vienen de ahí)
   const response = await api(`/news/${id}`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
   });
-
-  noticia = response;
+  participation = response;
 } catch (error) {
-  console.error("Error fetching news detail:", error);
+  console.error("Error fetching participation detail:", error);
 }
 ---
 
-<Layout title={noticia?.title || "Detalle de Noticia"}>
-  {noticia ? (
-    <section class="news-detail">
-      <div class="news-hero">
+<Layout title={participation?.title || "Detalle de Participación"}>
+  {participation ? (
+    <section class="participation-detail">
+      <div class="participation-hero">
         <img
-          src={`${import.meta.env.PUBLIC_URL_SERVER}${noticia.img_url}`}
-          alt={noticia.title}
-          class="news-image"
+          src={`${import.meta.env.PUBLIC_URL_SERVER}${participation.img_url}`}
+          alt={participation.title}
+          class="participation-image"
         />
       </div>
 
-      <div class="news-content">
-        <h1 class="news-title">{noticia.title}</h1>
+      <div class="participation-content">
+        <h1 class="participation-title">{participation.title}</h1>
         <div class="title-underline"></div>
 
-        <p class="news-description">{noticia.description}</p>
+        <p class="participation-description">{participation.description}</p>
 
-        <div class="news-text">
-          <p>{noticia.content}</p>
+        <div class="participation-text">
+          <p>{participation.content}</p>
         </div>
 
-        <p class="news-date">📅 {noticia.date}</p>
-
-        <a href="/news" class="back-link">⬅ Volver a noticias</a>
+        <a href="/participation" class="back-link">⬅ Volver a Participaciones</a>
       </div>
     </section>
   ) : (
-    <p style="text-align:center; padding:2rem; color:#666;">No se encontró la noticia.</p>
+    <p style="text-align:center; padding:2rem; color:#666;">
+      No se encontró la participación.
+    </p>
   )}
 </Layout>
 
 <style>
-.news-detail {
+@import "../../styles/global.css";
+
+.participation-detail {
   max-width: 1100px;
   margin: 0 auto;
   padding: var(--spacing-xl) var(--spacing-md);
 }
 
-.news-hero {
+.participation-hero {
   width: 100%;
   height: 60vh;
   overflow: hidden;
@@ -70,17 +71,17 @@ try {
   box-shadow: var(--shadow-md);
 }
 
-.news-image {
+.participation-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.news-content {
+.participation-content {
   text-align: left;
 }
 
-.news-title {
+.participation-title {
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--bv-azul-oscuro);
@@ -95,25 +96,19 @@ try {
   border-radius: var(--border-radius-sm);
 }
 
-.news-description {
+.participation-description {
   font-size: 1.25rem;
   font-weight: 500;
   color: var(--bv-gris);
   margin-bottom: var(--spacing-lg);
 }
 
-.news-text {
+.participation-text {
   font-size: 1.1rem;
   line-height: 1.8;
   color: var(--bv-gris);
   margin-bottom: var(--spacing-xl);
   text-align: justify;
-}
-
-.news-date {
-  font-size: 0.95rem;
-  color: var(--bv-gris-claro);
-  margin-bottom: var(--spacing-lg);
 }
 
 .back-link {
