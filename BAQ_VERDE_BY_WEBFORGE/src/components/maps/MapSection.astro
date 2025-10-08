@@ -846,6 +846,23 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         yearSelect.innerHTML = '<option value="">Error al cargar</option>';
         chartSelect.innerHTML = '<option value="">Error al cargar</option>';
       }
+
+      const periods = currentStationData?._periods || {};
+
+        if (yearSelect.value && periods[yearSelect.value]) {
+          monthSelect.disabled = false;
+          periods[yearSelect.value].forEach(month => {
+            const opt = document.createElement('option');
+            opt.selected = true;
+            opt.value = month;
+            opt.textContent = month.charAt(0).toUpperCase() + month.slice(1);
+            monthSelect.appendChild(opt);
+          });
+        } else {
+          monthSelect.disabled = true;
+          monthSelect.innerHTML = '<option value="">Seleccione un año</option>';
+        }
+        updateViewButtonState();
     }
 
     function updateViewButtonState() {
