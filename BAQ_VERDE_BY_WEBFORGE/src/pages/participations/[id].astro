@@ -4,124 +4,128 @@ import { api } from "../../lib/api.js";
 import "../../styles/global.css";
 
 export async function getStaticPaths() {
-  return [];
+    return [];
 }
 
 const { id } = Astro.params;
 let participation = null;
 
 try {
-  // Usa el mismo endpoint de noticias (ya que participaciones vienen de ahí)
-  const response = await api(`/news/${id}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-  participation = response;
+    // Usa el mismo endpoint de noticias (ya que participaciones vienen de ahí)
+    const response = await api(`/news/${id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    });
+    participation = response;
 } catch (error) {
-  console.error("Error fetching participation detail:", error);
+    console.error("Error fetching participation detail:", error);
 }
 ---
 
 <Layout title={participation?.title || "Detalle de Participación"}>
-  {participation ? (
-    <section class="participation-detail">
-      <div class="participation-hero">
-        <img
-          src={`${import.meta.env.PUBLIC_URL_SERVER}${participation.img_url}`}
-          alt={participation.title}
-          class="participation-image"
-        />
-      </div>
+    {
+        participation ? (
+            <section class="participation-detail">
+                <div class="participation-hero">
+                    <img
+                        src={`${import.meta.env.PUBLIC_URL_SERVER}${participation.img_url}`}
+                        alt={participation.title}
+                        class="participation-image"
+                    />
+                </div>
 
-      <div class="participation-content">
-        <h1 class="participation-title">{participation.title}</h1>
-        <div class="title-underline"></div>
+                <div class="participation-content">
+                    <h1 class="participation-title">{participation.title}</h1>
+                    <div class="title-underline" />
 
-        <p class="participation-description">{participation.description}</p>
+                    <p class="participation-description">{participation.description}</p>
 
-        <div class="participation-text">
-          <p>{participation.content}</p>
-        </div>
+                    <div class="participation-text">
+                        <p>{participation.content}</p>
+                    </div>
 
-        <a href="/participation" class="back-link">⬅ Volver a Participaciones</a>
-      </div>
-    </section>
-  ) : (
-    <p style="text-align:center; padding:2rem; color:#666;">
-      No se encontró la participación.
-    </p>
-  )}
+                    <a href="/participation" class="back-link">
+                        ⬅ Volver a Participaciones
+                    </a>
+                </div>
+            </section>
+        ) : (
+            <p style="text-align:center; padding:2rem; color:#666;">
+                No se encontró la participación.
+            </p>
+        )
+    }
 </Layout>
 
 <style>
-@import "../../styles/global.css";
+    @import "../../styles/global.css";
 
-.participation-detail {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-md);
-}
+    .participation-detail {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
 
-.participation-hero {
-  width: 100%;
-  height: 60vh;
-  overflow: hidden;
-  border-radius: var(--border-radius-lg);
-  margin-bottom: var(--spacing-xl);
-  box-shadow: var(--shadow-md);
-}
+    .participation-hero {
+        width: 100%;
+        height: 60vh;
+        overflow: hidden;
+        border-radius: var(--border-radius-lg);
+        margin-bottom: var(--spacing-xl);
+        box-shadow: var(--shadow-md);
+    }
 
-.participation-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    .participation-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-.participation-content {
-  text-align: left;
-}
+    .participation-content {
+        text-align: left;
+    }
 
-.participation-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--bv-azul-oscuro);
-  margin-bottom: var(--spacing-sm);
-}
+    .participation-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--bv-azul-oscuro);
+        margin-bottom: var(--spacing-sm);
+    }
 
-.title-underline {
-  width: 100px;
-  height: 4px;
-  background-color: var(--bv-verde-primario);
-  margin-bottom: var(--spacing-xl);
-  border-radius: var(--border-radius-sm);
-}
+    .title-underline {
+        width: 100px;
+        height: 4px;
+        background-color: var(--bv-verde-primario);
+        margin-bottom: var(--spacing-xl);
+        border-radius: var(--border-radius-sm);
+    }
 
-.participation-description {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--bv-gris);
-  margin-bottom: var(--spacing-lg);
-}
+    .participation-description {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--bv-gris);
+        margin-bottom: var(--spacing-lg);
+    }
 
-.participation-text {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: var(--bv-gris);
-  margin-bottom: var(--spacing-xl);
-  text-align: justify;
-}
+    .participation-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--bv-gris);
+        margin-bottom: var(--spacing-xl);
+        text-align: justify;
+    }
 
-.back-link {
-  display: inline-block;
-  text-decoration: none;
-  background-color: var(--bv-verde-primario);
-  color: var(--bv-blanco);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius-sm);
-  font-weight: 600;
-  transition: background 0.3s;
-}
-.back-link:hover {
-  background-color: var(--bv-verde-primario-dark);
-}
+    .back-link {
+        display: inline-block;
+        text-decoration: none;
+        background-color: var(--bv-verde-primario);
+        color: var(--bv-blanco);
+        padding: var(--spacing-sm) var(--spacing-md);
+        border-radius: var(--border-radius-sm);
+        font-weight: 600;
+        transition: background 0.3s;
+    }
+    .back-link:hover {
+        background-color: var(--bv-verde-primario-dark);
+    }
 </style>

@@ -9,357 +9,417 @@ import { api } from "../lib/api.js";
 let url = "/documents";
 let documentsData = [];
 
-const response = await api(url, {method: 'POST', headers: {'Content-type': 'application/json'}});
+const response = await api(url, {
+    method: "POST",
+    headers: { "Content-type": "application/json" },
+});
 
 documentsData = response;
 
 // Función para formatear fechas
 function formatDate(dateString) {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("es-ES", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
 }
 ---
 
 <Layout title="Documentos">
-  <div class="documents-page">
-    <div class="documents-header">
-      <h1>DOCUMENTACIÓN OFICIAL</h1>
-      <p class="subtitle">Consulta los documentos oficiales disponibles</p>
-    </div>
+    <div class="documents-page">
+        <div class="documents-header">
+            <h1>DOCUMENTACIÓN OFICIAL</h1>
+            <p class="subtitle">Consulta los documentos oficiales disponibles</p>
+        </div>
 
-    <SearchBar />
+        <SearchBar />
 
-    <div class="table-container">
-      <!-- tabla solo en desktop -->
-      <table class="documents-table">
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Descripción</th>
-            <th>Fecha de Disponibilidad</th>
-            <th>Autor</th>
-            <th>Descargar</th>
-          </tr>
-        </thead>
-        <tbody>
-          {documentsData.map((doc, index) => (
-            <tr class={index % 2 === 0 ? 'even' : 'odd'}>
-              <td class="title-cell">{doc.name}</td>
-              <td class="description-cell">{doc.description}</td>
-              <td class="date-cell">{formatDate(doc.date_disponibility)}</td>
-              <td class="author-cell">{doc.autor}</td>
-              <td class="action-cell">
-                <a href={`${import.meta.env.PUBLIC_URL_SERVER}${doc.document_url}`} class="download-btn" target="_blank" rel="noopener noreferrer">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7,10 12,15 17,10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                  </svg>
-                  Descargar
-                </a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div class="table-container">
+            <!-- tabla solo en desktop -->
+            <table class="documents-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Fecha de Disponibilidad</th>
+                        <th>Autor</th>
+                        <th>Descargar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        documentsData.map((doc, index) => (
+                            <tr class={index % 2 === 0 ? "even" : "odd"}>
+                                <td class="title-cell">{doc.name}</td>
+                                <td class="description-cell">{doc.description}</td>
+                                <td class="date-cell">{formatDate(doc.date_disponibility)}</td>
+                                <td class="author-cell">{doc.autor}</td>
+                                <td class="action-cell">
+                                    <a
+                                        href={`${import.meta.env.PUBLIC_URL_SERVER}${doc.document_url}`}
+                                        class="download-btn"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <svg
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                        >
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="7,10 12,15 17,10" />
+                                            <line x1="12" y1="15" x2="12" y2="3" />
+                                        </svg>
+                                        Descargar
+                                    </a>
+                                </td>
+                            </tr>
+                        ))
+                    }
+                </tbody>
+            </table>
 
-      <!-- Cards solo visibles en <=900px -->
-      <div class="accordion">
-        {documentsData.map((doc, index) => (
-          <div class="accordion-item">
-            <button class="accordion-header">
-              <span class="accordion-title">{doc.name}</span>
-              <span class="accordion-author">👤 {doc.autor}</span>
-              <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24">
-                <path d="M6 9l6 6 6-6"></path>
-              </svg>
-            </button>
-            <div class="accordion-content">
-              <p class="description">{doc.description}</p>
-              <p class="date">{formatDate(doc.date_disponibility)}</p>
-              <a href={`${import.meta.env.PUBLIC_URL_SERVER}${doc.document_url}`} class="download-btn" target="_blank">⬇ Download</a>
+            <!-- Cards solo visibles en <=900px -->
+            <div class="accordion">
+                {
+                    documentsData.map((doc, index) => (
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span class="accordion-title">{doc.name}</span>
+                                <span class="accordion-author">👤 {doc.autor}</span>
+                                <svg
+                                    class="accordion-icon"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </button>
+                            <div class="accordion-content">
+                                <p class="description">{doc.description}</p>
+                                <p class="date">{formatDate(doc.date_disponibility)}</p>
+                                <a
+                                    href={`${import.meta.env.PUBLIC_URL_SERVER}${doc.document_url}`}
+                                    class="download-btn"
+                                    target="_blank"
+                                >
+                                    ⬇ Download
+                                </a>
+                            </div>
+                        </div>
+                    ))
+                }
             </div>
-          </div>
-        ))}
-      </div>
+        </div>
     </div>
-  </div>
 </Layout>
 
 <style>
-.accordion {
-  display: none;
-}
-/* contenedor principal */
-.documents-page {
-  max-width: 95vw;
-  width: 100%;
-  margin: var(--spacing-lg) auto;
-  padding: var(--spacing-xl);
-  background: linear-gradient(135deg, var(--bv-blanco) 0%, #f0f9f0 100%);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  overflow: hidden;
-}
+    .accordion {
+        display: none;
+    }
+    /* contenedor principal */
+    .documents-page {
+        max-width: 95vw;
+        width: 100%;
+        margin: var(--spacing-lg) auto;
+        padding: var(--spacing-xl);
+        background: linear-gradient(135deg, var(--bv-blanco) 0%, #f0f9f0 100%);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
 
-.documents-page::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url('https://i.imgur.com/7qKZxLk.png');
-  background-repeat: repeat;
-  opacity: 0.03;
-  z-index: 0;
-  pointer-events: none;
-}
+    .documents-page::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("https://i.imgur.com/7qKZxLk.png");
+        background-repeat: repeat;
+        opacity: 0.03;
+        z-index: 0;
+        pointer-events: none;
+    }
 
-/* encabezado */
-.documents-header {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
-}
+    /* encabezado */
+    .documents-header {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+    }
 
-h1 {
-  color: var(--bv-verde-primario-dark);
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: var(--spacing-xs);
-  letter-spacing: 0.5px;
-}
+    h1 {
+        color: var(--bv-verde-primario-dark);
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: var(--spacing-xs);
+        letter-spacing: 0.5px;
+    }
 
-.subtitle {
-  color: var(--bv-verde-secundario-dark);
-  font-size: 1rem;
-  font-weight: 400;
-}
+    .subtitle {
+        color: var(--bv-verde-secundario-dark);
+        font-size: 1rem;
+        font-weight: 400;
+    }
 
-/* tabla */
-.table-container {
-  position: relative;
-  z-index: 1;
-  background: var(--bv-blanco);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
-  margin-top: var(--spacing-lg);
-  
-  overflow-x: scroll;  /* fuerza scroll horizontal */
-  overflow-y: scroll;  /* fuerza scroll vertical */
-  scrollbar-gutter: stable; /* evita saltos de layout en navegadores modernos */
-  
-  scrollbar-width: thin;
-  scrollbar-color: var(--bv-verde-primario) #f0f9f0;
-}
+    /* tabla */
+    .table-container {
+        position: relative;
+        z-index: 1;
+        background: var(--bv-blanco);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-md);
+        margin-top: var(--spacing-lg);
 
-.table-container::-webkit-scrollbar {
-  height: 8px;
-}
-.table-container::-webkit-scrollbar-track {
-  background: #f0f9f0;
-  border-radius: var(--border-radius-md);
-}
-.table-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--bv-verde-primario) 0%, var(--bv-verde-primario-dark) 100%);
-  border-radius: var(--border-radius-md);
-}
-.table-container::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--bv-verde-secundario) 0%, var(--bv-verde-secundario-dark) 100%);
-}
+        overflow-x: scroll; /* fuerza scroll horizontal */
+        overflow-y: scroll; /* fuerza scroll vertical */
+        scrollbar-gutter: stable; /* evita saltos de layout en navegadores modernos */
 
-.documents-table {
-  width: 100%;
-  min-width: 800px;
-  border-collapse: collapse;
-  font-family: var(--font-family-base);
-}
+        scrollbar-width: thin;
+        scrollbar-color: var(--bv-verde-primario) #f0f9f0;
+    }
 
-.documents-table thead {
-  background: linear-gradient(135deg, var(--bv-verde-primario), var(--bv-verde-primario-dark));
-  color: var(--bv-blanco);
-}
+    .table-container::-webkit-scrollbar {
+        height: 8px;
+    }
+    .table-container::-webkit-scrollbar-track {
+        background: #f0f9f0;
+        border-radius: var(--border-radius-md);
+    }
+    .table-container::-webkit-scrollbar-thumb {
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-primario) 0%,
+            var(--bv-verde-primario-dark) 100%
+        );
+        border-radius: var(--border-radius-md);
+    }
+    .table-container::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-secundario) 0%,
+            var(--bv-verde-secundario-dark) 100%
+        );
+    }
 
-.documents-table th {
-  padding: var(--spacing-md);
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-}
+    .documents-table {
+        width: 100%;
+        min-width: 800px;
+        border-collapse: collapse;
+        font-family: var(--font-family-base);
+    }
 
-.documents-table td {
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--bv-gris-claro);
-  font-size: 0.9rem;
-  vertical-align: middle;
-}
+    .documents-table thead {
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-primario),
+            var(--bv-verde-primario-dark)
+        );
+        color: var(--bv-blanco);
+    }
 
-.documents-table tr:last-child td {
-  border-bottom: none;
-}
+    .documents-table th {
+        padding: var(--spacing-md);
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
 
-.documents-table tr.even {
-  background-color: #fafafa;
-}
-.documents-table tr.odd {
-  background-color: var(--bv-blanco);
-}
-.documents-table tbody tr:hover {
-  background-color: #f1f8e9;
-  transform: scale(1.005);
-  transition: all 0.2s ease;
-}
+    .documents-table td {
+        padding: var(--spacing-md);
+        border-bottom: 1px solid var(--bv-gris-claro);
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
 
-/* celdas */
-.title-cell {
-  font-weight: 600;
-  color: var(--bv-verde-secundario-dark);
-  min-width: 200px;
-  width: 35%;
-}
+    .documents-table tr:last-child td {
+        border-bottom: none;
+    }
 
-.description-cell {
-  max-width: 100px;
-  width: 60%;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: var(--bv-gris);
-}
+    .documents-table tr.even {
+        background-color: #fafafa;
+    }
+    .documents-table tr.odd {
+        background-color: var(--bv-blanco);
+    }
+    .documents-table tbody tr:hover {
+        background-color: #f1f8e9;
+        transform: scale(1.005);
+        transition: all 0.2s ease;
+    }
 
-.date-cell {
-  color: var(--bv-gris);
-  font-size: 0.85rem;
-  white-space: nowrap;
-  font-family: 'Courier New', monospace;
-  width: 15%;
-  min-width: 100px;
-}
+    /* celdas */
+    .title-cell {
+        font-weight: 600;
+        color: var(--bv-verde-secundario-dark);
+        min-width: 200px;
+        width: 35%;
+    }
 
-.author-cell {
-  color: var(--bv-gris);
-  font-style: italic;
-  width: 20%;
-  min-width: 120px;
-}
+    .description-cell {
+        max-width: 100px;
+        width: 60%;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        color: var(--bv-gris);
+    }
 
-.action-cell {
-  text-align: center;
-  width: 15%;
-  min-width: 120px;
-}
+    .date-cell {
+        color: var(--bv-gris);
+        font-size: 0.85rem;
+        white-space: nowrap;
+        font-family: "Courier New", monospace;
+        width: 15%;
+        min-width: 100px;
+    }
 
-/* botón descarga */
-.download-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-md);
-  background: linear-gradient(135deg, var(--bv-verde-primario), var(--bv-verde-primario-dark));
-  color: var(--bv-blanco);
-  text-decoration: none;
-  border-radius: 25px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(55, 180, 72, 0.3);
-}
-.download-btn:hover {
-  background: linear-gradient(135deg, var(--bv-verde-secundario), var(--bv-verde-secundario-dark));
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(55, 180, 72, 0.4);
-}
-.download-btn svg {
-  width: 14px;
-  height: 14px;
-}
+    .author-cell {
+        color: var(--bv-gris);
+        font-style: italic;
+        width: 20%;
+        min-width: 120px;
+    }
 
-/* responsive */
-@media (max-width: 900px) {
-  .documents-table {
-    display: none;
-  }
-  .accordion {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
+    .action-cell {
+        text-align: center;
+        width: 15%;
+        min-width: 120px;
+    }
 
-  .accordion-item {
-    border-radius: var(--border-radius-md);
-    background: var(--bv-blanco);
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
+    /* botón descarga */
+    .download-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        padding: var(--spacing-xs) var(--spacing-md);
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-primario),
+            var(--bv-verde-primario-dark)
+        );
+        color: var(--bv-blanco);
+        text-decoration: none;
+        border-radius: 25px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(55, 180, 72, 0.3);
+    }
+    .download-btn:hover {
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-secundario),
+            var(--bv-verde-secundario-dark)
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(55, 180, 72, 0.4);
+    }
+    .download-btn svg {
+        width: 14px;
+        height: 14px;
+    }
 
-  .accordion-header {
-    width: 100%;
-    padding: var(--spacing-md);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(135deg, var(--bv-verde-primario), var(--bv-verde-primario-dark));
-    color: var(--bv-blanco);
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background 0.3s;
-  }
-  .accordion-header:hover {
-    background: linear-gradient(135deg, var(--bv-verde-secundario), var(--bv-verde-secundario-dark));
-  }
+    /* responsive */
+    @media (max-width: 900px) {
+        .documents-table {
+            display: none;
+        }
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
 
-  .accordion-icon {
-    transform: rotate(0deg);
-    transition: transform 0.3s ease;
-  }
-  .accordion-item.active .accordion-icon {
-    transform: rotate(180deg);
-  }
+        .accordion-item {
+            border-radius: var(--border-radius-md);
+            background: var(--bv-blanco);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
-  .accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    padding: 0 var(--spacing-md);
-    background: #f9fdf9;
-    transition: max-height 0.4s ease, padding 0.3s ease;
-  }
-  .accordion-item.active .accordion-content {
-    max-height: 300px;
-    padding: var(--spacing-md);
-  }
+        .accordion-header {
+            width: 100%;
+            padding: var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(
+                135deg,
+                var(--bv-verde-primario),
+                var(--bv-verde-primario-dark)
+            );
+            color: var(--bv-blanco);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        .accordion-header:hover {
+            background: linear-gradient(
+                135deg,
+                var(--bv-verde-secundario),
+                var(--bv-verde-secundario-dark)
+            );
+        }
 
-  .description {
-    margin-bottom: var(--spacing-sm);
-    font-size: 0.95rem;
-    line-height: 1.4;
-  }
+        .accordion-icon {
+            transform: rotate(0deg);
+            transition: transform 0.3s ease;
+        }
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
 
-  .date {
-    font-size: 0.85rem;
-    color: var(--bv-gris);
-    margin-bottom: var(--spacing-sm);
-  }
-}
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 var(--spacing-md);
+            background: #f9fdf9;
+            transition:
+                max-height 0.4s ease,
+                padding 0.3s ease;
+        }
+        .accordion-item.active .accordion-content {
+            max-height: 300px;
+            padding: var(--spacing-md);
+        }
+
+        .description {
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .date {
+            font-size: 0.85rem;
+            color: var(--bv-gris);
+            margin-bottom: var(--spacing-sm);
+        }
+    }
 </style>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const items = document.querySelectorAll(".accordion-item");
-    items.forEach(item => {
-      const header = item.querySelector(".accordion-header");
-      header.addEventListener("click", () => {
-        item.classList.toggle("active");
-      });
+    document.addEventListener("DOMContentLoaded", () => {
+        const items = document.querySelectorAll(".accordion-item");
+        items.forEach((item) => {
+            const header = item.querySelector(".accordion-header");
+            header.addEventListener("click", () => {
+                item.classList.toggle("active");
+            });
+        });
     });
-  });
 </script>

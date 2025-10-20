@@ -1,547 +1,552 @@
 ---
 export const prerender = false;
 
-import Layout from '../../../layouts/DashboardLayout.astro';
+import Layout from "../../../layouts/DashboardLayout.astro";
 
 const cookieStore = Astro.cookies;
-const sessionToken = cookieStore.get('token')?.value;
+const sessionToken = cookieStore.get("token")?.value;
 
 if (!sessionToken) {
-  return Astro.redirect('/login');
+    return Astro.redirect("/login");
 }
 
-if (Astro.url.searchParams.get('logout') === 'true') {
-  Astro.cookies.delete('token', { path: '/' });
-  return Astro.redirect('/login');
+if (Astro.url.searchParams.get("logout") === "true") {
+    Astro.cookies.delete("token", { path: "/" });
+    return Astro.redirect("/login");
 }
 ---
 
 <Layout title="Subir Documento">
-  <div class="dashboard-container">
-    <!-- Header Section -->
-    <div class="dashboard-header">
-      <div class="header-content">
-        <div class="title-section">
-          <h1 class="dashboard-title">📤 Subir Nuevo Documento</h1>
-          <p class="dashboard-subtitle">Añade un documento oficial al repositorio del observatorio</p>
-        </div>
-        <div class="header-actions">
-          <a href="/dashboard/document" class="btn-back">
-            <span class="btn-icon">⬅️</span>
-            Volver al Panel
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Alert Messages Container -->
-    <div id="message" class="alert-container"></div>
-
-    <!-- Form Section -->
-    <div class="form-container">
-      <div class="form-header">
-        <h2 class="form-title">Información del Documento</h2>
-        <p class="form-subtitle">Completa todos los campos obligatorios para subir el documento</p>
-      </div>
-
-      <form id="uploadForm" class="news-form" enctype="multipart/form-data">
-        <div class="form-grid">
-          <!-- Título -->
-          <div class="form-group full-width">
-            <label for="name" class="form-label">
-              <span class="label-icon">📄</span>
-              Título del Documento *
-            </label>
-            <input 
-              type="text" 
-              id="name" 
-              name="name" 
-              class="form-input"
-              placeholder="Ej: Informe Anual 2024"
-              required 
-            />
-          </div>
-
-          <!-- Archivo -->
-          <div class="form-group full-width">
-            <label for="file" class="form-label">
-              <span class="label-icon">📁</span>
-              Archivo (PDF, DOC, XLS, etc.) *
-            </label>
-            <div class="file-upload-wrapper">
-              <input 
-                type="file" 
-                id="file" 
-                name="file" 
-                class="file-input"
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.odt,.ods" 
-                required 
-              />
-              <label for="file" class="file-upload-label">
-                <span class="upload-icon">📁</span>
-                <span class="upload-text">Seleccionar archivo</span>
-              </label>
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="dashboard-title">📤 Subir Nuevo Documento</h1>
+                    <p class="dashboard-subtitle">
+                        Añade un documento oficial al repositorio del observatorio
+                    </p>
+                </div>
+                <div class="header-actions">
+                    <a href="/dashboard/document" class="btn-back">
+                        <span class="btn-icon">⬅️</span>
+                        Volver al Panel
+                    </a>
+                </div>
             </div>
-          </div>
-
-          <!-- Descripción -->
-          <div class="form-group full-width">
-            <label for="description" class="form-label">
-              <span class="label-icon">📝</span>
-              Descripción
-            </label>
-            <textarea 
-              id="description" 
-              name="description" 
-              rows="4" 
-              class="form-textarea"
-              placeholder="Describe brevemente el contenido del documento..."
-            ></textarea>
-          </div>
-
-          <!-- Autor -->
-          <div class="form-group">
-            <label for="autor" class="form-label">
-              <span class="label-icon">👤</span>
-              Autor *
-            </label>
-            <input 
-              type="text" 
-              id="autor" 
-              name="autor" 
-              class="form-input"
-              placeholder="Ej: Juan Pérez"
-              required 
-            />
-          </div>
-
-          <!-- Fecha de Disponibilidad -->
-          <div class="form-group">
-            <label for="date_disponibility" class="form-label">
-              <span class="label-icon">📅</span>
-              Fecha de Disponibilidad *
-            </label>
-            <input 
-              type="datetime-local" 
-              id="date_disponibility" 
-              name="date_disponibility" 
-              class="form-input"
-              required 
-            />
-          </div>
         </div>
 
-        <!-- Form Actions -->
-        <div class="form-actions">
-          <button type="submit" class="btn-submit">
-            <span class="btn-icon">💾</span>
-            Subir Documento
-          </button>
-          <a href="/dashboard/document" class="btn-cancel">
-            <span class="btn-icon">❌</span>
-            Cancelar
-          </a>
+        <!-- Alert Messages Container -->
+        <div id="message" class="alert-container"></div>
+
+        <!-- Form Section -->
+        <div class="form-container">
+            <div class="form-header">
+                <h2 class="form-title">Información del Documento</h2>
+                <p class="form-subtitle">
+                    Completa todos los campos obligatorios para subir el documento
+                </p>
+            </div>
+
+            <form id="uploadForm" class="news-form" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <!-- Título -->
+                    <div class="form-group full-width">
+                        <label for="name" class="form-label">
+                            <span class="label-icon">📄</span>
+                            Título del Documento *
+                        </label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-input"
+                            placeholder="Ej: Informe Anual 2024"
+                            required
+                        />
+                    </div>
+
+                    <!-- Archivo -->
+                    <div class="form-group full-width">
+                        <label for="file" class="form-label">
+                            <span class="label-icon">📁</span>
+                            Archivo (PDF, DOC, XLS, etc.) *
+                        </label>
+                        <div class="file-upload-wrapper">
+                            <input
+                                type="file"
+                                id="file"
+                                name="file"
+                                class="file-input"
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.odt,.ods"
+                                required
+                            />
+                            <label for="file" class="file-upload-label">
+                                <span class="upload-icon">📁</span>
+                                <span class="upload-text">Seleccionar archivo</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label">
+                            <span class="label-icon">📝</span>
+                            Descripción
+                        </label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="4"
+                            class="form-textarea"
+                            placeholder="Describe brevemente el contenido del documento..."
+                        ></textarea>
+                    </div>
+
+                    <!-- Autor -->
+                    <div class="form-group">
+                        <label for="autor" class="form-label">
+                            <span class="label-icon">👤</span>
+                            Autor *
+                        </label>
+                        <input
+                            type="text"
+                            id="autor"
+                            name="autor"
+                            class="form-input"
+                            placeholder="Ej: Juan Pérez"
+                            required
+                        />
+                    </div>
+
+                    <!-- Fecha de Disponibilidad -->
+                    <div class="form-group">
+                        <label for="date_disponibility" class="form-label">
+                            <span class="label-icon">📅</span>
+                            Fecha de Disponibilidad *
+                        </label>
+                        <input
+                            type="datetime-local"
+                            id="date_disponibility"
+                            name="date_disponibility"
+                            class="form-input"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <span class="btn-icon">💾</span>
+                        Subir Documento
+                    </button>
+                    <a href="/dashboard/document" class="btn-cancel">
+                        <span class="btn-icon">❌</span>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
 
-  <style>
-    .dashboard-container {
-      padding: 2rem;
-      max-width: 1000px;
-      margin: 0 auto;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-    }
+    <style>
+        .dashboard-container {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
 
-    .dashboard-header {
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      color: white;
-      box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
-    }
+        .dashboard-header {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+        }
 
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
 
-    .title-section {
-      flex: 1;
-    }
+        .title-section {
+            flex: 1;
+        }
 
-    .dashboard-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: 0 0 0.5rem 0;
-      background: linear-gradient(45deg, #ffffff, #e8f5e8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(45deg, #ffffff, #e8f5e8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    .dashboard-subtitle {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      margin: 0;
-    }
+        .dashboard-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
 
-    .btn-back {
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
 
-    .btn-back:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
-    }
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
 
-    .alert-container {
-      margin-bottom: 2rem;
-    }
+        .alert-container {
+            margin-bottom: 2rem;
+        }
 
-    .alert {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      margin-bottom: 1rem;
-    }
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+        }
 
-    .alert.error {
-      background: linear-gradient(135deg, rgba(244, 67, 54, 0.9), rgba(211, 47, 47, 0.9));
-      color: white;
-    }
+        .alert.error {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.9), rgba(211, 47, 47, 0.9));
+            color: white;
+        }
 
-    .alert.success {
-      background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(69, 160, 73, 0.9));
-      color: white;
-    }
+        .alert.success {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(69, 160, 73, 0.9));
+            color: white;
+        }
 
-    .alert-icon {
-      font-size: 1.5rem;
-    }
+        .alert-icon {
+            font-size: 1.5rem;
+        }
 
-    .form-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
 
-    .form-header {
-      margin-bottom: 2rem;
-      text-align: center;
-    }
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
 
-    .form-title {
-      font-size: 1.8rem;
-      font-weight: 600;
-      color: #333;
-      margin: 0 0 0.5rem 0;
-    }
+        .form-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 0.5rem 0;
+        }
 
-    .form-subtitle {
-      color: #666;
-      font-size: 1rem;
-      margin: 0;
-    }
+        .form-subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin: 0;
+        }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
 
-    .form-group.full-width {
-      grid-column: 1 / -1;
-    }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
 
-    .form-label {
-      font-weight: 600;
-      color: #333;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.95rem;
-    }
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
 
-    .label-icon {
-      font-size: 1.1rem;
-    }
+        .label-icon {
+            font-size: 1.1rem;
+        }
 
-    .form-input,
-    .form-textarea {
-      padding: 1rem;
-      border: 2px solid #e1e5e9;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.8);
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      color: #333;
-    }
+        .form-input,
+        .form-textarea {
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: #333;
+        }
 
-    .form-input:focus,
-    .form-textarea:focus {
-      outline: none;
-      border-color: #4CAF50;
-      background: rgba(255, 255, 255, 0.95);
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-    }
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4caf50;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
 
-    .form-textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
 
-    .file-upload-wrapper {
-      position: relative;
-    }
+        .file-upload-wrapper {
+            position: relative;
+        }
 
-    .file-input {
-      position: absolute;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-    }
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
 
-    .file-upload-label {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 1rem;
-      border: 2px dashed #4CAF50;
-      border-radius: 12px;
-      background: rgba(76, 175, 80, 0.05);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      color: #4CAF50;
-      font-weight: 500;
-    }
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 2px dashed #4caf50;
+            border-radius: 12px;
+            background: rgba(76, 175, 80, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #4caf50;
+            font-weight: 500;
+        }
 
-    .file-upload-label:hover {
-      background: rgba(76, 175, 80, 0.1);
-      border-color: #45a049;
-    }
+        .file-upload-label:hover {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: #45a049;
+        }
 
-    .upload-icon {
-      font-size: 1.2rem;
-    }
+        .upload-icon {
+            font-size: 1.2rem;
+        }
 
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-    .btn-submit,
-    .btn-cancel {
-      padding: 1rem 2rem;
-      border-radius: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 1rem;
-      min-width: 160px;
-      justify-content: center;
-    }
+        .btn-submit,
+        .btn-cancel {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            min-width: 160px;
+            justify-content: center;
+        }
 
-    .btn-submit {
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      color: white;
-      border: none;
-      box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
-    }
+        .btn-submit {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+        }
 
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
-    }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
 
-    .btn-cancel {
-      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-      color: white;
-      box-shadow: 0 4px 16px rgba(108, 117, 125, 0.3);
-    }
+        .btn-cancel {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(108, 117, 125, 0.3);
+        }
 
-    .btn-cancel:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
-    }
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+        }
 
-    .btn-icon {
-      font-size: 1.1rem;
-    }
+        .btn-icon {
+            font-size: 1.1rem;
+        }
 
-    @media (max-width: 768px) {
-      .dashboard-container {
-        padding: 1rem;
-      }
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
 
-      .dashboard-title {
-        font-size: 2rem;
-      }
+            .dashboard-title {
+                font-size: 2rem;
+            }
 
-      .header-content {
-        flex-direction: column;
-        text-align: center;
-      }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
 
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
 
-      .form-actions {
-        flex-direction: column;
-      }
+            .form-actions {
+                flex-direction: column;
+            }
 
-      .btn-submit,
-      .btn-cancel {
-        width: 100%;
-      }
-    }
-  </style>
-<script>
-  // --- NUEVO: Actualizar texto del label al seleccionar archivo ---
-  const fileInput = document.getElementById('file');
-  const fileLabel = document.querySelector('label[for="file"] .upload-text');
+            .btn-submit,
+            .btn-cancel {
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        // --- NUEVO: Actualizar texto del label al seleccionar archivo ---
+        const fileInput = document.getElementById("file");
+        const fileLabel = document.querySelector('label[for="file"] .upload-text');
 
-  if (fileInput && fileLabel) {
-    fileInput.addEventListener('change', function() {
-      if (this.files && this.files[0]) {
-        // Opción 1: Mostrar nombre del archivo
-        fileLabel.textContent = this.files[0].name;
+        if (fileInput && fileLabel) {
+            fileInput.addEventListener("change", function () {
+                if (this.files && this.files[0]) {
+                    // Opción 1: Mostrar nombre del archivo
+                    fileLabel.textContent = this.files[0].name;
 
-        // Opción 2 (alternativa): Mostrar "✅ Archivo seleccionado"
-        // fileLabel.innerHTML = '<span style="color: #4CAF50;">✅</span> Archivo seleccionado';
-      } else {
-        fileLabel.textContent = 'Seleccionar archivo';
-      }
-    });
-  }
+                    // Opción 2 (alternativa): Mostrar "✅ Archivo seleccionado"
+                    // fileLabel.innerHTML = '<span style="color: #4CAF50;">✅</span> Archivo seleccionado';
+                } else {
+                    fileLabel.textContent = "Seleccionar archivo";
+                }
+            });
+        }
 
-  // --- Tu lógica de envío existente ---
-  document.getElementById('uploadForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+        // --- Tu lógica de envío existente ---
+        document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
 
-    const form = e.target;
-    const fileInput = document.getElementById('file');
-    const file = fileInput.files[0];
+            const form = e.target;
+            const fileInput = document.getElementById("file");
+            const file = fileInput.files[0];
 
-    if (!file) {
-      showMessage('Selecciona un archivo', 'error');
-      return;
-    }
+            if (!file) {
+                showMessage("Selecciona un archivo", "error");
+                return;
+            }
 
-    // Leer archivo como base64 con FileReader
-    const base64WithHeader = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error("Error al leer el archivo"));
-      reader.readAsDataURL(file);
-    }).catch(err => {
-      showMessage(err.message, 'error');
-      return;
-    });
+            // Leer archivo como base64 con FileReader
+            const base64WithHeader = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error("Error al leer el archivo"));
+                reader.readAsDataURL(file);
+            }).catch((err) => {
+                showMessage(err.message, "error");
+                return;
+            });
 
-    // Obtener otros campos
-    const name = document.getElementById('name').value || file.name;
-    const description = document.getElementById('description').value || '';
-    const autor = document.getElementById('autor').value || 'Anónimo';
-    const dateDisponibility = document.getElementById('date_disponibility').value || new Date().toISOString();
+            // Obtener otros campos
+            const name = document.getElementById("name").value || file.name;
+            const description = document.getElementById("description").value || "";
+            const autor = document.getElementById("autor").value || "Anónimo";
+            const dateDisponibility =
+                document.getElementById("date_disponibility").value || new Date().toISOString();
 
-    // Construir payload
-    const payload = {
-      name,
-      document_url: base64WithHeader,
-      description,
-      autor,
-      date_disponibility: new Date(dateDisponibility).toISOString(),
-    };
+            // Construir payload
+            const payload = {
+                name,
+                document_url: base64WithHeader,
+                description,
+                autor,
+                date_disponibility: new Date(dateDisponibility).toISOString(),
+            };
 
-    // Obtener token
-    const token = getCookie('token');
-    if (!token) {
-      showMessage('Sesión expirada. Por favor, inicia sesión de nuevo.', 'error');
-      window.location.href = '/login';
-      return;
-    }
+            // Obtener token
+            const token = getCookie("token");
+            if (!token) {
+                showMessage("Sesión expirada. Por favor, inicia sesión de nuevo.", "error");
+                window.location.href = "/login";
+                return;
+            }
 
-    // Enviar
-    try {
-      const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/documents`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+            // Enviar
+            try {
+                const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/documents`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                });
 
-      if (res.ok) {
-        showMessage('Documento subido con éxito', 'success');
-        setTimeout(() => {
-          window.location.href = '/dashboard/document';
-        }, 1500);
-      } else {
-        const errorData = await res.json().catch(() => ({}));
-        showMessage(errorData.detail || 'Error al subir el documento', 'error');
-      }
-    } catch (err) {
-      showMessage('Error de conexión: ' + err.message, 'error');
-    }
-  });
+                if (res.ok) {
+                    showMessage("Documento subido con éxito", "success");
+                    setTimeout(() => {
+                        window.location.href = "/dashboard/document";
+                    }, 1500);
+                } else {
+                    const errorData = await res.json().catch(() => ({}));
+                    showMessage(errorData.detail || "Error al subir el documento", "error");
+                }
+            } catch (err) {
+                showMessage("Error de conexión: " + err.message, "error");
+            }
+        });
 
-  function showMessage(text, type) {
-    const messageDiv = document.getElementById('message');
-    messageDiv.innerHTML = `
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById("message");
+            messageDiv.innerHTML = `
       <div class="alert ${type}">
-        <div class="alert-icon">${type === 'success' ? '✅' : '⚠️'}</div>
+        <div class="alert-icon">${type === "success" ? "✅" : "⚠️"}</div>
         <div class="alert-content">
-          <strong>${type === 'success' ? 'Éxito:' : 'Error:'}</strong> ${text}
+          <strong>${type === "success" ? "Éxito:" : "Error:"}</strong> ${text}
         </div>
       </div>
     `;
-  }
+        }
 
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-</script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
+    </script>
 </Layout>

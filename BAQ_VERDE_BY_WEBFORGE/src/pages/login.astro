@@ -1,175 +1,177 @@
 ---
 let error = "";
 export const prerender = false;
-import '../styles/global.css';
+import "../styles/global.css";
 ---
 
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Observatorio Ambiental</title>
-    <style>
-      body {
-        margin: 0;
-        font-family: var(--font-family-base);
-        background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        color: var(--bv-blanco);
-        position: relative;
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login - Observatorio Ambiental</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: var(--font-family-base);
+                background-image: url("https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80");
+                background-size: cover;
+                background-position: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                color: var(--bv-blanco);
+                position: relative;
+            }
 
-      body::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(6, 27, 50, 0.19); /* azul oscuro con opacidad */
-        z-index: 1;
-      }
+            body::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(6, 27, 50, 0.19); /* azul oscuro con opacidad */
+                z-index: 1;
+            }
 
-      .login-container {
-        position: relative;
-        z-index: 2;
-        background-color: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(12px);
-        padding: var(--spacing-xl);
-        border-radius: var(--border-radius-lg);
-        box-shadow: var(--shadow-lg);
-        width: 100%;
-        max-width: 400px;
-        text-align: center;
-      }
+            .login-container {
+                position: relative;
+                z-index: 2;
+                background-color: rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(12px);
+                padding: var(--spacing-xl);
+                border-radius: var(--border-radius-lg);
+                box-shadow: var(--shadow-lg);
+                width: 100%;
+                max-width: 400px;
+                text-align: center;
+            }
 
-      .logo {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: var(--spacing-sm);
-        margin-bottom: var(--spacing-lg);
-      }
+            .logo {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: var(--spacing-sm);
+                margin-bottom: var(--spacing-lg);
+            }
 
-      .logo svg {
-        width: 40px;
-        height: 40px;
-        fill: var(--bv-verde-primario);
-      }
+            .logo svg {
+                width: 40px;
+                height: 40px;
+                fill: var(--bv-verde-primario);
+            }
 
-      .logo-text {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--bv-blanco);
-      }
+            .logo-text {
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: var(--bv-blanco);
+            }
 
-      .logo-text span {
-        color: var(--bv-amarillo);
-      }
+            .logo-text span {
+                color: var(--bv-amarillo);
+            }
 
-      input {
-        width: 100%;
-        padding: var(--spacing-sm) var(--spacing-md);
-        margin: var(--spacing-sm) 0;
-        border: none;
-        border-radius: var(--border-radius-md);
-        background-color: rgba(255, 255, 255, 0.9);
-        font-size: 1rem;
-        box-sizing: border-box;
-        transition: all 0.3s ease;
-      }
+            input {
+                width: 100%;
+                padding: var(--spacing-sm) var(--spacing-md);
+                margin: var(--spacing-sm) 0;
+                border: none;
+                border-radius: var(--border-radius-md);
+                background-color: rgba(255, 255, 255, 0.9);
+                font-size: 1rem;
+                box-sizing: border-box;
+                transition: all 0.3s ease;
+            }
 
-      input:focus {
-        outline: 2px solid var(--bv-verde-primario);
-        background-color: var(--bv-blanco);
-      }
+            input:focus {
+                outline: 2px solid var(--bv-verde-primario);
+                background-color: var(--bv-blanco);
+            }
 
-      button {
-        width: 100%;
-        padding: var(--spacing-md);
-        margin-top: var(--spacing-md);
-        border: none;
-        border-radius: var(--border-radius-md);
-        background-color: var(--bv-amarillo);
-        color: var(--bv-verde-primario-dark);
-        font-size: 1.1rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: var(--shadow-md);
-      }
+            button {
+                width: 100%;
+                padding: var(--spacing-md);
+                margin-top: var(--spacing-md);
+                border: none;
+                border-radius: var(--border-radius-md);
+                background-color: var(--bv-amarillo);
+                color: var(--bv-verde-primario-dark);
+                font-size: 1.1rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: var(--shadow-md);
+            }
 
-      button:hover {
-        background-color: #e6db29; /* variante más oscura del amarillo */
-        transform: translateY(-2px);
-      }
+            button:hover {
+                background-color: #e6db29; /* variante más oscura del amarillo */
+                transform: translateY(-2px);
+            }
 
-      button:active {
-        transform: translateY(0);
-      }
+            button:active {
+                transform: translateY(0);
+            }
 
-      .error {
-        color: #ff6b6b;
-        margin: var(--spacing-md) 0;
-        font-weight: bold;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="login-container">
-      <div class="logo">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L15.09 8.26L19.88 9.09L16.74 14.1L18.32 18.58L12 17.58L5.68 18.58L7.26 14.1L4.12 9.09L8.91 8.26L12 2Z" fill="#4CAF50"/>
-        </svg>
-        <div class="logo-text">Observatorio <span>Ambiental</span></div>
-      </div>
+            .error {
+                color: #ff6b6b;
+                margin: var(--spacing-md) 0;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2L15.09 8.26L19.88 9.09L16.74 14.1L18.32 18.58L12 17.58L5.68 18.58L7.26 14.1L4.12 9.09L8.91 8.26L12 2Z"
+                        fill="#4CAF50"></path>
+                </svg>
+                <div class="logo-text">Observatorio <span>Ambiental</span></div>
+            </div>
 
-      {error && <div class="error">{error}</div>}
+            {error && <div class="error">{error}</div>}
 
-      <form method="post" id="form">
-        <input id="user" type="text" name="username" placeholder="Usuario" required />
-        <input type="password" name="password" placeholder="Contraseña" required />
-        <button type="submit">🔐 Iniciar Sesión</button>
-      </form>
-    </div>
+            <form method="post" id="form">
+                <input id="user" type="text" name="username" placeholder="Usuario" required />
+                <input type="password" name="password" placeholder="Contraseña" required />
+                <button type="submit">🔐 Iniciar Sesión</button>
+            </form>
+        </div>
 
-    <script>
-      async function pete(e) {
-        e.preventDefault();
+        <script>
+            async function pete(e) {
+                e.preventDefault();
 
-        const form = document.getElementById("form");
-        const formData = new FormData(form);
+                const form = document.getElementById("form");
+                const formData = new FormData(form);
 
-        try {
-          const res = await fetch("http://localhost:8000/login", {
-            method: "POST",
-            body: formData,
-          });
+                try {
+                    const res = await fetch("http://localhost:8000/login", {
+                        method: "POST",
+                        body: formData,
+                    });
 
-          if (res.ok) {
-            const data = await res.json();
-            const token = data.access_token;
+                    if (res.ok) {
+                        const data = await res.json();
+                        const token = data.access_token;
 
-            // Guardar token en cookie
-            document.cookie = `token=${token}; path=/; max-age=3600; SameSite=Lax${import.meta.env.PROD ? '; Secure' : ''}`;
+                        // Guardar token en cookie
+                        document.cookie = `token=${token}; path=/; max-age=3600; SameSite=Lax${import.meta.env.PROD ? "; Secure" : ""}`;
 
-            // Redirigir
-            window.location.href = "/dashboard";
-          } else {
-            alert("Credenciales inválidas");
-          }
-        } catch (err) {
-          alert("Error de conexión con el servidor");
-          console.error(err);
-        }
-      }
+                        // Redirigir
+                        window.location.href = "/dashboard";
+                    } else {
+                        alert("Credenciales inválidas");
+                    }
+                } catch (err) {
+                    alert("Error de conexión con el servidor");
+                    console.error(err);
+                }
+            }
 
-      document.getElementById("form").addEventListener("submit", pete);
-    </script>
-  </body>
+            document.getElementById("form").addEventListener("submit", pete);
+        </script>
+    </body>
 </html>

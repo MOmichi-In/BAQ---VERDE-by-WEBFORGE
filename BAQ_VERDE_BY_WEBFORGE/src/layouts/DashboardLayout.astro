@@ -3,300 +3,318 @@ const { title } = Astro.props;
 import "../styles/global.css";
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{title} - Dashboard</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{title} - Dashboard</title>
 
-  <!-- Font Awesome para iconos -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <!-- Font Awesome para iconos -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
 
-  <style>
-    :root {
-      /* --------------------------------------------------
+        <style>
+            :root {
+                /* --------------------------------------------------
         COLORES (reemplazados por tokends)
         -------------------------------------------------- */
 
-      --color-blanco: var(--bv-blanco);
-      --color-gris-claro: var(--bv-gris-claro);
-      --color-gris-medio: var(--bv-gris);
-      --color-gris-oscuro: var(--bv-gris);
-      --color-azul-oscuro: var(--bv-azul-oscuro);
-      --color-verde: var(--bv-verde-primario);
-      --color-verde-secundario: var(--bv-verde-secundario);
-      --color-amarillo: var(--bv-amarillo);
+                --color-blanco: var(--bv-blanco);
+                --color-gris-claro: var(--bv-gris-claro);
+                --color-gris-medio: var(--bv-gris);
+                --color-gris-oscuro: var(--bv-gris);
+                --color-azul-oscuro: var(--bv-azul-oscuro);
+                --color-verde: var(--bv-verde-primario);
+                --color-verde-secundario: var(--bv-verde-secundario);
+                --color-amarillo: var(--bv-amarillo);
 
-      /* --------------------------------------------------
+                /* --------------------------------------------------
         BORDES, ESPACIADOS Y SOMBRAS (mantener los que ya estaban)
         -------------------------------------------------- */
 
-      --border-radius-md: 8px;
-      --border-radius-lg: 12px;
+                --border-radius-md: 8px;
+                --border-radius-lg: 12px;
 
-      --spacing-xs: 4px;
-      --spacing-sm: 8px;
-      --spacing-md: 16px;
-      --spacing-lg: 24px;
-      --spacing-xl: 32px;
-      --spacing-xxl: 48px;
+                --spacing-xs: 4px;
+                --spacing-sm: 8px;
+                --spacing-md: 16px;
+                --spacing-lg: 24px;
+                --spacing-xl: 32px;
+                --spacing-xxl: 48px;
 
-      --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-      --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
-    }
+                --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+                --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+                --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            }
 
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      /* background-color: var(--color-gris-claro); */
-      color: var(--color-azul-oscuro);
-      min-height: 100vh;
-    }
+            body {
+                margin: 0;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                /* background-color: var(--color-gris-claro); */
+                color: var(--color-azul-oscuro);
+                min-height: 100vh;
+            }
 
-    /* Header */
-    .header {
-      background: var(--color-blanco);
-      border-bottom: 1px solid var(--color-gris-medio);
-      padding: 0 var(--spacing-xl);
-      box-shadow: var(--shadow-sm);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+            /* Header */
+            .header {
+                background: var(--color-blanco);
+                border-bottom: 1px solid var(--color-gris-medio);
+                padding: 0 var(--spacing-xl);
+                box-shadow: var(--shadow-sm);
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
 
-    .header-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 70px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
+            .header-content {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                height: 70px;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-md);
-    }
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-md);
+            }
 
-    .logo-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--color-verde);
-      border-radius: var(--border-radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--color-blanco);
-      font-size: 20px;
-    }
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                background: var(--color-verde);
+                border-radius: var(--border-radius-md);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--color-blanco);
+                font-size: 20px;
+            }
 
-    .logo-text h1 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin: 0;
-      color: var(--color-azul-oscuro);
-    }
+            .logo-text h1 {
+                font-size: 1.4rem;
+                font-weight: 700;
+                margin: 0;
+                color: var(--color-azul-oscuro);
+            }
 
-    .logo-text p {
-      font-size: 0.85rem;
-      color: var(--color-gris-oscuro);
-      margin: 0;
-    }
+            .logo-text p {
+                font-size: 0.85rem;
+                color: var(--color-gris-oscuro);
+                margin: 0;
+            }
 
-    /* Navegación Principal */
-    .main-nav {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-lg);
-    }
+            /* Navegación Principal */
+            .main-nav {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-lg);
+            }
 
-    .main-nav a {
-      color: var(--color-azul-oscuro);
-      text-decoration: none;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: var(--border-radius-md);
-      transition: all 0.2s ease;
-      font-size: 0.95rem;
-    }
+            .main-nav a {
+                color: var(--color-azul-oscuro);
+                text-decoration: none;
+                font-weight: 500;
+                padding: 6px 12px;
+                border-radius: var(--border-radius-md);
+                transition: all 0.2s ease;
+                font-size: 0.95rem;
+            }
 
-    .main-nav a:hover,
-    .main-nav a.active {
-      background: var(--color-verde);
-      color: var(--color-blanco);
-    }
+            .main-nav a:hover,
+            .main-nav a.active {
+                background: var(--color-verde);
+                color: var(--color-blanco);
+            }
 
-    .main-nav a i {
-      margin-right: 6px;
-      font-size: 0.9rem;
-    }
+            .main-nav a i {
+                margin-right: 6px;
+                font-size: 0.9rem;
+            }
 
-    /* Acciones de Header (Usuario + Logout) */
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-lg);
-      margin-left: var(--spacing-xl);
-    }
+            /* Acciones de Header (Usuario + Logout) */
+            .header-actions {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-lg);
+                margin-left: var(--spacing-xl);
+            }
 
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-md);
-      padding: var(--spacing-sm) var(--spacing-md);
-      background: var(--color-gris-claro);
-      border-radius: var(--border-radius-lg);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+            .user-profile {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-md);
+                padding: var(--spacing-sm) var(--spacing-md);
+                background: var(--color-gris-claro);
+                border-radius: var(--border-radius-lg);
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
 
-    .user-profile:hover {
-      background: var(--color-gris-medio);
-    }
+            .user-profile:hover {
+                background: var(--color-gris-medio);
+            }
 
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      background: var(--color-verde);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--color-blanco);
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
+            .user-avatar {
+                width: 36px;
+                height: 36px;
+                background: var(--color-verde);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--color-blanco);
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
 
-    .user-info h3 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin: 0;
-      color: var(--color-azul-oscuro);
-    }
+            .user-info h3 {
+                font-size: 0.9rem;
+                font-weight: 600;
+                margin: 0;
+                color: var(--color-azul-oscuro);
+            }
 
-    .user-info p {
-      font-size: 0.8rem;
-      color: var(--color-gris-oscuro);
-      margin: 0;
-    }
+            .user-info p {
+                font-size: 0.8rem;
+                color: var(--color-gris-oscuro);
+                margin: 0;
+            }
 
-    /* Logout */
-    .logout-link {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--color-gris-oscuro);
-      text-decoration: none;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: var(--border-radius-md);
-      transition: all 0.2s ease;
-    }
+            /* Logout */
+            .logout-link {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: var(--color-gris-oscuro);
+                text-decoration: none;
+                font-weight: 500;
+                padding: 6px 12px;
+                border-radius: var(--border-radius-md);
+                transition: all 0.2s ease;
+            }
 
-    .logout-link:hover {
-      background: #f44336;
-      color: white;
-    }
+            .logout-link:hover {
+                background: #f44336;
+                color: white;
+            }
 
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .main-nav {
-        gap: var(--spacing-md);
-      }
-      .main-nav a {
-        padding: 6px 8px;
-        font-size: 0.9rem;
-      }
-    }
+            /* Responsive */
+            @media (max-width: 1024px) {
+                .main-nav {
+                    gap: var(--spacing-md);
+                }
+                .main-nav a {
+                    padding: 6px 8px;
+                    font-size: 0.9rem;
+                }
+            }
 
-    @media (max-width: 768px) {
-      .header-content {
-        flex-wrap: wrap;
-        padding: 0 var(--spacing-md);
-      }
+            @media (max-width: 768px) {
+                .header-content {
+                    flex-wrap: wrap;
+                    padding: 0 var(--spacing-md);
+                }
 
-      .main-nav {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-        padding: var(--spacing-sm) 0;
-        background: rgba(0,0,0,0.03);
-        margin-top: var(--spacing-sm);
-      }
+                .main-nav {
+                    order: 3;
+                    width: 100%;
+                    justify-content: center;
+                    padding: var(--spacing-sm) 0;
+                    background: rgba(0, 0, 0, 0.03);
+                    margin-top: var(--spacing-sm);
+                }
 
-      .header-actions {
-        margin-left: 0;
-        width: 100%;
-        justify-content: center;
-        padding: var(--spacing-sm) 0;
-        background: rgba(0,0,0,0.02);
-      }
+                .header-actions {
+                    margin-left: 0;
+                    width: 100%;
+                    justify-content: center;
+                    padding: var(--spacing-sm) 0;
+                    background: rgba(0, 0, 0, 0.02);
+                }
 
-      main {
-        padding: var(--spacing-md);
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <div class="logo">
-        <div class="logo-icon">
-          <i class="fas fa-seedling"></i>
-        </div>
-        <div class="logo-text">
-          <h1>Observatorio Ambiental</h1>
-          <p>Panel Administrativo</p>
-        </div>
-      </div>
+                main {
+                    padding: var(--spacing-md);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Observatorio Ambiental</h1>
+                        <p>Panel Administrativo</p>
+                    </div>
+                </div>
 
-      <!-- Menú de Navegación -->
-      <nav class="main-nav">
-        <a href="/dashboard" class={Astro.url.pathname === '/dashboard' ? 'active' : ''}>
-          <i class="fas fa-home"></i> Dashboard
-        </a>
-        <a href="/dashboard/news" class={Astro.url.pathname.startsWith('/dashboard/news') ? 'active' : ''}>
-          <i class="fas fa-newspaper"></i> Noticias
-        </a>
-        <a href="/dashboard/stake" class={Astro.url.pathname.startsWith('/dashboard/stake') ? 'active' : ''}>
-          <i class="fas fa-users"></i> Participación
-        </a>
-        <a href="/dashboard/document" class={Astro.url.pathname.startsWith('/dashboard/document') ? 'active' : ''}>
-          <i class="fas fa-file-alt"></i> Documentos
-        </a>
-        <a href="/dashboard/stations" class={Astro.url.pathname.startsWith('/dashboard/stations') ? 'active' : ''}>
-          <i class="fas fa-map-marker-alt"></i> Estaciones
-        </a>
-      </nav>
+                <!-- Menú de Navegación -->
+                <nav class="main-nav">
+                    <a
+                        href="/dashboard"
+                        class={Astro.url.pathname === "/dashboard" ? "active" : ""}
+                    >
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a
+                        href="/dashboard/news"
+                        class={Astro.url.pathname.startsWith("/dashboard/news") ? "active" : ""}
+                    >
+                        <i class="fas fa-newspaper"></i> Noticias
+                    </a>
+                    <a
+                        href="/dashboard/stake"
+                        class={Astro.url.pathname.startsWith("/dashboard/stake") ? "active" : ""}
+                    >
+                        <i class="fas fa-users"></i> Participación
+                    </a>
+                    <a
+                        href="/dashboard/document"
+                        class={Astro.url.pathname.startsWith("/dashboard/document") ? "active" : ""}
+                    >
+                        <i class="fas fa-file-alt"></i> Documentos
+                    </a>
+                    <a
+                        href="/dashboard/stations"
+                        class={Astro.url.pathname.startsWith("/dashboard/stations") ? "active" : ""}
+                    >
+                        <i class="fas fa-map-marker-alt"></i> Estaciones
+                    </a>
+                </nav>
 
-      <!-- Acciones (Usuario + Logout) -->
-      <div class="header-actions">
-        <div class="user-profile">
-          <div class="user-avatar">
-            AD
-          </div>
-          <div class="user-info">
-            <h3>Administrador</h3>
-            <p>Super usuario</p>
-          </div>
-          <i class="fas fa-chevron-down" style="color: var(--color-gris-oscuro); font-size: 0.8rem;"></i>
-        </div>
+                <!-- Acciones (Usuario + Logout) -->
+                <div class="header-actions">
+                    <div class="user-profile">
+                        <div class="user-avatar">AD</div>
+                        <div class="user-info">
+                            <h3>Administrador</h3>
+                            <p>Super usuario</p>
+                        </div>
+                        <i
+                            class="fas fa-chevron-down"
+                            style="color: var(--color-gris-oscuro); font-size: 0.8rem;"></i>
+                    </div>
 
-        <a href="/dashboard?logout=true" class="logout-link">
-          <i class="fas fa-door-open"></i> Salir
-        </a>
-      </div>
-    </div>
-  </header>
+                    <a href="/dashboard?logout=true" class="logout-link">
+                        <i class="fas fa-door-open"></i> Salir
+                    </a>
+                </div>
+            </div>
+        </header>
 
-  <!-- Contenido dinámico -->
-  <main>
-    <slot />
-  </main>
-</body>
+        <!-- Contenido dinámico -->
+        <main>
+            <slot />
+        </main>
+    </body>
 </html>

@@ -1,54 +1,54 @@
 :root {
-  /* --------------------------------------------------
+    /* --------------------------------------------------
      COLORES OFICIALES 
      -------------------------------------------------- */
 
-  /* verdes */
-  --bv-verde-primario: #279b48;
-  --bv-verde-primario-dark: #298736; /* para usar con texto blanco (accesible) */
-  --bv-verde-secundario: #51AC50;
-  --bv-verde-secundario-dark: #3E843D;
+    /* verdes */
+    --bv-verde-primario: #279b48;
+    --bv-verde-primario-dark: #298736; /* para usar con texto blanco (accesible) */
+    --bv-verde-secundario: #51ac50;
+    --bv-verde-secundario-dark: #3e843d;
 
-  /* azul / texto */
-  --bv-azul-oscuro: #142334;
+    /* azul / texto */
+    --bv-azul-oscuro: #142334;
 
-  /* acento */
-  --bv-amarillo: #FFEA00;
+    /* acento */
+    --bv-amarillo: #ffea00;
 
-  /* neutrales */
-  --bv-blanco: #FEFEFE;
-  --bv-gris: #939BA5;
-  --bv-gris-claro: #b7cecd6b;
+    /* neutrales */
+    --bv-blanco: #fefefe;
+    --bv-gris: #939ba5;
+    --bv-gris-claro: #b7cecd6b;
 
-  /* --------------------------------------------------
+    /* --------------------------------------------------
      TIPOGRAFÍA
      -------------------------------------------------- */
 
-  /* La tipografía oficial es "Volkswagen", pero no es libre.
+    /* La tipografía oficial es "Volkswagen", pero no es libre.
      Usaremos "Inter" como alternativa moderna, limpia y profesional. */
-  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-family-heading: var(--font-family-base); /* Para títulos, podrías usar otra si quieres */
+    --font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-family-heading: var(--font-family-base); /* Para títulos, podrías usar otra si quieres */
 
-  /* --------------------------------------------------
+    /* --------------------------------------------------
      ESPACIADO Y BORDES
      -------------------------------------------------- */
 
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
 
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-xxl: 128px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 128px;
 
-  /* --------------------------------------------------
+    /* --------------------------------------------------
      SOMBRAS 
      -------------------------------------------------- */
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 }

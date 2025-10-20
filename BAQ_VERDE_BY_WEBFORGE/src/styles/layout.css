@@ -1,4 +1,8 @@
-/* Reset */
+/* ===================================
+   LAYOUT.CSS - Observatorio Ambiental
+   =================================== */
+
+/* === RESET === */
 *,
 *::before,
 *::after {
@@ -7,333 +11,270 @@
   box-sizing: border-box;
 }
 
-/* HTML y BODY ocupan toda la pantalla */
-html,
-body {
+html {
+  scroll-behavior: smooth;
   height: 100%;
-  font-family: var(--font-family-base);
-  background-color: var(--bv-blanco);
-  color: var(--bv-azul-oscuro);
 }
 
-/* 🟢 Contenedor principal para layout flexible */
-.page-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+body {
+  background-color: #ffffff;
+  color: #1a1a1a;
+  line-height: 1.6;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100%;
+
+/* ========================
+   BARRAS INFORMATIVAS SUPERIORES
+   ======================== */
+
+.top-info-bars {
+  width: 100%;
 }
 
-/* --- TOP BARS --- */
 .top-bar {
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 2rem;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .top-bar img {
-  height: 36px;
+  height: 40px;
+  object-fit: contain;
 }
 
-/* GOV bar */
 .gov-bar {
   background: #2f64d6;
 }
 
-/* Alcaldía bar */
 .alcaldia-bar {
   background: #279B48;
 }
 
-/* NAV - Color sólido */
+/* ========================
+   NAVEGACIÓN PRINCIPAL (STICKY)
+   ======================== */
+
 .header {
-  position: relative;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 4rem;
-  padding: 3%;
-  background: transparent;
-  transition: all 0.3s ease-in-out;
-  z-index: 999;  
-}
-
-/* Estado inicial: transparente, relative */
-.header.at-top {
-  position: fixed;
-  background: transparent;
-  transition: all 0.3s ease-in-out;
-}
-
-/* Estado cuando se hace scroll */
-.header.scrolled {
-  position: fixed;
+  position: sticky;
   top: 0;
+  z-index: 9999;
+  width: 100%;
+  background: #279B48; /* Fondo verde por defecto */
+}
+
+/* Solo el home: fondo transparente */
+.header--home {
+position: absolute;
+  top: 120px; /* Posición inicial, debajo de las barras */
   left: 0;
   width: 100%;
-  background: #279B48;
-  padding: 2%;
   z-index: 1000;
-  transition: all 0.3s ease-in-out;
+  background: transparent;
 }
 
-/* Contenedor */
-.header .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Efecto cuando hace scroll en home (si usas el script) */
+.header--home.scrolled {
+   position: fixed;
+  top: 0; /* 👈 Cuando haces scroll, ahora sí se pega al borde superior */
+  background: #279B48;
+}
+
+
+.header.at-top {
+  height: 85px;
+}
+
+.header.scrolled {
+  height: 85px;
+}
+
+.container-full {
+  max-width: 100%;
   width: 100%;
-  max-width: 1200px;
-  padding: 0 var(--spacing-md);
-}
-
-/* Logo */
-.header .logo img {
-  height: 55px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-}
-
-/* --- NAV --- */
-.header .nav {
-  position: relative;
+  padding: 0 2rem;
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  transition: padding 0.3s ease;
+  height: 100%;
 }
 
-/* enlaces */
-.header .nav a {
-  color: var(--bv-blanco);
+.header .logo img {
+  height: 45px;
+  transition: height 0.3s ease;
+  margin-left: 20px;
+}
+
+.nav {
+  display: flex;
+  gap: 12rem;
+  align-items: center;
+}
+
+.nav a {
+  color: #ffffff;
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
   padding: 0.5rem 0;
-  transition: color 0.3s ease;
-  z-index: 2;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  position: relative;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
 
-/* ===== HERO CAROUSEL ===== */
-.hero-carousel {
+.nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #ffffff;
+  transition: width 0.3s ease;
+}
+
+.nav a:hover::after {
+  width: 100%;
+}
+
+.nav a:hover {
+  opacity: 0.8;
+}
+
+/* ========================
+   HERO SIMPLE
+   ======================== */
+
+.hero-simple {
   position: relative;
-  height: 600px;
+  width: 100%;
+  height: 500px;
   overflow: hidden;
-  z-index: 1;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
 }
 
-.carousel-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.carousel-slide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  text-align: center;
-}
-
-.carousel-slide.active {
-  opacity: 1;
-  z-index: 2;
-}
-
-.carousel-slide img {
-  position: absolute;
-  top: 0;
-  left: 0;
+.hero-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 1;
+  object-position: center;
 }
 
-.slide-content {
-  position: relative;
-  z-index: 3;
-  max-width: 800px;
-  padding: 0 1rem;
-  animation: fadeInUp 1s ease-out;
-}
-
-.slide-content h1 {
-  font-size: 3rem;
-  margin: 0 0 1rem 0;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-  line-height: 1.2;
-}
-
-.slide-content p {
-  font-size: 1.25rem;
-  margin: 0;
-  font-weight: 400;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
-  opacity: 0.95;
-}
-
-/* Indicadores */
-.carousel-indicators {
+.hero-overlay {
   position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 12px;
-  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(34, 139, 34, 0.7) 0%,
+    rgba(0, 100, 0, 0.6) 100%
+  );
 }
 
-.indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-}
-
-.indicator:hover {
-  border-color: rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-}
-
-.indicator.active {
-  background: white;
-  border-color: white;
-  transform: scale(1.2);
-}
-
-/* Controles de navegación */
-.carousel-control {
+.hero-content {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
   color: white;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  z-index: 10;
-  backdrop-filter: blur(10px);
+  z-index: 2;
+  width: 90%;
+  max-width: 1200px;
 }
 
-.carousel-control:hover {
-  background: rgba(0, 0, 0, 0.6);
-  border-color: white;
-  transform: translateY(-50%) scale(1.1);
+.hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.carousel-control.prev {
-  left: 30px;
+.hero-content p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-.carousel-control.next {
-  right: 30px;
-}
+/* ========================
+   MAIN CONTENT
+   ======================== */
 
-.carousel-control svg {
-  width: 24px;
-  height: 24px;
-}
-
-/* Animaciones */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Efecto de zoom suave en las imágenes */
-.carousel-slide.active img {
-  animation: zoomIn 8s ease-out;
-}
-
-@keyframes zoomIn {
-  from {
-    transform: scale(1.1);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-/* MAIN */
 main {
   flex: 1;
-  background-color: var(--bv-blanco);
+  background-color: #ffffff;
 }
 
-/* FOOTER */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ========================
+   FOOTER
+   ======================== */
+
 .footer {
-  background: var(--bv-azul-oscuro);
-  color: var(--bv-blanco);
-  padding: var(--spacing-xl) 0 var(--spacing-md);
+  background: #1a3a52;
+  color: #ffffff;
+  padding: 4rem 0 2rem;
   margin-top: auto;
 }
 
 .footer .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--spacing-md);
+  padding: 0 2rem;
 }
 
-/* === Barra de logos institucionales en el footer === */
 .footer-institutional-bar {
   display: flex;
   justify-content: center;
-  gap: 2.5rem;
-  margin-bottom: var(--spacing-lg);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--bv-gris);
+  align-items: center;
+  gap: 3rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-institutional-bar a {
+  display: block;
+  transition: opacity 0.3s ease;
+}
+
+.footer-institutional-bar a:hover {
+  opacity: 0.8;
 }
 
 .footer-institutional-bar img {
-  height: 36px;
+  height: 40px;
   object-fit: contain;
-  filter: brightness(0) invert(1); /* Asegura visibilidad en fondo oscuro */
+  filter: brightness(0) invert(1);
 }
 
-/* === Grid principal del footer === */
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 3rem;
+  margin-bottom: 3rem;
 }
 
 .footer-col h4 {
-  margin-bottom: var(--spacing-sm);
-  font-size: 1.1rem;
-  color: var(--bv-gris-claro);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.footer-col p {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.8;
+  margin-bottom: 0.5rem;
 }
 
 .footer-col ul {
@@ -341,158 +282,129 @@ main {
 }
 
 .footer-col ul li {
-  margin-bottom: var(--spacing-xs);
-  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
 }
 
-.footer-col ul li a,
-.footer-col p {
-  color: var(--bv-gris);
+.footer-col ul li a {
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-  line-height: 1.6;
   transition: color 0.3s ease;
 }
 
 .footer-col ul li a:hover {
-  color: var(--bv-verde-primario);
+  color: #279B48;
 }
 
-/* Logo del Observatorio en el footer */
 .logo-footer img {
-  height: 55px;
-  margin-bottom: var(--spacing-sm);
+  height: 60px;
+  margin-bottom: 1rem;
   object-fit: contain;
 }
 
-/* Redes sociales */
 .social-links {
   display: flex;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .social-links a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
-  color: var(--bv-blanco);
+  color: #ffffff;
   text-decoration: none;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .social-links a:hover {
-  background: var(--bv-verde-primario);
+  background: #279B48;
+  transform: translateY(-2px);
 }
 
-/* Pie legal */
 .footer-bottom {
   text-align: center;
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--bv-gris);
-  color: var(--bv-gris);
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
 }
 
-/* 📱 Responsive */
-@media (max-width: 768px) {
-  .footer-institutional-bar {
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-sm);
-  }
+/* ========================
+   RESPONSIVE
+   ======================== */
 
-  .footer-grid {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .footer-col {
-    margin-bottom: var(--spacing-md);
-  }
-
-  .social-links {
-    justify-content: center;
+@media (max-width: 1200px) {
+  .nav {
+    gap: 3rem;
   }
 }
 
-/* 📱 Responsive */
-@media (max-width: 768px) {
-  .hero-carousel {
-    height: 500px;
+@media (max-width: 992px) {
+  .container-full {
+    padding: 0 1.5rem;
   }
 
-  .slide-content h1 {
+  .nav {
+    gap: 2rem;
+  }
+
+  .hero-simple {
+    height: 450px;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-content p {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-simple {
+    height: 400px;
+  }
+
+  .hero-content h1 {
     font-size: 2rem;
   }
 
-  .slide-content p {
-    font-size: 1rem;
+  .hero-content p {
+    font-size: 1.1rem;
   }
 
-  .carousel-control {
-    width: 40px;
-    height: 40px;
-  }
-
-  .carousel-control svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .carousel-control.prev {
-    left: 15px;
-  }
-
-  .carousel-control.next {
-    right: 15px;
-  }
-
-  .carousel-indicators {
-    bottom: 20px;
-  }
-
-  .indicator {
-    width: 10px;
-    height: 10px;
-  }
-
-  .header {
-    height: 5rem;
-  }
-
-  .header .container {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .header .logo img {
-    height: 45px;
-  }
-
-  .footer-grid {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .footer-col {
-    margin-bottom: var(--spacing-md);
+  .container-full {
+    padding: 0 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .hero-carousel {
-    height: 400px;
+  .container-full {
+    flex-direction: column;
+    height: auto;
+    padding: 1rem;
+    gap: 1rem;
   }
 
-  .slide-content h1 {
-    font-size: 1.75rem;
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
   }
 
-  .slide-content p {
+  .hero-simple {
+    height: 350px;
+  }
+
+  .hero-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .hero-content p {
     font-size: 0.9rem;
   }
-}

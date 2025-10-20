@@ -1,67 +1,67 @@
 {
-	"version": 3,
-	"routes": [
-		{
-			"handle": "filesystem"
-		},
-		{
-			"src": "^/_astro/(.*)$",
-			"headers": {
-				"cache-control": "public, max-age=31536000, immutable"
-			},
-			"continue": true
-		},
-		{
-			"src": "^/_server-islands/([^/]+?)/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/_image/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/document/upload/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/document/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/news/create/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/news/edit/([^/]+?)/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/news/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/stake/create/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/stake/edit/([^/]+?)/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/stake/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/stations/create/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/stations/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/dashboard/?$",
-			"dest": "_render"
-		}
-	]
+    "version": 3,
+    "routes": [
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "^/_astro/(.*)$",
+            "headers": {
+                "cache-control": "public, max-age=31536000, immutable"
+            },
+            "continue": true
+        },
+        {
+            "src": "^/_server-islands/([^/]+?)/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/_image/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/document/upload/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/document/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/news/create/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/news/edit/([^/]+?)/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/news/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/stake/create/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/stake/edit/([^/]+?)/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/stake/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/stations/create/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/stations/?$",
+            "dest": "_render"
+        },
+        {
+            "src": "^/dashboard/?$",
+            "dest": "_render"
+        }
+    ]
 }

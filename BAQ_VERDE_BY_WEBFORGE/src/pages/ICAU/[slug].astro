@@ -1,0 +1,34 @@
+---
+// src/pages/ICAU/[slug].astro
+import Layout from "../../layouts/Layout.astro";
+import { cardsData } from "../../lib/card_ambiental_data.js";
+import { slugify } from "../../utils/slugify.js";
+
+export async function getStaticPaths() {
+  return cardsData.map((title) => {
+    const slug = slugify(title);
+    return {
+      params: { slug },      
+      props: { title, slug }
+    };
+  });
+}
+
+const { title } = Astro.props;
+---
+
+<Layout>
+  <main class="icau-landing">
+    <h1>{title}</h1>
+    <p>Contenido detallado para: <strong>{title}</strong>.</p>
+  </main>
+</Layout>
+
+<style>
+  .icau-landing {
+    padding: var(--spacing-xxl) var(--spacing-md);
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: var(--bv-blanco);
+  }
+</style>

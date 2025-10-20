@@ -1,268 +1,363 @@
 ---
-import { date } from 'astro:schema';
-import Layout from '../../../layouts/DashboardLayout.astro';
-import { api } from '../../../lib/api';
+import { date } from "astro:schema";
+import Layout from "../../../layouts/DashboardLayout.astro";
+import { api } from "../../../lib/api";
 
 export const prerender = false;
 
 const cookieStore = Astro.cookies;
-const sessionToken = cookieStore.get('token')?.value;
+const sessionToken = cookieStore.get("token")?.value;
 
 if (!sessionToken) {
-  return Astro.redirect('/login');
+    return Astro.redirect("/login");
 }
 
 // Borrar la cookie directamente desde el servidor si se pide
-if (Astro.url.searchParams.get('logout') === 'true') {
-  Astro.cookies.delete('token', { path: '/' });
-  return Astro.redirect('/login');
+if (Astro.url.searchParams.get("logout") === "true") {
+    Astro.cookies.delete("token", { path: "/" });
+    return Astro.redirect("/login");
 }
 
-const data = await api("/news/?category=Alertas", sessionToken)
-const data2 = await api("/news/?category=Comunicados", sessionToken)
+const data = await api("/news/?category=Alertas", sessionToken);
+const data2 = await api("/news/?category=Comunicados", sessionToken);
 
 // Obtener noticias desde la API
 const noticiasRes = [...data, ...data2];
-const noticias = noticiasRes
+const noticias = noticiasRes;
 ---
 
 <Layout title="Gestión de Noticias">
-  <div class="dashboard-container">
-    <!-- Header Section -->
-    <div class="dashboard-header">
-      <div class="header-content">
-        <div class="title-section">
-          <h1 class="dashboard-title">Gestión de Noticias</h1>
-          <p class="dashboard-subtitle">Administra las publicaciones, artículos y comunicados del observatorio</p>
-        </div>
-        <a href="/dashboard/news/create" class="btn-create">
-          <span class="btn-icon">+</span>
-          Crear Noticia
-        </a>
-      </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-number">{noticias.length}</div>
-        <div class="stat-label">Total de Noticias</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{data.length}</div>
-        <div class="stat-label">Alertas</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{data2.length}</div>
-        <div class="stat-label">Comunicados</div>
-      </div>
-    </div>
-
-    <!-- News Grid -->
-    <div class="content-section">
-      <h2 class="section-title">Todas las Noticias</h2>
-      <div class="noticias-grid">
-        {noticias.map((noticia) => (
-          <div class="news-card">
-            <div class="news-image-container">
-              <img 
-                src={`${import.meta.env.PUBLIC_URL_SERVER}${noticia.img_url}`} 
-                alt="Imagen de la noticia" 
-                class="news-image" 
-              />
-              <div class="category-badge">{noticia.category}</div>
-            </div>
-            <div class="news-content">
-              <h3 class="news-title">{noticia.title}</h3>
-              <div class="news-actions">
-                <a href={`/dashboard/news/edit/${noticia._id}`} class="btn-edit">
-                  <span class="btn-icon">✏️</span>
-                  Editar
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="dashboard-title">Gestión de Noticias</h1>
+                    <p class="dashboard-subtitle">
+                        Administra las publicaciones, artículos y comunicados del observatorio
+                    </p>
+                </div>
+                <a href="/dashboard/news/create" class="btn-create">
+                    <span class="btn-icon">+</span>
+                    Crear Noticia
                 </a>
-                <button class="btn-delete" data-id={noticia._id}>
-                  <span class="btn-icon">🗑️</span>
-                  Eliminar
-                </button>
-              </div>
             </div>
-          </div>
-        ))}
-      </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{noticias.length}</div>
+                <div class="stat-label">Total de Noticias</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{data.length}</div>
+                <div class="stat-label">Alertas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{data2.length}</div>
+                <div class="stat-label">Comunicados</div>
+            </div>
+        </div>
+
+        <!-- News Grid -->
+        <div class="content-section">
+            <h2 class="section-title">Todas las Noticias</h2>
+            <div class="noticias-grid">
+                {
+                    noticias.map((noticia) => (
+                        <div class="news-card">
+                            <div class="news-image-container">
+                                <img
+                                    src={`${import.meta.env.PUBLIC_URL_SERVER}${noticia.img_url}`}
+                                    alt="Imagen de la noticia"
+                                    class="news-image"
+                                />
+                                <div class="category-badge">{noticia.category}</div>
+                            </div>
+                            <div class="news-content">
+                                <h3 class="news-title">{noticia.title}</h3>
+                                <div class="news-actions">
+                                    <a
+                                        href={`/dashboard/news/edit/${noticia._id}`}
+                                        class="btn-edit"
+                                    >
+                                        <span class="btn-icon">✏️</span>
+                                        Editar
+                                    </a>
+                                    <button class="btn-delete" data-id={noticia._id}>
+                                        <span class="btn-icon">🗑️</span>
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
     </div>
-  </div>
 
-  <style>
-    /* Dashboard container */
-    .dashboard-container {
-      padding: var(--spacing-xl);
-      margin: 0 auto;
-      min-height: 100vh;
-      background: var(--color-gris-claro);
-      max-width: 95vw;
-    }
-
-    /* Header */
-    .dashboard-header {
-      padding: var(--spacing-xl);
-      margin-bottom: var(--spacing-xl);
-      border-radius: var(--border-radius-lg);
-      background: var(--color-verde);
-      color: var(--color-blanco);
-      box-shadow: var(--shadow-lg);
-    }
-    .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md); }
-    .title-section { flex: 1; }
-    .dashboard-title { font-size: 2.5rem; font-weight: 700; margin: 0 0 var(--spacing-sm) 0; color: var(--color-blanco); }
-    .dashboard-subtitle { font-size: 1.1rem; opacity: 0.9; margin: 0; }
-
-    /* Buttons */
-    .btn-create {
-      background: var(--color-amarillo);
-      color: var(--color-azul-oscuro);
-      padding: var(--spacing-md) var(--spacing-lg);
-      border-radius: var(--border-radius-md);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      transition: all 0.3s ease;
-    }
-    .btn-create:hover {
-      background: var(--color-verde-secundario);
-      transform: translateY(-2px);
-    }
-    .btn-icon { font-size: 1.2rem; }
-
-    /* Stats */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--spacing-lg);
-      margin-bottom: var(--spacing-xl);
-    }
-    .stat-card {
-      background: var(--color-blanco);
-      padding: var(--spacing-md);
-      border-radius: var(--border-radius-md);
-      text-align: center;
-      border: 1px solid var(--color-gris-claro);
-      box-shadow: var(--shadow-md);
-      transition: transform 0.3s ease;
-    }
-    .stat-card:hover { transform: translateY(-4px); }
-    .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--color-verde); margin-bottom: var(--spacing-xs); }
-    .stat-label { color: var(--color-gris); font-weight: 500; }
-
-    /* News grid */
-    .content-section {
-      background: var(--color-blanco);
-      border-radius: var(--border-radius-lg);
-      padding: var(--spacing-xl);
-      border: 1px solid var(--color-gris-claro);
-      box-shadow: var(--shadow-lg);
-    }
-    .section-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--color-azul-oscuro);
-      margin-bottom: var(--spacing-lg);
-      border-bottom: 2px solid var(--color-verde);
-      display: inline-block;
-      padding-bottom: var(--spacing-xs);
-    }
-    .noticias-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: var(--spacing-lg);
-    }
-    .news-card {
-      background: var(--color-blanco);
-      border-radius: var(--border-radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-md);
-      transition: all 0.3s ease;
-      border: 1px solid var(--color-gris-claro);
-    }
-    .news-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-    .news-image-container { position: relative; height: 200px; overflow: hidden; }
-    .news-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-    .news-card:hover .news-image { transform: scale(1.05); }
-    .category-badge {
-      position: absolute; top: var(--spacing-md); right: var(--spacing-md);
-      background: var(--color-verde-secundario);
-      color: var(--color-blanco);
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-      backdrop-filter: blur(10px);
-    }
-    .news-content { padding: var(--spacing-md); }
-    .news-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--color-azul-oscuro);
-      margin: 0 0 var(--spacing-sm) 0;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .news-actions { display: flex; gap: var(--spacing-sm); }
-    .btn-edit, .btn-delete {
-      flex: 1; padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--border-radius-md);
-      font-weight: 500; display: flex; align-items: center; justify-content: center;
-      gap: var(--spacing-xs); transition: all 0.3s ease; font-size: 0.9rem; cursor: pointer; border: none; text-decoration: none;
-    }
-    .btn-edit { background: var(--color-verde); color: var(--color-blanco); }
-    .btn-edit:hover { background: var(--color-verde-secundario); transform: translateY(-1px); }
-    .btn-delete { background: var(--color-amarillo); color: var(--color-azul-oscuro); }
-    .btn-delete:hover { background: var(--color-verde-secundario); transform: translateY(-1px); }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .dashboard-container { padding: var(--spacing-lg); }
-      .dashboard-title { font-size: 2rem; }
-      .header-content { flex-direction: column; text-align: center; }
-      .noticias-grid { grid-template-columns: 1fr; }
-      .news-actions { flex-direction: column; }
-      .stats-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-
-  <script>
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const id = e.target.dataset.id;
-        if (confirm('¿Eliminar esta noticia?')) {
-          // 👇 Obtener el token de las cookies
-          const token = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('token='))
-            ?.split('=')[1];
-          
-          if (!token) {
-            alert('No estás autenticado. Por favor, inicia sesión.');
-            return;
-          }
-          
-          console.log(import.meta.env.PUBLIC_URL_SERVER + "aswddadsa")
-          
-          const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/news/${id}`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`, // 👈 ¡Token agregado!
-              'Content-Type': 'application/json'
-            }
-          });
-          
-          if (res.ok) {
-            location.reload();
-          } else {
-            const errorData = await res.json().catch(() => ({}));
-            alert(`Error al eliminar: ${errorData.detail || 'Error desconocido'}`);
-          }
+    <style>
+        /* Dashboard container */
+        .dashboard-container {
+            padding: var(--spacing-xl);
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--color-gris-claro);
+            max-width: 95vw;
         }
-      });
-    });
-  </script>
+
+        /* Header */
+        .dashboard-header {
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            background: var(--color-verde);
+            color: var(--color-blanco);
+            box-shadow: var(--shadow-lg);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+        .title-section {
+            flex: 1;
+        }
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 var(--spacing-sm) 0;
+            color: var(--color-blanco);
+        }
+        .dashboard-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        /* Buttons */
+        .btn-create {
+            background: var(--color-amarillo);
+            color: var(--color-azul-oscuro);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: all 0.3s ease;
+        }
+        .btn-create:hover {
+            background: var(--color-verde-secundario);
+            transform: translateY(-2px);
+        }
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .stat-card {
+            background: var(--color-blanco);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            text-align: center;
+            border: 1px solid var(--color-gris-claro);
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-verde);
+            margin-bottom: var(--spacing-xs);
+        }
+        .stat-label {
+            color: var(--color-gris);
+            font-weight: 500;
+        }
+
+        /* News grid */
+        .content-section {
+            background: var(--color-blanco);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            border: 1px solid var(--color-gris-claro);
+            box-shadow: var(--shadow-lg);
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-azul-oscuro);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--color-verde);
+            display: inline-block;
+            padding-bottom: var(--spacing-xs);
+        }
+        .noticias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        .news-card {
+            background: var(--color-blanco);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            border: 1px solid var(--color-gris-claro);
+        }
+        .news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .news-image-container {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+        .news-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .news-card:hover .news-image {
+            transform: scale(1.05);
+        }
+        .category-badge {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            background: var(--color-verde-secundario);
+            color: var(--color-blanco);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        .news-content {
+            padding: var(--spacing-md);
+        }
+        .news-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--color-azul-oscuro);
+            margin: 0 0 var(--spacing-sm) 0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .news-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        .btn-edit,
+        .btn-delete {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+        }
+        .btn-edit {
+            background: var(--color-verde);
+            color: var(--color-blanco);
+        }
+        .btn-edit:hover {
+            background: var(--color-verde-secundario);
+            transform: translateY(-1px);
+        }
+        .btn-delete {
+            background: var(--color-amarillo);
+            color: var(--color-azul-oscuro);
+        }
+        .btn-delete:hover {
+            background: var(--color-verde-secundario);
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: var(--spacing-lg);
+            }
+            .dashboard-title {
+                font-size: 2rem;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .noticias-grid {
+                grid-template-columns: 1fr;
+            }
+            .news-actions {
+                flex-direction: column;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        document.querySelectorAll(".btn-delete").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+                const id = e.target.dataset.id;
+                if (confirm("¿Eliminar esta noticia?")) {
+                    // 👇 Obtener el token de las cookies
+                    const token = document.cookie
+                        .split("; ")
+                        .find((row) => row.startsWith("token="))
+                        ?.split("=")[1];
+
+                    if (!token) {
+                        alert("No estás autenticado. Por favor, inicia sesión.");
+                        return;
+                    }
+
+                    console.log(import.meta.env.PUBLIC_URL_SERVER + "aswddadsa");
+
+                    const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/news/${id}`, {
+                        method: "DELETE",
+                        headers: {
+                            Authorization: `Bearer ${token}`, // 👈 ¡Token agregado!
+                            "Content-Type": "application/json",
+                        },
+                    });
+
+                    if (res.ok) {
+                        location.reload();
+                    } else {
+                        const errorData = await res.json().catch(() => ({}));
+                        alert(`Error al eliminar: ${errorData.detail || "Error desconocido"}`);
+                    }
+                }
+            });
+        });
+    </script>
 </Layout>

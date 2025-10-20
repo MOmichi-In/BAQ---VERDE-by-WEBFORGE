@@ -1,11 +1,11 @@
 {
-	"folders": [
-		{
-			"path": "../../.."
-		},
-		{
-			"path": "../../../../../baq - verde - back"
-		}
-	],
-	"settings": {}
+    "folders": [
+        {
+            "path": "../../..",
+        },
+        {
+            "path": "../../../../../baq - verde - back",
+        },
+    ],
+    "settings": {},
 }
