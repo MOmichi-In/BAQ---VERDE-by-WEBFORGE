@@ -35,16 +35,46 @@ Resolución 2254 de 2017, artículo 2: niveles permisibles de contaminantes crit
 
 ## Datos 2022
 
-- **Ec 2022 para PM10** = 3
-- **Et 2022 para PM10** = 3 → %EC = 3/3 * 100 = **66%**
-- **Ec 2022 para PM2.5** = 4
-- **Et 2022 para PM2.5** = 4 → %EC = 4/4 * 100 = **100%**
+<div class="data-cards">
+  <div class="data-card">
+    <h4>PM10</h4>
+    <div class="value">66%</div>
+    <div class="label">Estaciones en cumplimiento</div>
+  </div>
+  <div class="data-card">
+    <h4>PM2.5</h4>
+    <div class="value">100%</div>
+    <div class="label">Estaciones en cumplimiento</div>
+  </div>
+</div>
 
-| Año | %EC para PM10 | %EC para PM2.5 |
-|-----|---------------|----------------|
-| 2022 | 66%           | 100%           |
+<table class="custom-table">
+  <thead>
+    <tr>
+      <th>2022: para PM10=</th>
+      <td>60%</td>
+    </tr>
+    <tr>
+      <th>2022: para PM2.5 =</th>
+      <td>100%</td>
+    </tr>
+  </thead>
+</table>
 
 ## Datos 2023
+
+<div class="data-cards">
+  <div class="data-card">
+    <h4>PM10</h4>
+    <div class="value">25%</div>
+    <div class="label">Estaciones en cumplimiento</div>
+  </div>
+  <div class="data-card">
+    <h4>PM2.5</h4>
+    <div class="value">0%</div>
+    <div class="label">Estaciones en cumplimiento</div>
+  </div>
+</div>
 
 Para ambos cálculos, el factor de corrección es el valor 1.
 
@@ -52,10 +82,6 @@ Para ambos cálculos, el factor de corrección es el valor 1.
 - **Et 2023 para PM10** = 1 → %EC = 4/1 * 100 = **25%**
 - **Ec 2023 para PM2.5** = 4
 - **Et 2023 para PM2.5** = 0 → %EC = 0%
-
-| Año | %EC para PM10 | %EC para PM2.5 |
-|-----|---------------|----------------|
-| 2023 | 25%           | 0%             |
 
 > **Nota importante**: Para la estación que monitorea el contaminante material particulado (PM10) se encuentran por debajo de los niveles máximos permisibles y que cuentan con la representatividad superior al 75%. Sin embargo, respecto al resto de estaciones, estas se encuentran en mantenimiento y se encontraban operando pero no cumplían con la representatividad superior 75%. Este caso pasó para ambos contaminantes (las 3 estaciones restantes para el PM10 y las 4 estaciones para el PM2.5).
 

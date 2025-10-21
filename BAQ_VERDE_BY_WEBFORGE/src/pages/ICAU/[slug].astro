@@ -1,34 +1,257 @@
 ---
 // src/pages/ICAU/[slug].astro
+export const prerender = true;
+
 import Layout from "../../layouts/Layout.astro";
-import { cardsData } from "../../lib/card_ambiental_data.js";
 import { slugify } from "../../utils/slugify.js";
+import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
-  return cardsData.map((title) => {
-    const slug = slugify(title);
-    return {
-      params: { slug },      
-      props: { title, slug }
-    };
-  });
+  const posts = await getCollection("icau");
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
 }
 
-const { title } = Astro.props;
+const { post } = Astro.props;
+const { Content } = await post.render();
 ---
 
 <Layout>
   <main class="icau-landing">
-    <h1>{title}</h1>
-    <p>Contenido detallado para: <strong>{title}</strong>.</p>
+    <h1>{post.data.title}</h1>
+    <p class="description">{post.data.description}</p>
+    <img src={post.data.image} alt={post.data.title} />
+    
+    <article class="content">
+      <Content />
+    </article>
   </main>
 </Layout>
 
 <style>
   .icau-landing {
-    padding: var(--spacing-xxl) var(--spacing-md);
-    max-width: 800px;
+    padding: 4rem 2rem;
+    max-width: 900px;
     margin: 0 auto;
-    background-color: var(--bv-blanco);
+    background: var(--bv-blanco);
+    border-radius: 1.5rem;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    color: #1a1a1a;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+  }
+
+  .icau-landing h1 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #157a3b;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .description {
+    font-size: 1.15rem;
+    color: #4a4a4a;
+    margin-bottom: 2.5rem;
+    padding-left: 1.25rem;
+    border-left: 4px solid #3fa464;
+    background: #f8fcf9;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+  }
+
+  .icau-landing img {
+    width: 100%;
+    border-radius: 1rem;
+    margin: 2.5rem 0;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .icau-landing img:hover {
+    transform: scale(1.01);
+  }
+
+  .content {
+    font-size: 1.05rem;
+    color: #333;
+  }
+
+  .content h2 {
+    font-size: 1.75rem;
+    color: #136a31;
+    margin: 2.5rem 0 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2f2e8;
+    font-weight: 700;
+  }
+
+  .content h3 {
+    font-size: 1.35rem;
+    color: #217846;
+    margin: 1.75rem 0 1rem;
+    font-weight: 600;
+  }
+
+  .content p {
+    margin: 1.25rem 0;
+    text-align: justify;
+  }
+
+  /* Tarjetas para datos anuales */
+  .data-cards {
+    display: flex;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+  }
+
+  .data-card {
+    flex: 1;
+    min-width: 200px;
+    background: #f0f9f3;
+    border: 1px solid #c8e6d0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .data-card h4 {
+    margin: 0 0 0.75rem;
+    color: #157a3b;
+    font-size: 1.1rem;
+  }
+
+  .data-card .value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0d5a2a;
+  }
+
+  .data-card .label {
+    font-size: 0.95rem;
+    color: #555;
+    margin-top: 0.25rem;
+  }
+
+  /* Tabla personalizada estilo "clave: valor" (como en la imagen) */
+  .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background: #f0f9f3;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .custom-table th,
+  .custom-table td {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #157a3b;
+  }
+
+  .custom-table th {
+    background: #e6f5eb;
+    width: 60%;
+    font-weight: 700;
+    color: #145e2c;
+    font-size: 1.05rem;
+  }
+
+  .custom-table td {
+    background: #fff;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0d5a2a;
+    text-align: right;
+  }
+
+  .custom-table tr:nth-child(even) td {
+    background: #fafafa;
+  }
+
+  /* Tablas estándar (por si usas Markdown en el futuro) */
+  .content table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 2rem 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .content th,
+  .content td {
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .content th {
+    background: #e6f5eb;
+    color: #145e2c;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .content tr:nth-child(even) {
+    background-color: #f9fdfb;
+  }
+
+  .content tr:hover {
+    background-color: #edf7f0;
+  }
+
+  /* Bloque de cita / nota importante */
+  .content blockquote {
+    background: #f0f9f3;
+    border-left: 4px solid #3fa464;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 8px 8px 0;
+    font-style: normal;
+    color: #2c5a3d;
+    font-weight: 500;
+    position: relative;
+  }
+
+  .content blockquote::before {
+    content: "“";
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    font-size: 3rem;
+    color: #d0eade;
+    font-family: serif;
+    line-height: 1;
+  }
+
+  /* Listas */
+  .content ul {
+    padding-left: 2rem;
+    margin: 1.25rem 0;
+  }
+
+  .content li {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Código inline */
+  .content code {
+    background: #f0f7f2;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: "Fira Code", Consolas, monospace;
+    font-size: 0.95em;
+    color: #157a3b;
+    border: 1px solid #d8eadd;
   }
 </style>
+

@@ -1,10 +1,10 @@
-// src/content/config.ts
-import { defineCollection, z } from 'astro:content';
+import { z, defineCollection } from "astro:content";
 
 const icau = defineCollection({
+  type: "content",
   schema: z.object({
     title: z.string(),
-    description: z.string().optional(),
+    description: z.string(),
     image: z.string().optional(),
     order: z.number().optional(),
   }),
