@@ -1,98 +1,98 @@
 ---
 const { title, image, description, text } = Astro.props;
 import "../../styles/common/cards.css";
-import "../../styles/global.css"
+import "../../styles/global.css";
 ---
 
 <div class="card">
-  <div class="card-header">
-    <h3>{title}</h3>
-  </div>
+    <div class="card-header">
+        <h3>{title}</h3>
+    </div>
 
-  <img src={`${import.meta.env.PUBLIC_URL_SERVER}${image}`} alt={title} class="card-image" />
+    <img src={`${import.meta.env.PUBLIC_URL_SERVER}${image}`} alt={title} class="card-image" />
 
-  <!-- <p>{image}</p> -->
-  <div class="card-content">
-    <p class="card-description">{ description }</p>
-    <p class="card-text">{ text }</p>
-  </div>
+    <!-- <p>{image}</p> -->
+    <div class="card-content">
+        <p class="card-description">{description}</p>
+        <p class="card-text">{text}</p>
+    </div>
 
-  <a href={`/news/${Astro.props.id}`} class="card-buttom">Ver más</a>
+    <a href={`/news/${Astro.props.id}`} class="card-buttom">Ver más</a>
 </div>
 
 <style>
-.card {
-  height: 60vh;
-  background: var(--bv-blanco);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* mantiene bordes limpios */
-}
+    .card {
+        height: 60vh;
+        background: var(--bv-blanco);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-md);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* mantiene bordes limpios */
+    }
 
-.card-content {
-  flex: 1;
-  padding: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: var(--spacing-sm);
-  overflow: hidden; /* 👈 evita que el texto empuje más allá */
-}
+    .card-content {
+        flex: 1;
+        padding: var(--spacing-md);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: var(--spacing-sm);
+        overflow: hidden; /* 👈 evita que el texto empuje más allá */
+    }
 
-.card-description,
-.card-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-}
+    .card-description,
+    .card-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+    }
 
-.card-description {
-  font-weight: 600;
-  color: var(--bv-azul-oscuro);
-  font-size: 1.1rem;
-  margin: 0 0 var(--spacing-xs) 0;
-}
+    .card-description {
+        font-weight: 600;
+        color: var(--bv-azul-oscuro);
+        font-size: 1.1rem;
+        margin: 0 0 var(--spacing-xs) 0;
+    }
 
-.card-text {
-  color: var(--bv-gris);
-  font-size: 0.95rem;
-  line-height: 1.5;
+    .card-text {
+        color: var(--bv-gris);
+        font-size: 0.95rem;
+        line-height: 1.5;
 
-  /* ✅ truncamos solo el texto largo */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3; 
-  -webkit-box-orient: vertical;
-}
+        /* ✅ truncamos solo el texto largo */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
 
-.card-buttom {
-  margin-top: auto; /* 👈 siempre al fondo */
-  display: block;
-  text-align: center;
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--bv-gris);
-  color: var(--bv-blanco);
-  border-radius: var(--border-radius-sm);
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
+    .card-buttom {
+        margin-top: auto; /* 👈 siempre al fondo */
+        display: block;
+        text-align: center;
+        padding: var(--spacing-sm) var(--spacing-md);
+        background: var(--bv-gris);
+        color: var(--bv-blanco);
+        border-radius: var(--border-radius-sm);
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
 
-.card-buttom:hover {
-  background: var(--bv-amarillo);
-  color: var(--bv-azul-oscuro);
-}
+    .card-buttom:hover {
+        background: var(--bv-amarillo);
+        color: var(--bv-azul-oscuro);
+    }
 
-@media (max-width: 900px) {
-  .card {
-    height: auto; /* en móvil que se adapte al contenido */
-  }
-  .card-image {
-    height: 180px;
-  }
-}
+    @media (max-width: 900px) {
+        .card {
+            height: auto; /* en móvil que se adapte al contenido */
+        }
+        .card-image {
+            height: 180px;
+        }
+    }
 </style>

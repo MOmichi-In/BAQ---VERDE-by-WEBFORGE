@@ -8,26 +8,23 @@ console.log("👉 Token de sesión leído en .astro:", sessionToken);
 
 let stations = [];
 try {
-  const data = await getStations(sessionToken);
-  console.log("👉 Respuesta cruda de la API en .astro:", data);
+    const data = await getStations(sessionToken);
+    console.log("👉 Respuesta cruda de la API en .astro:", data);
 
-  if (Array.isArray(data)) {
-    stations = data;
-  } else if (data && Array.isArray(data.stations)) {
-    stations = data.stations;
-  } else {
-    console.warn("⚠️ La API no devolvió un array ni un objeto con stations");
-  }
+    if (Array.isArray(data)) {
+        stations = data;
+    } else if (data && Array.isArray(data.stations)) {
+        stations = data.stations;
+    } else {
+        console.warn("⚠️ La API no devolvió un array ni un objeto con stations");
+    }
 } catch (error) {
-  console.error("❌ Error al obtener las estaciones:", error);
+    console.error("❌ Error al obtener las estaciones:", error);
 }
 
 // Solo filtramos por coordenadas válidas
-const validStations = stations.filter(s => 
-  typeof s.lat === 'number' && 
-  typeof s.lon === 'number' && 
-  !isNaN(s.lat) && 
-  !isNaN(s.lon)
+const validStations = stations.filter(
+    (s) => typeof s.lat === "number" && typeof s.lon === "number" && !isNaN(s.lat) && !isNaN(s.lon)
 );
 
 console.log("✅ Estaciones válidas para el mapa:", validStations);
@@ -36,630 +33,947 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 <!-- Estilos de Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+/>
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+/>
 
 <style is:global>
-  /* Contenedor principal */
-  .map-app-container {
-    display: flex;
-    height: calc(100vh - 4rem);
-    width: 100%;
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    font-family: var(--font-family-base);
-    background-color: var(--bv-blanco);
-    border: 1px solid var(--bv-gris-claro);
-    border-radius: var(--border-radius-md);
-  }
-
-  /* Sidebar izquierdo */
-  .sidebar {
-    width: 320px;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid var(--bv-gris-claro);
-    background: var(--bv-blanco);
-    z-index: 2;
-    overflow: auto;
-  }
-
-  .sidebar-header {
-    padding: var(--spacing-lg) var(--spacing-md);
-    background: linear-gradient(135deg, var(--bv-verde-primario) 0%, var(--bv-verde-primario-dark) 100%);
-    color: var(--bv-blanco);
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .sidebar-header h3 {
-    color: var(--bv-blanco);
-    margin: 0;
-    font-size: 1.125rem;
-    font-weight: 700;
-    line-height: 1.3;
-    font-family: var(--font-family-heading);
-  }
-
-  .sidebar-subtitle {
-    font-size: 0.8125rem;
-    opacity: 0.95;
-    margin-top: var(--spacing-xs);
-  }
-
-  .sidebar-content {
-    flex: 1;
-    padding: var(--spacing-md);
-    overflow-y: auto;
-    background: var(--bv-gris-claro);
-  }
-
-  .filter-group {
-    margin-bottom: var(--spacing-md);
-  }
-
-  .filter-item {
-    display: flex;
-    align-items: center;
-    padding: var(--spacing-md);
-    background: var(--bv-blanco);
-    border: 1px solid var(--bv-gris-claro);
-    border-radius: var(--border-radius-lg);
-    margin-bottom: var(--spacing-md);
-    cursor: pointer;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-    position: relative;
-  }
-
-  .filter-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--bv-verde-primario);
-  }
-
-  .filter-item.active {
-    border-color: var(--bv-verde-primario);
-    box-shadow: 0 0 0 6px rgba(55,180,72,0.06);
-  }
-
-  .filter-item-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: var(--border-radius-md);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: var(--spacing-md);
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  .filter-item-content {
-    flex-grow: 1;
-    min-width: 0;
-  }
-
-  .filter-item-title {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--bv-azul-oscuro);
-    margin-bottom: 2px;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-family: var(--font-family-heading);
-  }
-
-  .category-count {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--bv-gris);
-    background-color: var(--bv-gris-claro);
-    padding: 2px var(--spacing-sm);
-    border-radius: var(--border-radius-lg);
-    min-width: 24px;
-    text-align: center;
-  }
-
-  .filter-item-description {
-    font-size: 0.8125rem;
-    color: var(--bv-gris);
-    line-height: 1.4;
-  }
-
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 28px;
-    flex-shrink: 0;
-  }
-  .switch input { opacity: 0; width: 0; height: 0; }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--bv-gris-claro);
-    transition: background-color 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s ease;
-    border-radius: 34px;
-  }
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 4px;
-    background-color: var(--bv-blanco);
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-    border-radius: 50%;
-    box-shadow: var(--shadow-sm);
-  }
-  .switch input:checked + .slider { background-color: var(--bv-amarillo); }
-  .switch input:checked + .slider[data-category="biodiversity"] { background-color: var(--bv-verde-primario-dark); }
-  .switch input:checked + .slider[data-category="soil"] { background-color: rgba(137, 81, 41, 1); }
-  .switch input:focus + .slider { box-shadow: 0 0 0 4px rgba(55,180,72,0.12); }
-  .switch input:checked + .slider:before { transform: translateX(20px); }
-
-  #map {
-    flex: 1;
-    height: 100%;
-    position: relative;
-    background-color: var(--bv-gris-claro);
-  }
-
-  .custom-marker-icon {
-    background: transparent !important;
-    border: none !important;
-  }
-  .marker-bubble {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--bv-blanco);
-    font-weight: 700;
-    font-size: 14px;
-    box-shadow: var(--shadow-md);
-    border: 3px solid var(--bv-blanco);
-    position: relative;
-    transform: translateY(-50%);
-  }
-  .marker-bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 6px solid var(--bv-blanco);
-  }
-
-  /* Modal personalizado mejorado */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(12px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    animation: fadeIn 0.2s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .modal-content {
-    background: var(--bv-blanco);
-    width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
-    padding: 0;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    position: relative;
-    font-family: var(--font-family-base);
-    animation: slideUp 0.3s ease;
-    display: flex;
-    flex-direction: column;
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
+    /* Contenedor principal */
+    .map-app-container {
+        display: flex;
+        height: calc(100vh - 4rem);
+        width: 100%;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        font-family: var(--font-family-base);
+        background-color: var(--bv-blanco);
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+
+    /* Sidebar izquierdo */
+    .sidebar {
+        width: 320px;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid var(--bv-gris-claro);
+        background: var(--bv-blanco);
+        z-index: 2;
+        overflow: auto;
     }
-  }
 
-  .modal-header {
-    padding: var(--spacing-lg) var(--spacing-xl);
-    background: linear-gradient(135deg, var(--bv-verde-primario) 0%, var(--bv-verde-primario-dark) 100%);
-    color: var(--bv-blanco);
-    position: relative;
-    border-bottom: 3px solid rgba(255, 255, 255, 0.2);
-  }
+    .sidebar-header {
+        padding: var(--spacing-lg) var(--spacing-md);
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-primario) 0%,
+            var(--bv-verde-primario-dark) 100%
+        );
+        color: var(--bv-blanco);
+        position: relative;
+        flex-shrink: 0;
+    }
 
-  .modal-header h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    font-family: var(--font-family-heading);
-    color: var(--bv-blanco);
-    padding-right: 40px;
-  }
+    .sidebar-header h3 {
+        color: var(--bv-blanco);
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+        line-height: 1.3;
+        font-family: var(--font-family-heading);
+    }
 
-  .modal-close {
-    position: absolute;
-    top: var(--spacing-lg);
-    right: var(--spacing-lg);
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--bv-blanco);
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(10px);
-  }
+    .sidebar-subtitle {
+        font-size: 0.8125rem;
+        opacity: 0.95;
+        margin-top: var(--spacing-xs);
+    }
 
-  .modal-close:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: rotate(90deg);
-  }
+    .sidebar-content {
+        flex: 1;
+        padding: var(--spacing-md);
+        overflow-y: auto;
+        background: var(--bv-gris-claro);
+    }
 
-  .modal-body {
-    padding: var(--spacing-xl);
-    overflow-y: auto;
-    flex: 1;
-  }
+    .filter-group {
+        margin-bottom: var(--spacing-md);
+    }
 
-  .modal-form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-xl);
-  }
+    .filter-item {
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-md);
+        background: var(--bv-blanco);
+        border: 1px solid var(--bv-gris-claro);
+        border-radius: var(--border-radius-lg);
+        margin-bottom: var(--spacing-md);
+        cursor: pointer;
+        transition:
+            transform 0.18s ease,
+            box-shadow 0.18s ease,
+            border-color 0.18s ease;
+        position: relative;
+    }
 
-  .form-group {
-    margin-bottom: 0;
-  }
+    .filter-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--bv-verde-primario);
+    }
 
-  .form-group label {
-    display: block;
-    margin-bottom: var(--spacing-xs);
-    font-weight: 600;
-    color: var(--bv-azul-oscuro);
-    font-family: var(--font-family-heading);
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+    .filter-item.active {
+        border-color: var(--bv-verde-primario);
+        box-shadow: 0 0 0 6px rgba(55, 180, 72, 0.06);
+    }
 
-  .form-group label i {
-    margin-right: 6px;
-    color: var(--bv-verde-primario);
-  }
+    .filter-item-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--border-radius-md);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: var(--spacing-md);
+        font-size: 18px;
+        flex-shrink: 0;
+    }
 
-  .form-group select {
-    width: 100%;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border: 2px solid var(--bv-gris-claro);
-    border-radius: var(--border-radius-md);
-    background: var(--bv-blanco);
-    font-size: 0.9375rem;
-    transition: all 0.2s ease;
-    font-family: var(--font-family-base);
-  }
+    .filter-item-content {
+        flex-grow: 1;
+        min-width: 0;
+    }
 
-  .form-group select:focus {
-    outline: none;
-    border-color: var(--bv-verde-primario);
-    box-shadow: 0 0 0 3px rgba(55, 180, 72, 0.1);
-  }
+    .filter-item-title {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--bv-azul-oscuro);
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-family: var(--font-family-heading);
+    }
 
-  .form-group select:disabled {
-    background: var(--bv-gris-claro);
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
+    .category-count {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--bv-gris);
+        background-color: var(--bv-gris-claro);
+        padding: 2px var(--spacing-sm);
+        border-radius: var(--border-radius-lg);
+        min-width: 24px;
+        text-align: center;
+    }
 
-  .btn-primary {
-    width: 100%;
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: linear-gradient(135deg, var(--bv-verde-primario) 0%, var(--bv-verde-primario-dark) 100%);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(55, 180, 72, 0.3);
-  }
+    .filter-item-description {
+        font-size: 0.8125rem;
+        color: var(--bv-gris);
+        line-height: 1.4;
+    }
 
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(55, 180, 72, 0.4);
-  }
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--bv-gris-claro);
+        transition:
+            background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow 0.2s ease;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: var(--bv-blanco);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 50%;
+        box-shadow: var(--shadow-sm);
+    }
+    .switch input:checked + .slider {
+        background-color: var(--bv-amarillo);
+    }
+    .switch input:checked + .slider[data-category="biodiversity"] {
+        background-color: var(--bv-verde-primario-dark);
+    }
+    .switch input:checked + .slider[data-category="soil"] {
+        background-color: rgba(137, 81, 41, 1);
+    }
+    .switch input:focus + .slider {
+        box-shadow: 0 0 0 4px rgba(55, 180, 72, 0.12);
+    }
+    .switch input:checked + .slider:before {
+        transform: translateX(20px);
+    }
 
-  .btn-primary:active:not(:disabled) {
-    transform: translateY(0);
-  }
+    #map {
+        flex: 1;
+        height: 100%;
+        position: relative;
+        background-color: var(--bv-gris-claro);
+    }
 
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
+    /* Controles personalizados del mapa */
+    .map-controls {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
 
-  .btn-primary i {
-    margin-right: 8px;
-  }
+    .map-control-btn {
+        width: 44px;
+        height: 44px;
+        background: var(--bv-blanco);
+        border: 2px solid var(--bv-gris-claro);
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: var(--shadow-md);
+        color: var(--bv-azul-oscuro);
+        font-size: 18px;
+    }
 
-  /* Contenedor de la gráfica mejorado */
-  .chart-section {
-    margin-top: var(--spacing-lg);
-    padding: var(--spacing-lg);
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-radius: var(--border-radius-lg);
-    border: 1px solid var(--bv-gris-claro);
-  }
+    .map-control-btn:hover {
+        background: var(--bv-verde-primario);
+        color: var(--bv-blanco);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--bv-verde-primario);
+    }
 
-  .chart-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--spacing-md);
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 2px solid var(--bv-gris-claro);
-  }
+    .map-control-btn:active {
+        transform: translateY(0);
+    }
 
-  .chart-title {
-    font-size: 1.125rem;
-    color: var(--bv-azul-oscuro);
-    font-weight: 700;
-    font-family: var(--font-family-heading);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-  }
+    /* Overlay para desactivar scroll en mapa */
+    .map-scroll-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
 
-  .chart-title i {
-    color: var(--bv-verde-primario);
-  }
+    .map-scroll-overlay.active {
+        display: none;
+    }
 
-  .chart-subtitle {
-    font-size: 0.875rem;
-    color: var(--bv-gris);
-    margin-top: var(--spacing-xs);
-  }
+    .map-click-hint {
+        background: rgba(55, 180, 72, 0.95);
+        color: var(--bv-blanco);
+        padding: 16px 24px;
+        border-radius: var(--border-radius-lg);
+        font-size: 0.9375rem;
+        font-weight: 600;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: pulse 2s ease-in-out infinite;
+    }
 
-  .chart-container {
-    position: relative;
-    height: 350px;
-    background: var(--bv-blanco);
-    border-radius: var(--border-radius-md);
-    padding: var(--spacing-md);
-    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
 
-  .chart-empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--bv-gris);
-    text-align: center;
-  }
+    .map-click-hint i {
+        font-size: 24px;
+    }
 
-  .chart-empty-state i {
-    font-size: 3rem;
-    margin-bottom: var(--spacing-md);
-    opacity: 0.3;
-  }
+    /* Modal de manual de uso */
+    .manual-modal-content {
+        max-width: 900px;
+    }
 
-  .chart-empty-state p {
-    font-size: 1rem;
-    margin: 0;
-    margin-top: var(--spacing-sm);
-  }
+    .manual-step {
+        display: flex;
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+        padding: var(--spacing-lg);
+        background: var(--bv-gris-claro);
+        border-radius: var(--border-radius-lg);
+        align-items: center;
+    }
 
-  /* Loading state */
-  .chart-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--bv-gris);
-  }
+    .manual-step-number {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--bv-verde-primario) 0%, var(--bv-verde-primario-dark) 100%);
+        color: var(--bv-blanco);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
 
-  .chart-loading .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--bv-gris-claro);
-    border-top-color: var(--bv-verde-primario);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-bottom: var(--spacing-md);
-  }
+    .manual-step-content {
+        flex: 1;
+    }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
+    .manual-step-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--bv-azul-oscuro);
+        margin-bottom: var(--spacing-sm);
+        font-family: var(--font-family-heading);
+    }
 
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .map-app-container { flex-direction: column; }
-    .sidebar { width: 100%; max-height: 40%; }
-    #map { height: 60%; }
-  }
+    .manual-step-description {
+        font-size: 0.9375rem;
+        color: var(--bv-gris);
+        line-height: 1.6;
+    }
 
-  @media (max-width: 768px) {
+    .manual-step-image {
+        width: 200px;
+        height: 150px;
+        background: var(--bv-blanco);
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--bv-gris-claro);
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .manual-step-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .manual-step-image i {
+        font-size: 3rem;
+        color: var(--bv-gris-claro);
+    }
+
+    .custom-marker-icon {
+        background: transparent !important;
+        border: none !important;
+    }
+    .marker-bubble {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--bv-blanco);
+        font-weight: 700;
+        font-size: 14px;
+        box-shadow: var(--shadow-md);
+        border: 3px solid var(--bv-blanco);
+        position: relative;
+        transform: translateY(-50%);
+    }
+    .marker-bubble::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid var(--bv-blanco);
+    }
+
+    /* Modal personalizado mejorado */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
     .modal-content {
-      width: 95%;
-      max-height: 95vh;
+        background: var(--bv-blanco);
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        padding: 0;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        position: relative;
+        font-family: var(--font-family-base);
+        animation: slideUp 0.3s ease;
+        display: flex;
+        flex-direction: column;
     }
 
-    .modal-form {
-      grid-template-columns: 1fr;
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    .chart-container {
-      height: 280px;
+    .modal-header {
+        padding: var(--spacing-lg) var(--spacing-xl);
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-primario) 0%,
+            var(--bv-verde-primario-dark) 100%
+        );
+        color: var(--bv-blanco);
+        position: relative;
+        border-bottom: 3px solid rgba(255, 255, 255, 0.2);
     }
 
     .modal-header h3 {
-      font-size: 1.25rem;
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-family: var(--font-family-heading);
+        color: var(--bv-blanco);
+        padding-right: 40px;
     }
-  }
+
+    .modal-close {
+        position: absolute;
+        top: var(--spacing-lg);
+        right: var(--spacing-lg);
+        background: rgba(255, 255, 255, 0.15);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--bv-blanco);
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .modal-close:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: rotate(90deg);
+    }
+
+    .modal-body {
+        padding: var(--spacing-xl);
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: var(--spacing-xs);
+        font-weight: 600;
+        color: var(--bv-azul-oscuro);
+        font-family: var(--font-family-heading);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group label i {
+        margin-right: 6px;
+        color: var(--bv-verde-primario);
+    }
+
+    .form-group select {
+        width: 100%;
+        padding: var(--spacing-sm) var(--spacing-md);
+        border: 2px solid var(--bv-gris-claro);
+        border-radius: var(--border-radius-md);
+        background: var(--bv-blanco);
+        font-size: 0.9375rem;
+        transition: all 0.2s ease;
+        font-family: var(--font-family-base);
+    }
+
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--bv-verde-primario);
+        box-shadow: 0 0 0 3px rgba(55, 180, 72, 0.1);
+    }
+
+    .form-group select:disabled {
+        background: var(--bv-gris-claro);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: var(--spacing-md) var(--spacing-lg);
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-primario) 0%,
+            var(--bv-verde-primario-dark) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: var(--border-radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 12px rgba(55, 180, 72, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(55, 180, 72, 0.4);
+    }
+
+    .btn-primary:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .btn-primary i {
+        margin-right: 8px;
+    }
+
+    /* Contenedor de la gráfica mejorado */
+    .chart-section {
+        margin-top: var(--spacing-lg);
+        padding: var(--spacing-lg);
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-radius: var(--border-radius-lg);
+        border: 1px solid var(--bv-gris-claro);
+    }
+
+    .chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-md);
+        padding-bottom: var(--spacing-sm);
+        border-bottom: 2px solid var(--bv-gris-claro);
+    }
+
+    .chart-title {
+        font-size: 1.125rem;
+        color: var(--bv-azul-oscuro);
+        font-weight: 700;
+        font-family: var(--font-family-heading);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .chart-title i {
+        color: var(--bv-verde-primario);
+    }
+
+    .chart-subtitle {
+        font-size: 0.875rem;
+        color: var(--bv-gris);
+        margin-top: var(--spacing-xs);
+    }
+
+    .chart-container {
+        position: relative;
+        height: 350px;
+        background: var(--bv-blanco);
+        border-radius: var(--border-radius-md);
+        padding: var(--spacing-md);
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--bv-gris);
+        text-align: center;
+    }
+
+    .chart-empty-state i {
+        font-size: 3rem;
+        margin-bottom: var(--spacing-md);
+        opacity: 0.3;
+    }
+
+    .chart-empty-state p {
+        font-size: 1rem;
+        margin: 0;
+        margin-top: var(--spacing-sm);
+    }
+
+    /* Loading state */
+    .chart-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--bv-gris);
+    }
+
+    .chart-loading .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--bv-gris-claro);
+        border-top-color: var(--bv-verde-primario);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-bottom: var(--spacing-md);
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .map-app-container {
+            flex-direction: column;
+        }
+        .sidebar {
+            width: 100%;
+            max-height: 40%;
+        }
+        #map {
+            height: 60%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .modal-content {
+            width: 95%;
+            max-height: 95vh;
+        }
+
+        .modal-form {
+            grid-template-columns: 1fr;
+        }
+
+        .chart-container {
+            height: 280px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+        }
+
+        .manual-step {
+            flex-direction: column;
+        }
+
+        .manual-step-image {
+            width: 100%;
+            height: 200px;
+        }
+    }
 </style>
 
 <div class="map-app-container">
-  <div class="sidebar" role="region" aria-label="Filtros de mapas">
-    <div class="sidebar-header">
-      <h3>Datos Ambientales</h3>
-      <div class="sidebar-subtitle">Barranquilla, Colombia</div>
+    <div class="sidebar" role="region" aria-label="Filtros de mapas">
+        <div class="sidebar-header">
+            <h3>Datos Ambientales</h3>
+            <div class="sidebar-subtitle">Barranquilla, Colombia</div>
+        </div>
+        <div class="sidebar-content">
+            <div class="filter-group">
+                <div class="filter-item" data-category="airQuality">
+                    <div
+                        class="filter-item-icon"
+                        style="background-color: rgba(255, 234, 0, 0.1); color: #FFEA00;"
+                    >
+                        <i class="fas fa-wind"></i>
+                    </div>
+                    <div class="filter-item-content">
+                        <div class="filter-item-title">
+                            Calidad del aire <span class="category-count"
+                                >({validStations.length})</span
+                            >
+                        </div>
+                        <div class="filter-item-description">Estaciones de monitoreo</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked data-category="airQuality" />
+                        <span class="slider" data-category="airQuality"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="sidebar-content">
-      <div class="filter-group">
-        <div class="filter-item" data-category="airQuality">
-          <div class="filter-item-icon" style="background-color: rgba(255, 234, 0, 0.1); color: #FFEA00;"><i class="fas fa-wind"></i></div>
-          <div class="filter-item-content">
-            <div class="filter-item-title">Calidad del aire <span class="category-count">({validStations.length})</span></div>
-            <div class="filter-item-description">Estaciones de monitoreo</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" checked data-category="airQuality">
-            <span class="slider" data-category="airQuality"></span>
-          </label>
+    <div id="map" role="application" aria-label="Mapa Interactivo">
+        <!-- Overlay para activar el mapa al hacer clic -->
+        <div class="map-scroll-overlay" id="mapScrollOverlay">
+            <div class="map-click-hint">
+                <i class="fas fa-hand-pointer"></i>
+                <span>Haz clic para interactuar con el mapa</span>
+            </div>
         </div>
-      </div>
 
-      <div class="filter-group">
-        <div class="filter-item" data-category="biodiversity">
-          <div class="filter-item-icon" style="background-color: rgba(39, 155, 72, 0.1); color: #279B48;"><i class="fas fa-leaf"></i></div>
-          <div class="filter-item-content">
-            <div class="filter-item-title">Biodiversidad <span class="category-count">(0)</span></div>
-            <div class="filter-item-description">Reservas naturales, corredores</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" data-category="biodiversity">
-            <span class="slider" data-category="biodiversity"></span>
-          </label>
+        <!-- Controles personalizados del mapa -->
+        <div class="map-controls">
+            <button class="map-control-btn" id="zoomInBtn" title="Acercar" aria-label="Acercar zoom">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button class="map-control-btn" id="zoomOutBtn" title="Alejar" aria-label="Alejar zoom">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button class="map-control-btn" id="centerMapBtn" title="Centrar en Barranquilla" aria-label="Centrar mapa">
+                <i class="fas fa-crosshairs"></i>
+            </button>
+            <button class="map-control-btn" id="manualBtn" title="Manual de uso" aria-label="Abrir manual">
+                <i class="fas fa-question"></i>
+            </button>
         </div>
-      </div>
-
-      <div class="filter-group">
-        <div class="filter-item" data-category="soil">
-          <div class="filter-item-icon" style="background-color: rgba(57, 169, 52, 0.1); color: #39A934;"><i class="fas fa-mountain"></i></div>
-          <div class="filter-item-content">
-            <div class="filter-item-title">Suelo <span class="category-count">(0)</span></div>
-            <div class="filter-item-description">Calidad, erosión, uso de tierra</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" data-category="soil">
-            <span class="slider" data-category="soil"></span>
-          </label>
-        </div>
-      </div>
     </div>
-  </div>
-  <div id="map" role="application" aria-label="Mapa Interactivo"></div>
 </div>
 
 <!-- Modal personalizado mejorado -->
 <div id="stationModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <!-- Header del modal -->
-    <div class="modal-header">
-      <h3 id="modalStationTitle">Estación de Monitoreo</h3>
-      <button class="modal-close" aria-label="Cerrar">&times;</button>
-    </div>
-    
-    <!-- Body del modal -->
-    <div class="modal-body">
-      <!-- Formulario de selección -->
-      <div class="modal-form">
-        <div class="form-group">
-          <label for="yearSelect"><i class="fas fa-calendar-alt"></i> Año</label>
-          <select id="yearSelect" disabled>
-            <option value="">Cargando...</option>
-          </select>
+    <div class="modal-content">
+        <!-- Header del modal -->
+        <div class="modal-header">
+            <h3 id="modalStationTitle">Estación de Monitoreo</h3>
+            <button class="modal-close" aria-label="Cerrar">&times;</button>
         </div>
-        
-        <div class="form-group">
-          <label for="monthSelect"><i class="fas fa-calendar-day"></i> Mes</label>
-          <select id="monthSelect" disabled>
-            <option value="">Seleccione un año</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="chartSelect"><i class="fas fa-chart-line"></i> Variable</label>
-          <select id="chartSelect" disabled>
-            <option value="">Cargando...</option>
-          </select>
-        </div>
-        
-        <div class="form-group" style="display: flex; align-items: flex-end;">
-          <button id="viewChartBtn" class="btn-primary" disabled>
-            <i class="fas fa-eye"></i> Ver gráfico
-          </button>
-        </div>
-      </div>
-      
-      <!-- Sección de la gráfica -->
-      <div class="chart-section">
-        <div class="chart-header">
-          <div>
-            <div class="chart-title">
-              <i class="fas fa-chart-area"></i>
-              <span id="chartTitleText">Visualización de Datos</span>
+
+        <!-- Body del modal -->
+        <div class="modal-body">
+            <!-- Formulario de selección -->
+            <div class="modal-form">
+                <div class="form-group">
+                    <label for="yearSelect"><i class="fas fa-calendar-alt"></i> Año</label>
+                    <select id="yearSelect" disabled>
+                        <option value="">Cargando...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="monthSelect"><i class="fas fa-calendar-day"></i> Mes</label>
+                    <select id="monthSelect" disabled>
+                        <option value="">Seleccione un año</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="chartSelect"><i class="fas fa-chart-line"></i> Variable</label>
+                    <select id="chartSelect" disabled>
+                        <option value="">Cargando...</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button id="viewChartBtn" class="btn-primary" disabled>
+                        <i class="fas fa-eye"></i> Ver gráfico
+                    </button>
+                </div>
             </div>
-            <div class="chart-subtitle" id="chartSubtitle">Selecciona los parámetros para ver el gráfico</div>
-          </div>
+
+            <!-- Sección de la gráfica -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">
+                            <i class="fas fa-chart-area"></i>
+                            <span id="chartTitleText">Visualización de Datos</span>
+                        </div>
+                        <div class="chart-subtitle" id="chartSubtitle">
+                            Selecciona los parámetros para ver el gráfico
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container" id="chartContainerWrapper">
+                    <div class="chart-empty-state" id="chartEmptyState">
+                        <i class="fas fa-chart-line"></i>
+                        <p>Selecciona un año, mes y variable para visualizar los datos</p>
+                    </div>
+                    <canvas id="chartCanvas" style="display: none;"></canvas>
+                </div>
+            </div>
         </div>
-        
-        <div class="chart-container" id="chartContainerWrapper">
-          <div class="chart-empty-state" id="chartEmptyState">
-            <i class="fas fa-chart-line"></i>
-            <p>Selecciona un año, mes y variable para visualizar los datos</p>
-          </div>
-          <canvas id="chartCanvas" style="display: none;"></canvas>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
+
+<!-- Modal de Manual de Uso -->
+<div id="manualModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content manual-modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-book-open"></i> Manual de Uso del Mapa</h3>
+            <button class="modal-close manual-modal-close" aria-label="Cerrar">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="manual-step">
+                <div class="manual-step-number">1</div>
+                <div class="manual-step-content">
+                    <div class="manual-step-title">Activar el mapa</div>
+                    <div class="manual-step-description">
+                        Haz clic en el mapa para activarlo y poder interactuar. Esto evita que el scroll de la página afecte al mapa.
+                    </div>
+                </div>
+                <div class="manual-step-image">
+                    <!-- Aquí puedes agregar tu imagen -->
+                    <i class="fas fa-hand-pointer"></i>
+                </div>
+            </div>
+
+            <div class="manual-step">
+                <div class="manual-step-number">2</div>
+                <div class="manual-step-content">
+                    <div class="manual-step-title">Acercar y alejar</div>
+                    <div class="manual-step-description">
+                        Usa los botones + y - en la esquina superior derecha para hacer zoom, o usa la rueda del mouse cuando el mapa esté activo.
+                    </div>
+                </div>
+                <div class="manual-step-image">
+                    <!-- Aquí puedes agregar tu imagen -->
+                    <i class="fas fa-search-plus"></i>
+                </div>
+            </div>
+
+            <div class="manual-step">
+                <div class="manual-step-number">3</div>
+                <div class="manual-step-content">
+                    <div class="manual-step-title">Navegar por el mapa</div>
+                    <div class="manual-step-description">
+                        Arrastra el mapa con el mouse o con el dedo (en dispositivos táctiles) para moverte por diferentes áreas.
+                    </div>
+                </div>
+                <div class="manual-step-image">
+                    <!-- Aquí puedes agregar tu imagen -->
+                    <i class="fas fa-arrows-alt"></i>
+                </div>
+            </div>
+
+            <div class="manual-step">
+                <div class="manual-step-number">4</div>
+                <div class="manual-step-content">
+                    <div class="manual-step-title">Ver estaciones</div>
+                    <div class="manual-step-description">
+                        Haz clic en los marcadores numerados para ver la información detallada de cada estación de monitoreo.
+                    </div>
+                </div>
+                <div class="manual-step-image">
+                    <!-- Aquí puedes agregar tu imagen -->
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+            </div>
+
+            <div class="manual-step">
+                <div class="manual-step-number">5</div>
+                <div class="manual-step-content">
+                    <div class="manual-step-title">Centrar en Barranquilla</div>
+                    <div class="manual-step-description">
+                        Usa el botón con el ícono de cruz para volver rápidamente a la vista centrada en Barranquilla.
+                    </div>
+                </div>
+                <div class="manual-step-image">
+                    <!-- Aquí puedes agregar tu imagen -->
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+            </div>
+
+            <div class="manual-step">
+                <div class="manual-step-number">6</div>
+                <div class="manual-step-content">
+                    <div class="manual-step-title">Filtrar categorías</div>
+                    <div class="manual-step-description">
+                        Usa los interruptores en el panel lateral para mostrar u ocultar diferentes tipos de estaciones (calidad del aire, biodiversidad, suelo).
+                    </div>
+                </div>
+                <div class="manual-step-image">
+                    <!-- Aquí puedes agregar tu imagen -->
+                    <i class="fas fa-filter"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Datos para el frontend -->
@@ -669,523 +983,573 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-  // Función básica de sanitización
-  function escapeHtml(unsafe) {
-    if (typeof unsafe !== 'string') return String(unsafe);
-    return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  if (typeof window !== "undefined") {
-    // Obtener estaciones desde el DOM
-    const stationDataEl = document.getElementById('station-data');
-    const stationsFromServer = stationDataEl 
-      ? JSON.parse(stationDataEl.dataset.stations) 
-      : [];
-
-    // Obtener la URL base desde la variable de entorno pública
-    const API_BASE_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
-
-    let currentStationData = null;
-    let chartInstance = null; // Para reutilizar o destruir la gráfica
-
-    const categoriesConfig = {
-      airQuality: { color: '#FFEA00' },
-      biodiversity: { color: 'var(--bv-verde-primario-dark)' },
-      soil: { color: 'rgba(137, 81, 41, 1)' }
-    };
-
-    const normalizedStations = stationsFromServer.map(station => ({
-      ...station,
-      lng: station.lon
-    }));
-
-    const airQualityMarkers = normalizedStations.map(station => ({
-      id: station._id,
-      name: station.name,
-      lat: station.lat,
-      lng: station.lng,
-      category: 'airQuality',
-      charts_permited: station.charts_permited || []
-    }));
-
-    const allMarkersData = [...airQualityMarkers];
-    let map;
-    let currentMarkers = {};
-
-    function createCustomMarkerIcon(color, number) {
-      let actualColor = color;
-      if (color.startsWith('var(')) {
-        const rootStyles = getComputedStyle(document.documentElement);
-        const varName = color.match(/var\(([^,)]+)/)?.[1] || '';
-        actualColor = rootStyles.getPropertyValue(varName).trim() || color;
-      }
-      return L.divIcon({
-        className: 'custom-marker-icon',
-        html: `<div style="background-color: ${actualColor};" class="marker-bubble">${number}</div>`,
-        iconSize: [36, 48],
-        iconAnchor: [18, 42],
-        popupAnchor: [0, -42]
-      });
+    // Función básica de sanitización
+    function escapeHtml(unsafe) {
+        if (typeof unsafe !== "string") return String(unsafe);
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
-    // Función para mostrar el estado de carga
-    function showChartLoading() {
-      const canvas = document.getElementById('chartCanvas');
-      const emptyState = document.getElementById('chartEmptyState');
-      
-      canvas.style.display = 'none';
-      emptyState.innerHTML = `
+    if (typeof window !== "undefined") {
+        // Obtener estaciones desde el DOM
+        const stationDataEl = document.getElementById("station-data");
+        const stationsFromServer = stationDataEl ? JSON.parse(stationDataEl.dataset.stations) : [];
+
+        // Obtener la URL base desde la variable de entorno pública
+        const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8000";
+
+        let currentStationData = null;
+        let chartInstance = null; // Para reutilizar o destruir la gráfica
+
+        const categoriesConfig = {
+            airQuality: { color: "#FFEA00" },
+            biodiversity: { color: "var(--bv-verde-primario-dark)" },
+            soil: { color: "rgba(137, 81, 41, 1)" },
+        };
+
+        const normalizedStations = stationsFromServer.map((station) => ({
+            ...station,
+            lng: station.lon,
+        }));
+
+        const airQualityMarkers = normalizedStations.map((station) => ({
+            id: station._id,
+            name: station.name,
+            lat: station.lat,
+            lng: station.lng,
+            category: "airQuality",
+            charts_permited: station.charts_permited || [],
+        }));
+
+        const allMarkersData = [...airQualityMarkers];
+        let map;
+        let currentMarkers = {};
+
+        function createCustomMarkerIcon(color, number) {
+            let actualColor = color;
+            if (color.startsWith("var(")) {
+                const rootStyles = getComputedStyle(document.documentElement);
+                const varName = color.match(/var\(([^,)]+)/)?.[1] || "";
+                actualColor = rootStyles.getPropertyValue(varName).trim() || color;
+            }
+            return L.divIcon({
+                className: "custom-marker-icon",
+                html: `<div style="background-color: ${actualColor};" class="marker-bubble">${number}</div>`,
+                iconSize: [36, 48],
+                iconAnchor: [18, 42],
+                popupAnchor: [0, -42],
+            });
+        }
+
+        // Función para mostrar el estado de carga
+        function showChartLoading() {
+            const canvas = document.getElementById("chartCanvas");
+            const emptyState = document.getElementById("chartEmptyState");
+
+            canvas.style.display = "none";
+            emptyState.innerHTML = `
         <div class="chart-loading">
           <div class="spinner"></div>
           <p>Cargando datos...</p>
         </div>
       `;
-      emptyState.style.display = 'flex';
-    }
+            emptyState.style.display = "flex";
+        }
 
-    // Función para ocultar el canvas y mostrar empty state
-    function showEmptyState() {
-      const canvas = document.getElementById('chartCanvas');
-      const emptyState = document.getElementById('chartEmptyState');
-      
-      canvas.style.display = 'none';
-      emptyState.innerHTML = `
+        // Función para ocultar el canvas y mostrar empty state
+        function showEmptyState() {
+            const canvas = document.getElementById("chartCanvas");
+            const emptyState = document.getElementById("chartEmptyState");
+
+            canvas.style.display = "none";
+            emptyState.innerHTML = `
         <i class="fas fa-chart-line"></i>
         <p>Selecciona un año, mes y variable para visualizar los datos</p>
       `;
-      emptyState.style.display = 'flex';
-    }
-
-    // Función para mostrar el canvas
-    function showChart() {
-      const canvas = document.getElementById('chartCanvas');
-      const emptyState = document.getElementById('chartEmptyState');
-      
-      canvas.style.display = 'block';
-      emptyState.style.display = 'none';
-    }
-
-    async function openStationModal(stationData) {
-      currentStationData = stationData;
-      const modal = document.getElementById('stationModal');
-      modal.style.display = 'flex';
-
-      document.getElementById('modalStationTitle').textContent = stationData.name;
-
-      const yearSelect = document.getElementById('yearSelect');
-      const monthSelect = document.getElementById('monthSelect');
-      const chartSelect = document.getElementById('chartSelect');
-      const viewBtn = document.getElementById('viewChartBtn');
-
-      yearSelect.innerHTML = '<option value="">Cargando años...</option>';
-      monthSelect.innerHTML = '<option value="">Seleccione un año</option>';
-      chartSelect.innerHTML = '<option value="">Cargando gráficos...</option>';
-      yearSelect.disabled = true;
-      monthSelect.disabled = true;
-      chartSelect.disabled = true;
-      viewBtn.disabled = true;
-
-      // Resetear gráfica
-      showEmptyState();
-
-      try {
-        // Gráficos
-        if (Array.isArray(stationData.charts_permited) && stationData.charts_permited.length > 0) {
-          chartSelect.innerHTML = '';
-          stationData.charts_permited.forEach(chart => {
-            const opt = document.createElement('option');
-            opt.value = chart;
-            opt.textContent = chart;
-            chartSelect.appendChild(opt);
-          });
-          chartSelect.disabled = false;
-        } else {
-          chartSelect.innerHTML = '<option value="">No hay gráficos</option>';
+            emptyState.style.display = "flex";
         }
 
-        // Token
-        const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
-        const token = tokenMatch ? tokenMatch[2] : '';
+        // Función para mostrar el canvas
+        function showChart() {
+            const canvas = document.getElementById("chartCanvas");
+            const emptyState = document.getElementById("chartEmptyState");
 
-        // Llamar al endpoint con la URL base
-        const response = await fetch(`${API_BASE_URL}/station-data/available-periods?station_id=${encodeURIComponent(stationData.id)}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-          }
-        });
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const periods = await response.json();
-        currentStationData._periods = periods;
-
-        const years = Object.keys(periods).sort((a, b) => parseInt(b) - parseInt(a));
-        if (years.length > 0) {
-          yearSelect.innerHTML = '';
-          years.forEach(year => {
-            const opt = document.createElement('option');
-            opt.value = year;
-            opt.textContent = year;
-            yearSelect.appendChild(opt);
-          });
-          yearSelect.disabled = false;
-        } else {
-          yearSelect.innerHTML = '<option value="">No hay datos</option>';
+            canvas.style.display = "block";
+            emptyState.style.display = "none";
         }
 
-        updateViewButtonState();
-      } catch (error) {
-        console.error("Error al cargar periodos:", error);
-        yearSelect.innerHTML = '<option value="">Error al cargar</option>';
-        chartSelect.innerHTML = '<option value="">Error al cargar</option>';
-      }
+        async function openStationModal(stationData) {
+            currentStationData = stationData;
+            const modal = document.getElementById("stationModal");
+            modal.style.display = "flex";
 
-      const periods = currentStationData?._periods || {};
+            document.getElementById("modalStationTitle").textContent = stationData.name;
 
-        if (yearSelect.value && periods[yearSelect.value]) {
-          monthSelect.disabled = false;
-          periods[yearSelect.value].forEach(month => {
-            const opt = document.createElement('option');
-            opt.selected = true;
-            opt.value = month;
-            opt.textContent = month.charAt(0).toUpperCase() + month.slice(1);
-            monthSelect.appendChild(opt);
-          });
-        } else {
-          monthSelect.disabled = true;
-          monthSelect.innerHTML = '<option value="">Seleccione un año</option>';
-        }
-        updateViewButtonState();
-    }
+            const yearSelect = document.getElementById("yearSelect");
+            const monthSelect = document.getElementById("monthSelect");
+            const chartSelect = document.getElementById("chartSelect");
+            const viewBtn = document.getElementById("viewChartBtn");
 
-    function updateViewButtonState() {
-      const year = document.getElementById('yearSelect').value;
-      const chart = document.getElementById('chartSelect').value;
-      document.getElementById('viewChartBtn').disabled = !(year && chart);
-    }
+            yearSelect.innerHTML = '<option value="">Cargando años...</option>';
+            monthSelect.innerHTML = '<option value="">Seleccione un año</option>';
+            chartSelect.innerHTML = '<option value="">Cargando gráficos...</option>';
+            yearSelect.disabled = true;
+            monthSelect.disabled = true;
+            chartSelect.disabled = true;
+            viewBtn.disabled = true;
 
-    function closeStationModal() {
-      document.getElementById('stationModal').style.display = 'none';
-      currentStationData = null;
-      // Destruir gráfica si existe
-      if (chartInstance) {
-        chartInstance.destroy();
-        chartInstance = null;
-      }
-      showEmptyState();
-    }
+            // Resetear gráfica
+            showEmptyState();
 
-    function renderMarkers() {
-      for (const category in currentMarkers) {
-        (currentMarkers[category] || []).forEach(marker => map.removeLayer(marker));
-      }
-      currentMarkers = {};
-
-      const activeCategories = Array.from(
-        document.querySelectorAll('.sidebar input[type="checkbox"]:checked')
-      ).map(input => input.dataset.category);
-
-      document.querySelectorAll('.filter-item').forEach(item => {
-        item.classList.toggle('active', activeCategories.includes(item.dataset.category));
-      });
-
-      activeCategories.forEach(activeCat => {
-        currentMarkers[activeCat] = [];
-        const markersForCategory = allMarkersData.filter(data => data.category === activeCat);
-
-        markersForCategory.forEach((markerData, index) => {
-          const color = categoriesConfig[activeCat].color;
-          const markerIcon = createCustomMarkerIcon(color, index + 1);
-          const marker = L.marker([markerData.lat, markerData.lng], { icon: markerIcon })
-            .addTo(map)
-            .on('click', () => openStationModal(markerData));
-          currentMarkers[activeCat].push(marker);
-        });
-      });
-    }
-
-    function loadLeaflet() {
-      map = L.map("map", { 
-        center: [10.9877, -74.8055], 
-        zoom: 13, 
-        zoomControl: false 
-      });
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
-        maxZoom: 19
-      }).addTo(map);
-
-      renderMarkers();
-
-      document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', renderMarkers);
-      });
-
-      // Eventos del modal
-      document.querySelector('.modal-close').addEventListener('click', closeStationModal);
-      document.getElementById('stationModal').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('stationModal')) closeStationModal();
-      });
-      
-      // Cambio de año → llenar meses
-      document.getElementById('yearSelect').addEventListener('change', function() {
-        const monthSelect = document.getElementById('monthSelect');
-        const periods = currentStationData?._periods || {};
-
-        monthSelect.innerHTML = '';
-        if (this.value && periods[this.value]) {
-          monthSelect.disabled = false;
-          periods[this.value].forEach(month => {
-            const opt = document.createElement('option');
-            opt.value = month;
-            opt.textContent = month.charAt(0).toUpperCase() + month.slice(1);
-            monthSelect.appendChild(opt);
-          });
-        } else {
-          monthSelect.disabled = true;
-          monthSelect.innerHTML = '<option value="">Seleccione un año</option>';
-        }
-        updateViewButtonState();
-      });
-
-      document.getElementById('chartSelect').addEventListener('change', updateViewButtonState);
-
-      // Evento del botón Ver Gráfico (mejorado)
-      document.getElementById('viewChartBtn').addEventListener('click', async () => {
-        const year = document.getElementById('yearSelect').value;
-        const month = document.getElementById('monthSelect').value || 'all';
-        const chart = document.getElementById('chartSelect').value;
-        const stationId = currentStationData.id;
-
-        if (!year || !chart) return;
-
-        // Mostrar loading
-        showChartLoading();
-
-        // Limpiar gráfica anterior
-        if (chartInstance) {
-          chartInstance.destroy();
-          chartInstance = null;
-        }
-
-        try {
-          const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
-          const token = tokenMatch ? tokenMatch[2] : '';
-
-          const url = `${API_BASE_URL}/station-data/hourly-by-month?station_id=${encodeURIComponent(stationId)}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}&variable=${encodeURIComponent(chart)}`;
-
-          const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-            }
-          });
-
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-          const data = await response.json();
-
-          if (!data.y || !Array.isArray(data.y)) {
-            throw new Error('Respuesta inválida: no contiene arreglo "y"');
-          }
-
-          // Mostrar canvas
-          showChart();
-
-          // Crear etiquetas para el eje X
-          const xLabels = data.y.map((_, i) => i);
-
-          // Configurar título y subtítulo
-          const monthName = month === 'all' ? 'Todo el año' : month.charAt(0).toUpperCase() + month.slice(1);
-          document.getElementById('chartTitleText').textContent = chart;
-          document.getElementById('chartSubtitle').textContent = `${monthName} ${year} - Datos por hora`;
-
-          // Obtener el canvas
-          const ctx = document.getElementById('chartCanvas').getContext('2d');
-
-          // Crear gradiente dinámico
-          const gradient = ctx.createLinearGradient(0, 0, 0, 350);
-          gradient.addColorStop(0, 'rgba(55, 180, 72, 0.3)');
-          gradient.addColorStop(1, 'rgba(55, 180, 72, 0.01)');
-
-          // Configurar datos
-          const chartData = {
-            labels: xLabels,
-            datasets: [{
-              label: chart,
-              data: data.y,
-              borderColor: '#37B448',
-              backgroundColor: gradient,
-              borderWidth: 3,
-              pointRadius: 0,
-              pointHoverRadius: 8,
-              pointHoverBackgroundColor: '#37B448',
-              pointHoverBorderColor: '#fff',
-              pointHoverBorderWidth: 3,
-              fill: true,
-              tension: 0.4,
-              cubicInterpolationMode: 'monotone'
-            }]
-          };
-
-          // Calcular estadísticas
-          const values = data.y.filter(v => v !== null && !isNaN(v));
-          const minValue = Math.min(...values);
-          const maxValue = Math.max(...values);
-          const avgValue = values.reduce((a, b) => a + b, 0) / values.length;
-
-          // Opciones avanzadas
-          const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-              duration: 1200,
-              easing: 'easeOutQuart'
-            },
-            plugins: {
-              legend: {
-                display: false
-              },
-              tooltip: {
-                enabled: true,
-                backgroundColor: 'rgba(25, 25, 35, 0.95)',
-                titleColor: '#fff',
-                bodyColor: '#fff',
-                titleFont: {
-                  family: "'Inter', sans-serif",
-                  size: 14,
-                  weight: '600'
-                },
-                bodyFont: {
-                  family: "'Inter', sans-serif",
-                  size: 13
-                },
-                padding: 16,
-                cornerRadius: 12,
-                displayColors: false,
-                borderColor: 'rgba(55, 180, 72, 0.5)',
-                borderWidth: 1,
-                callbacks: {
-                  title: (tooltipItems) => `Hora ${tooltipItems[0].dataIndex}`,
-                  label: (tooltipItem) => {
-                    const value = tooltipItem.raw;
-                    return [
-                      `Valor: ${value.toFixed(2)}`,
-                      ``,
-                      `Promedio: ${avgValue.toFixed(2)}`,
-                      `Mínimo: ${minValue.toFixed(2)}`,
-                      `Máximo: ${maxValue.toFixed(2)}`
-                    ];
-                  }
-                }
-              }
-            },
-            scales: {
-              x: {
-                display: true,
-                grid: {
-                  display: false
-                },
-                ticks: {
-                  font: {
-                    family: "'Inter', sans-serif",
-                    size: 11
-                  },
-                  color: '#6B7280',
-                  maxTicksLimit: 12,
-                  callback: function(value) {
-                    return value % 24 === 0 ? `${value}h` : '';
-                  }
-                },
-                title: {
-                  display: true,
-                  text: 'Horas',
-                  font: {
-                    family: "'Inter', sans-serif",
-                    size: 12,
-                    weight: '600'
-                  },
-                  color: '#4B5563'
-                }
-              },
-              y: {
-                beginAtZero: false,
-                grid: {
-                  color: 'rgba(0, 0, 0, 0.06)',
-                  drawBorder: false,
-                  lineWidth: 1
-                },
-                ticks: {
-                  font: {
-                    family: "'Inter', sans-serif",
-                    size: 12
-                  },
-                  color: '#6B7280',
-                  padding: 8,
-                  callback: function(value) {
-                    return value.toLocaleString('es-CO', { 
-                      maximumFractionDigits: 1 
+            try {
+                // Gráficos
+                if (
+                    Array.isArray(stationData.charts_permited) &&
+                    stationData.charts_permited.length > 0
+                ) {
+                    chartSelect.innerHTML = "";
+                    stationData.charts_permited.forEach((chart) => {
+                        const opt = document.createElement("option");
+                        opt.value = chart;
+                        opt.textContent = chart;
+                        chartSelect.appendChild(opt);
                     });
-                  }
-                },
-                title: {
-                  display: true,
-                  text: chart,
-                  font: {
-                    family: "'Inter', sans-serif",
-                    size: 13,
-                    weight: '600'
-                  },
-                  color: '#374151',
-                  padding: { top: 0, bottom: 10 }
+                    chartSelect.disabled = false;
+                } else {
+                    chartSelect.innerHTML = '<option value="">No hay gráficos</option>';
                 }
-              }
-            },
-            interaction: {
-              intersect: false,
-              mode: 'index'
+
+                // Token
+                const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
+                const token = tokenMatch ? tokenMatch[2] : "";
+
+                // Llamar al endpoint con la URL base
+                const response = await fetch(
+                    `${API_BASE_URL}/station-data/available-periods?station_id=${encodeURIComponent(stationData.id)}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Accept: "application/json",
+                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                        },
+                    }
+                );
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const periods = await response.json();
+                currentStationData._periods = periods;
+
+                const years = Object.keys(periods).sort((a, b) => parseInt(b) - parseInt(a));
+                if (years.length > 0) {
+                    yearSelect.innerHTML = "";
+                    years.forEach((year) => {
+                        const opt = document.createElement("option");
+                        opt.value = year;
+                        opt.textContent = year;
+                        yearSelect.appendChild(opt);
+                    });
+                    yearSelect.disabled = false;
+                } else {
+                    yearSelect.innerHTML = '<option value="">No hay datos</option>';
+                }
+
+                updateViewButtonState();
+            } catch (error) {
+                console.error("Error al cargar periodos:", error);
+                yearSelect.innerHTML = '<option value="">Error al cargar</option>';
+                chartSelect.innerHTML = '<option value="">Error al cargar</option>';
             }
-          };
+        }
 
-          // Crear la gráfica
-          chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: chartData,
-            options: chartOptions
-          });
+        function updateViewButtonState() {
+            const year = document.getElementById("yearSelect").value;
+            const chart = document.getElementById("chartSelect").value;
+            document.getElementById("viewChartBtn").disabled = !(year && chart);
+        }
 
-        } catch (error) {
-          console.error("Error al cargar la gráfica:", error);
-          
-          // Mostrar estado de error
-          const emptyState = document.getElementById('chartEmptyState');
-          emptyState.innerHTML = `
+        function closeStationModal() {
+            document.getElementById("stationModal").style.display = "none";
+            currentStationData = null;
+            // Destruir gráfica si existe
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+            showEmptyState();
+        }
+
+        function renderMarkers() {
+            for (const category in currentMarkers) {
+                (currentMarkers[category] || []).forEach((marker) => map.removeLayer(marker));
+            }
+            currentMarkers = {};
+
+            const activeCategories = Array.from(
+                document.querySelectorAll('.sidebar input[type="checkbox"]:checked')
+            ).map((input) => input.dataset.category);
+
+            document.querySelectorAll(".filter-item").forEach((item) => {
+                item.classList.toggle("active", activeCategories.includes(item.dataset.category));
+            });
+
+            activeCategories.forEach((activeCat) => {
+                currentMarkers[activeCat] = [];
+                const markersForCategory = allMarkersData.filter(
+                    (data) => data.category === activeCat
+                );
+
+                markersForCategory.forEach((markerData, index) => {
+                    const color = categoriesConfig[activeCat].color;
+                    const markerIcon = createCustomMarkerIcon(color, index + 1);
+                    const marker = L.marker([markerData.lat, markerData.lng], { icon: markerIcon })
+                        .addTo(map)
+                        .on("click", () => openStationModal(markerData));
+                    currentMarkers[activeCat].push(marker);
+                });
+            });
+        }
+
+        function loadLeaflet() {
+            map = L.map("map", {
+                center: [10.9877, -74.8055],
+                zoom: 13,
+                zoomControl: false,
+                scrollWheelZoom: false, // Desactivar scroll wheel inicialmente
+                dragging: false, // Desactivar arrastre inicialmente
+            });
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution:
+                    "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+                maxZoom: 19,
+            }).addTo(map);
+
+            renderMarkers();
+
+            // Gestionar activación del mapa
+            const mapScrollOverlay = document.getElementById("mapScrollOverlay");
+            const mapContainer = document.getElementById("map");
+
+            mapScrollOverlay.addEventListener("click", () => {
+                mapScrollOverlay.classList.add("active");
+                map.scrollWheelZoom.enable();
+                map.dragging.enable();
+            });
+
+            // Desactivar mapa al hacer clic fuera
+            document.addEventListener("click", (e) => {
+                if (!mapContainer.contains(e.target)) {
+                    mapScrollOverlay.classList.remove("active");
+                    map.scrollWheelZoom.disable();
+                    map.dragging.disable();
+                }
+            });
+
+            // Controles personalizados
+            document.getElementById("zoomInBtn").addEventListener("click", () => {
+                map.zoomIn();
+            });
+
+            document.getElementById("zoomOutBtn").addEventListener("click", () => {
+                map.zoomOut();
+            });
+
+            document.getElementById("centerMapBtn").addEventListener("click", () => {
+                map.setView([10.9877, -74.8055], 13, {
+                    animate: true,
+                    duration: 1,
+                });
+            });
+
+            // Abrir modal de manual
+            document.getElementById("manualBtn").addEventListener("click", () => {
+                document.getElementById("manualModal").style.display = "flex";
+            });
+
+            // Cerrar modal de manual
+            document.querySelector(".manual-modal-close").addEventListener("click", () => {
+                document.getElementById("manualModal").style.display = "none";
+            });
+
+            document.getElementById("manualModal").addEventListener("click", (e) => {
+                if (e.target === document.getElementById("manualModal")) {
+                    document.getElementById("manualModal").style.display = "none";
+                }
+            });
+
+            document.querySelectorAll('.sidebar input[type="checkbox"]').forEach((checkbox) => {
+                checkbox.addEventListener("change", renderMarkers);
+            });
+
+            // Eventos del modal de estación
+            document.querySelector(".modal-close").addEventListener("click", closeStationModal);
+            document.getElementById("stationModal").addEventListener("click", (e) => {
+                if (e.target === document.getElementById("stationModal")) closeStationModal();
+            });
+
+            // Cambio de año → llenar meses
+            document.getElementById("yearSelect").addEventListener("change", function () {
+                const monthSelect = document.getElementById("monthSelect");
+                const periods = currentStationData?._periods || {};
+
+                monthSelect.innerHTML = "";
+                if (this.value && periods[this.value]) {
+                    monthSelect.disabled = false;
+                    periods[this.value].forEach((month) => {
+                        const opt = document.createElement("option");
+                        opt.value = month;
+                        opt.textContent = month.charAt(0).toUpperCase() + month.slice(1);
+                        monthSelect.appendChild(opt);
+                    });
+                } else {
+                    monthSelect.disabled = true;
+                    monthSelect.innerHTML = '<option value="">Seleccione un año</option>';
+                }
+                updateViewButtonState();
+            });
+
+            document
+                .getElementById("chartSelect")
+                .addEventListener("change", updateViewButtonState);
+
+            // Evento del botón Ver Gráfico (mejorado)
+            document.getElementById("viewChartBtn").addEventListener("click", async () => {
+                const year = document.getElementById("yearSelect").value;
+                const month = document.getElementById("monthSelect").value || "all";
+                const chart = document.getElementById("chartSelect").value;
+                const stationId = currentStationData.id;
+
+                if (!year || !chart) return;
+
+                // Mostrar loading
+                showChartLoading();
+
+                // Limpiar gráfica anterior
+                if (chartInstance) {
+                    chartInstance.destroy();
+                    chartInstance = null;
+                }
+
+                try {
+                    const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
+                    const token = tokenMatch ? tokenMatch[2] : "";
+
+                    const url = `${API_BASE_URL}/station-data/hourly-by-month?station_id=${encodeURIComponent(stationId)}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}&variable=${encodeURIComponent(chart)}`;
+
+                    const response = await fetch(url, {
+                        method: "GET",
+                        headers: {
+                            Accept: "application/json",
+                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                        },
+                    });
+
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                    const data = await response.json();
+
+                    if (!data.y || !Array.isArray(data.y)) {
+                        throw new Error('Respuesta inválida: no contiene arreglo "y"');
+                    }
+
+                    // Mostrar canvas
+                    showChart();
+
+                    // Crear etiquetas para el eje X
+                    const xLabels = data.y.map((_, i) => i);
+
+                    // Configurar título y subtítulo
+                    const monthName =
+                        month === "all"
+                            ? "Todo el año"
+                            : month.charAt(0).toUpperCase() + month.slice(1);
+                    document.getElementById("chartTitleText").textContent = chart;
+                    document.getElementById("chartSubtitle").textContent =
+                        `${monthName} ${year} - Datos por hora`;
+
+                    // Obtener el canvas
+                    const ctx = document.getElementById("chartCanvas").getContext("2d");
+
+                    // Crear gradiente dinámico
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+                    gradient.addColorStop(0, "rgba(55, 180, 72, 0.3)");
+                    gradient.addColorStop(1, "rgba(55, 180, 72, 0.01)");
+
+                    // Configurar datos
+                    const chartData = {
+                        labels: xLabels,
+                        datasets: [
+                            {
+                                label: chart,
+                                data: data.y,
+                                borderColor: "#37B448",
+                                backgroundColor: gradient,
+                                borderWidth: 3,
+                                pointRadius: 0,
+                                pointHoverRadius: 8,
+                                pointHoverBackgroundColor: "#37B448",
+                                pointHoverBorderColor: "#fff",
+                                pointHoverBorderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                cubicInterpolationMode: "monotone",
+                            },
+                        ],
+                    };
+
+                    // Calcular estadísticas
+                    const values = data.y.filter((v) => v !== null && !isNaN(v));
+                    const minValue = Math.min(...values);
+                    const maxValue = Math.max(...values);
+                    const avgValue = values.reduce((a, b) => a + b, 0) / values.length;
+
+                    // Opciones avanzadas
+                    const chartOptions = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 1200,
+                            easing: "easeOutQuart",
+                        },
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: "rgba(25, 25, 35, 0.95)",
+                                titleColor: "#fff",
+                                bodyColor: "#fff",
+                                titleFont: {
+                                    family: "'Inter', sans-serif",
+                                    size: 14,
+                                    weight: "600",
+                                },
+                                bodyFont: {
+                                    family: "'Inter', sans-serif",
+                                    size: 13,
+                                },
+                                padding: 16,
+                                cornerRadius: 12,
+                                displayColors: false,
+                                borderColor: "rgba(55, 180, 72, 0.5)",
+                                borderWidth: 1,
+                                callbacks: {
+                                    title: (tooltipItems) => `Hora ${tooltipItems[0].dataIndex}`,
+                                    label: (tooltipItem) => {
+                                        const value = tooltipItem.raw;
+                                        return [
+                                            `Valor: ${value.toFixed(2)}`,
+                                            ``,
+                                            `Promedio: ${avgValue.toFixed(2)}`,
+                                            `Mínimo: ${minValue.toFixed(2)}`,
+                                            `Máximo: ${maxValue.toFixed(2)}`,
+                                        ];
+                                    },
+                                },
+                            },
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                grid: {
+                                    display: false,
+                                },
+                                ticks: {
+                                    font: {
+                                        family: "'Inter', sans-serif",
+                                        size: 11,
+                                    },
+                                    color: "#6B7280",
+                                    maxTicksLimit: 12,
+                                    callback: function (value) {
+                                        return value % 24 === 0 ? `${value}h` : "";
+                                    },
+                                },
+                                title: {
+                                    display: true,
+                                    text: "Horas",
+                                    font: {
+                                        family: "'Inter', sans-serif",
+                                        size: 12,
+                                        weight: "600",
+                                    },
+                                    color: "#4B5563",
+                                },
+                            },
+                            y: {
+                                beginAtZero: false,
+                                grid: {
+                                    color: "rgba(0, 0, 0, 0.06)",
+                                    drawBorder: false,
+                                    lineWidth: 1,
+                                },
+                                ticks: {
+                                    font: {
+                                        family: "'Inter', sans-serif",
+                                        size: 12,
+                                    },
+                                    color: "#6B7280",
+                                    padding: 8,
+                                    callback: function (value) {
+                                        return value.toLocaleString("es-CO", {
+                                            maximumFractionDigits: 1,
+                                        });
+                                    },
+                                },
+                                title: {
+                                    display: true,
+                                    text: chart,
+                                    font: {
+                                        family: "'Inter', sans-serif",
+                                        size: 13,
+                                        weight: "600",
+                                    },
+                                    color: "#374151",
+                                    padding: { top: 0, bottom: 10 },
+                                },
+                            },
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: "index",
+                        },
+                    };
+
+                    // Crear la gráfica
+                    chartInstance = new Chart(ctx, {
+                        type: "line",
+                        data: chartData,
+                        options: chartOptions,
+                    });
+                } catch (error) {
+                    console.error("Error al cargar la gráfica:", error);
+
+                    // Mostrar estado de error
+                    const emptyState = document.getElementById("chartEmptyState");
+                    emptyState.innerHTML = `
             <i class="fas fa-exclamation-triangle" style="color: #EF4444;"></i>
             <p style="color: #EF4444;">Error al cargar los datos</p>
             <p style="font-size: 0.875rem; margin-top: 8px;">Por favor, inténtalo de nuevo</p>
           `;
-          emptyState.style.display = 'flex';
-          document.getElementById('chartCanvas').style.display = 'none';
+                    emptyState.style.display = "flex";
+                    document.getElementById("chartCanvas").style.display = "none";
+                }
+            });
         }
-      });
-    }
 
-    if (window.L) {
-      loadLeaflet();
-    } else {
-      const script = document.createElement("script");
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-      script.onload = loadLeaflet;
-      document.head.appendChild(script);
+        if (window.L) {
+            loadLeaflet();
+        } else {
+            const script = document.createElement("script");
+            script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+            script.onload = loadLeaflet;
+            document.head.appendChild(script);
+        }
     }
-  }
 </script>

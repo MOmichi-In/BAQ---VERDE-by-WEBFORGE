@@ -1,576 +1,583 @@
 ---
-import Layout from '../../../layouts/DashboardLayout.astro';
-import { api } from '../../../lib/api';
+import Layout from "../../../layouts/DashboardLayout.astro";
+import { api } from "../../../lib/api";
 
 export const prerender = false;
 
 const cookieStore = Astro.cookies;
-const sessionToken = cookieStore.get('token')?.value;
+const sessionToken = cookieStore.get("token")?.value;
 
 if (!sessionToken) {
-  return Astro.redirect('/login');
+    return Astro.redirect("/login");
 }
 
 // Borrar la cookie directamente desde el servidor si se pide
-if (Astro.url.searchParams.get('logout') === 'true') {
-  Astro.cookies.delete('token', { path: '/' });
-  return Astro.redirect('/login');
+if (Astro.url.searchParams.get("logout") === "true") {
+    Astro.cookies.delete("token", { path: "/" });
+    return Astro.redirect("/login");
 }
 
 let error = null;
 let success = null;
 
-if (Astro.request.method === 'POST') {
-  const formData = await Astro.request.formData();
-  const title = formData.get('title')?.toString();
-  const category = formData.get('category')?.toString();
-  const content = formData.get('content')?.toString();
-  const imageFile = formData.get('image') as File;
+if (Astro.request.method === "POST") {
+    const formData = await Astro.request.formData();
+    const title = formData.get("title")?.toString();
+    const category = formData.get("category")?.toString();
+    const content = formData.get("content")?.toString();
+    const imageFile = formData.get("image") as File;
 
-  if (!title || !content) {
-    error = 'Todos los campos son requeridos';
-  } else {
-    let img_url = null;
-
-    // Si hay imagen, convertirla a base64
-    if (imageFile && imageFile.size > 0) {
-      const arrayBuffer = await imageFile.arrayBuffer();
-      const base64 = Buffer.from(arrayBuffer).toString('base64');
-      const mimeType = imageFile.type;
-      img_url = `data:${imageFile.type};base64,${base64}`;
-    }
-
-    console.log(img_url)
-
-    const res = await api("/news/", sessionToken, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title,
-        category: "Participacion",
-        content,
-        img_url,
-      })
-    });
-
-    console.log(res)
-
-    if (res) {
-      success = 'Participación creada con éxito';
-      // Redirigir inmediatamente (no puedes usar setTimeout en server-side)
-      return Astro.redirect('/dashboard/stake');
+    if (!title || !content) {
+        error = "Todos los campos son requeridos";
     } else {
-      error = 'Error al crear la participación';
+        let img_url = null;
+
+        // Si hay imagen, convertirla a base64
+        if (imageFile && imageFile.size > 0) {
+            const arrayBuffer = await imageFile.arrayBuffer();
+            const base64 = Buffer.from(arrayBuffer).toString("base64");
+            const mimeType = imageFile.type;
+            img_url = `data:${imageFile.type};base64,${base64}`;
+        }
+
+        console.log(img_url);
+
+        const res = await api("/news/", sessionToken, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                title,
+                category: "Participacion",
+                content,
+                img_url,
+            }),
+        });
+
+        console.log(res);
+
+        if (res) {
+            success = "Participación creada con éxito";
+            // Redirigir inmediatamente (no puedes usar setTimeout en server-side)
+            return Astro.redirect("/dashboard/stake");
+        } else {
+            error = "Error al crear la participación";
+        }
     }
-  }
 }
 ---
 
 <Layout title="Crear Participación">
-  <div class="dashboard-container">
-    <!-- Header Section -->
-    <div class="dashboard-header">
-      <div class="header-content">
-        <div class="title-section">
-          <h1 class="dashboard-title">Crear Nueva Participación</h1>
-          <p class="dashboard-subtitle">Registra una nueva participación ciudadana en el observatorio</p>
-        </div>
-        <div class="header-actions">
-          <a href="/dashboard/stake" class="btn-back">
-            <span class="btn-icon">⬅️</span>
-            Volver al Panel
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Alert Messages -->
-    {error && (
-      <div class="alert alert-error">
-        <div class="alert-icon">⚠️</div>
-        <div class="alert-content">
-          <strong>Error:</strong> {error}
-        </div>
-      </div>
-    )}
-
-    {success && (
-      <div class="alert alert-success">
-        <div class="alert-icon">✅</div>
-        <div class="alert-content">
-          <strong>Éxito:</strong> {success}
-        </div>
-      </div>
-    )}
-
-    <!-- Form Section -->
-    <div class="form-container">
-      <div class="form-header">
-        <h2 class="form-title">Información de la Participación</h2>
-        <p class="form-subtitle">Completa todos los campos para registrar la participación ciudadana</p>
-      </div>
-
-      <form method="post" class="participacion-form" enctype="multipart/form-data">
-        <div class="form-grid">
-          <!-- Título -->
-          <div class="form-group full-width">
-            <label for="title" class="form-label">
-              <span class="label-icon">🤝</span>
-              Título de la Participación
-            </label>
-            <input 
-              type="text" 
-              id="title" 
-              name="title" 
-              class="form-input"
-              placeholder="Ingresa el título de la participación ciudadana..."
-              required 
-            />
-          </div>
-
-          <!-- Imagen -->
-          <div class="form-group full-width">
-            <label for="image" class="form-label">
-              <span class="label-icon">🖼️</span>
-              Imagen de la Participación
-            </label>
-            <div class="file-upload-wrapper">
-              <input 
-                type="file" 
-                id="image" 
-                name="image" 
-                class="file-input"
-                accept="image/*" 
-                required 
-              />
-              <label for="image" class="file-upload-label">
-                <span class="upload-icon">📁</span>
-                <span class="upload-text">Seleccionar imagen</span>
-                <span class="upload-hint">JPG, PNG, GIF hasta 10MB</span>
-              </label>
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="dashboard-title">Crear Nueva Participación</h1>
+                    <p class="dashboard-subtitle">
+                        Registra una nueva participación ciudadana en el observatorio
+                    </p>
+                </div>
+                <div class="header-actions">
+                    <a href="/dashboard/stake" class="btn-back">
+                        <span class="btn-icon">⬅️</span>
+                        Volver al Panel
+                    </a>
+                </div>
             </div>
-          </div>
-
-          <!-- Contenido -->
-          <div class="form-group full-width">
-            <label for="content" class="form-label">
-              <span class="label-icon">📝</span>
-              Descripción de la Participación
-            </label>
-            <textarea 
-              id="content" 
-              name="content" 
-              rows="8" 
-              class="form-textarea"
-              placeholder="Describe detalladamente la participación ciudadana, sus objetivos, alcance y beneficios para la comunidad..."
-              required
-            ></textarea>
-          </div>
         </div>
 
-        <!-- Form Actions -->
-        <div class="form-actions">
-          <button type="submit" class="btn-submit">
-            <span class="btn-icon">💾</span>
-            Guardar Participación
-          </button>
-          <a href="/dashboard/stake" class="btn-cancel">
-            <span class="btn-icon">❌</span>
-            Cancelar
-          </a>
-        </div>
-      </form>
-    </div>
-
-    <!-- Info Section -->
-    <div class="info-section">
-      <div class="info-card">
-        <div class="info-icon">💡</div>
-        <div class="info-content">
-          <h3 class="info-title">Consejos para una buena participación</h3>
-          <ul class="info-list">
-            <li>Usa un título claro y descriptivo</li>
-            <li>Incluye imágenes que representen la participación</li>
-            <li>Describe claramente los objetivos y beneficios</li>
-            <li>Menciona cómo los ciudadanos pueden participar</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <style>
-    .dashboard-container {
-      padding: 2rem;
-      max-width: 1000px;
-      margin: 0 auto;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-    }
-
-    .dashboard-header {
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      color: white;
-      box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
-    }
-
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .title-section {
-      flex: 1;
-    }
-
-    .dashboard-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: 0 0 0.5rem 0;
-      background: linear-gradient(45deg, #ffffff, #e8f5e8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .dashboard-subtitle {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      margin: 0;
-    }
-
-    .btn-back {
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .btn-back:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
-    }
-
-    .alert {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      margin-bottom: 2rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .alert-error {
-      background: linear-gradient(135deg, rgba(244, 67, 54, 0.9), rgba(211, 47, 47, 0.9));
-      color: white;
-    }
-
-    .alert-success {
-      background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(69, 160, 73, 0.9));
-      color: white;
-    }
-
-    .alert-icon {
-      font-size: 1.5rem;
-    }
-
-    .alert-content {
-      flex: 1;
-    }
-
-    .form-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-header {
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    .form-title {
-      font-size: 1.8rem;
-      font-weight: 600;
-      color: #333;
-      margin: 0 0 0.5rem 0;
-    }
-
-    .form-subtitle {
-      color: #666;
-      font-size: 1rem;
-      margin: 0;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .form-group.full-width {
-      grid-column: 1 / -1;
-    }
-
-    .form-label {
-      font-weight: 600;
-      color: #333;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.95rem;
-    }
-
-    .label-icon {
-      font-size: 1.1rem;
-    }
-
-    .form-input,
-    .form-textarea {
-      padding: 1rem;
-      border: 2px solid #e1e5e9;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.8);
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      color: #333;
-      font-family: inherit;
-    }
-
-    .form-input:focus,
-    .form-textarea:focus {
-      outline: none;
-      border-color: #4CAF50;
-      background: rgba(255, 255, 255, 0.95);
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-    }
-
-    .form-textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    .file-upload-wrapper {
-      position: relative;
-    }
-
-    .file-input {
-      position: absolute;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-    }
-
-    .file-upload-label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 2rem;
-      border: 2px dashed #4CAF50;
-      border-radius: 12px;
-      background: rgba(76, 175, 80, 0.05);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      color: #4CAF50;
-      font-weight: 500;
-      text-align: center;
-    }
-
-    .file-upload-label:hover {
-      background: rgba(76, 175, 80, 0.1);
-      border-color: #45a049;
-    }
-
-    .upload-icon {
-      font-size: 2rem;
-    }
-
-    .upload-text {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .upload-hint {
-      font-size: 0.9rem;
-      opacity: 0.7;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn-submit,
-    .btn-cancel {
-      padding: 1rem 2rem;
-      border-radius: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 1rem;
-      min-width: 160px;
-      justify-content: center;
-    }
-
-    .btn-submit {
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      color: white;
-      border: none;
-      box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
-    }
-
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
-    }
-
-    .btn-cancel {
-      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-      color: white;
-      box-shadow: 0 4px 16px rgba(108, 117, 125, 0.3);
-    }
-
-    .btn-cancel:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
-    }
-
-    .btn-icon {
-      font-size: 1.1rem;
-    }
-
-    .info-section {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .info-card {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .info-icon {
-      font-size: 2rem;
-      color: #4CAF50;
-    }
-
-    .info-content {
-      flex: 1;
-    }
-
-    .info-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: #333;
-      margin: 0 0 1rem 0;
-    }
-
-    .info-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .info-list li {
-      padding: 0.5rem 0;
-      color: #666;
-      position: relative;
-      padding-left: 1.5rem;
-    }
-
-    .info-list li:before {
-      content: "✓";
-      position: absolute;
-      left: 0;
-      color: #4CAF50;
-      font-weight: bold;
-    }
-
-    @media (max-width: 768px) {
-      .dashboard-container {
-        padding: 1rem;
-      }
-
-      .dashboard-title {
-        font-size: 2rem;
-      }
-
-      .header-content {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .form-actions {
-        flex-direction: column;
-      }
-
-      .btn-submit,
-      .btn-cancel {
-        width: 100%;
-      }
-
-      .info-card {
-        flex-direction: column;
-        text-align: center;
-      }
-    }
-  </style>
-    <script>
-    // Actualizar texto del botón de subir imagen cuando se selecciona un archivo
-    const imageInput = document.getElementById('image');
-    const imageLabel = document.querySelector('label[for="image"] .upload-text');
-
-    if (imageInput && imageLabel) {
-      imageInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-          // Opción 1: Mostrar el nombre del archivo
-          imageLabel.textContent = this.files[0].name;
-
-          // Opción 2 (alternativa más visual): Mostrar un check y texto genérico
-          // imageLabel.innerHTML = '<span style="color: #4CAF50;">✅</span> Imagen seleccionada';
-        } else {
-          imageLabel.textContent = 'Seleccionar imagen';
+        <!-- Alert Messages -->
+        {
+            error && (
+                <div class="alert alert-error">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-content">
+                        <strong>Error:</strong> {error}
+                    </div>
+                </div>
+            )
         }
-      });
-    }
-  </script>
+
+        {
+            success && (
+                <div class="alert alert-success">
+                    <div class="alert-icon">✅</div>
+                    <div class="alert-content">
+                        <strong>Éxito:</strong> {success}
+                    </div>
+                </div>
+            )
+        }
+
+        <!-- Form Section -->
+        <div class="form-container">
+            <div class="form-header">
+                <h2 class="form-title">Información de la Participación</h2>
+                <p class="form-subtitle">
+                    Completa todos los campos para registrar la participación ciudadana
+                </p>
+            </div>
+
+            <form method="post" class="participacion-form" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <!-- Título -->
+                    <div class="form-group full-width">
+                        <label for="title" class="form-label">
+                            <span class="label-icon">🤝</span>
+                            Título de la Participación
+                        </label>
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            class="form-input"
+                            placeholder="Ingresa el título de la participación ciudadana..."
+                            required
+                        />
+                    </div>
+
+                    <!-- Imagen -->
+                    <div class="form-group full-width">
+                        <label for="image" class="form-label">
+                            <span class="label-icon">🖼️</span>
+                            Imagen de la Participación
+                        </label>
+                        <div class="file-upload-wrapper">
+                            <input
+                                type="file"
+                                id="image"
+                                name="image"
+                                class="file-input"
+                                accept="image/*"
+                                required
+                            />
+                            <label for="image" class="file-upload-label">
+                                <span class="upload-icon">📁</span>
+                                <span class="upload-text">Seleccionar imagen</span>
+                                <span class="upload-hint">JPG, PNG, GIF hasta 10MB</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Contenido -->
+                    <div class="form-group full-width">
+                        <label for="content" class="form-label">
+                            <span class="label-icon">📝</span>
+                            Descripción de la Participación
+                        </label>
+                        <textarea
+                            id="content"
+                            name="content"
+                            rows="8"
+                            class="form-textarea"
+                            placeholder="Describe detalladamente la participación ciudadana, sus objetivos, alcance y beneficios para la comunidad..."
+                            required></textarea>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <span class="btn-icon">💾</span>
+                        Guardar Participación
+                    </button>
+                    <a href="/dashboard/stake" class="btn-cancel">
+                        <span class="btn-icon">❌</span>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Info Section -->
+        <div class="info-section">
+            <div class="info-card">
+                <div class="info-icon">💡</div>
+                <div class="info-content">
+                    <h3 class="info-title">Consejos para una buena participación</h3>
+                    <ul class="info-list">
+                        <li>Usa un título claro y descriptivo</li>
+                        <li>Incluye imágenes que representen la participación</li>
+                        <li>Describe claramente los objetivos y beneficios</li>
+                        <li>Menciona cómo los ciudadanos pueden participar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .dashboard-container {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(45deg, #ffffff, #e8f5e8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.9), rgba(211, 47, 47, 0.9));
+            color: white;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(69, 160, 73, 0.9));
+            color: white;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .form-subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .label-icon {
+            font-size: 1.1rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: #333;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4caf50;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 2rem;
+            border: 2px dashed #4caf50;
+            border-radius: 12px;
+            background: rgba(76, 175, 80, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #4caf50;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .file-upload-label:hover {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: #45a049;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-submit,
+        .btn-cancel {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-icon {
+            font-size: 1.1rem;
+        }
+
+        .info-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .info-icon {
+            font-size: 2rem;
+            color: #4caf50;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 1rem 0;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-list li {
+            padding: 0.5rem 0;
+            color: #666;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .info-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+
+            .dashboard-title {
+                font-size: 2rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-submit,
+            .btn-cancel {
+                width: 100%;
+            }
+
+            .info-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+    <script>
+        // Actualizar texto del botón de subir imagen cuando se selecciona un archivo
+        const imageInput = document.getElementById("image");
+        const imageLabel = document.querySelector('label[for="image"] .upload-text');
+
+        if (imageInput && imageLabel) {
+            imageInput.addEventListener("change", function () {
+                if (this.files && this.files[0]) {
+                    // Opción 1: Mostrar el nombre del archivo
+                    imageLabel.textContent = this.files[0].name;
+
+                    // Opción 2 (alternativa más visual): Mostrar un check y texto genérico
+                    // imageLabel.innerHTML = '<span style="color: #4CAF50;">✅</span> Imagen seleccionada';
+                } else {
+                    imageLabel.textContent = "Seleccionar imagen";
+                }
+            });
+        }
+    </script>
 </Layout>

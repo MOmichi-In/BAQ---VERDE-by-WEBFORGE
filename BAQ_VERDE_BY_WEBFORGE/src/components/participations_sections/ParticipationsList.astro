@@ -4,14 +4,17 @@ import "../../styles/common/carousel.css";
 import { api } from "../../lib/api.js";
 
 const category = Astro.props.category || null;
-let url = '/news';
+let url = "/news";
 if (category) {
-  url += `?category=${encodeURIComponent(category)}`;
+    url += `?category=${encodeURIComponent(category)}`;
 }
 
 let ParticipationsData = [];
 
-const response = await api(url, {method: 'POST', headers: {'Content-Type': 'application/json'}});
+const response = await api(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+});
 ParticipationsData = response;
 ---
 
@@ -19,101 +22,110 @@ ParticipationsData = response;
   category: {category}
   ParticipationsData: {JSON.stringify(ParticipationsData, null, 2)}
 </pre> -->
-
 <div class="participation-carousel carousel">
-  <div class="cards-wrapper">
-    {ParticipationsData.length === 0 ? (
-      <p style="text-align: center; padding: 2rem; color: #666;">No hay participaciones disponibles.</p>
-    ) : (
-      ParticipationsData.map((item) => (
-        <div class="card-container">
-          <ParticipationCard 
-            title={item.title}
-            image={item.img_url || "/placeholder.jpg"}
-            description={item.content?.substring(0, 100) + "..."}
-            text={item.content}
-            id={item._id}
-            href={`/participations/#{item._id}`}
-          />
-        </div>
-      ))
-    )}
-  </div>
-
-  {ParticipationsData.length > 0 && (
-    <div class="carousel-controls">
-      <button class="prevBtn" aria-label="Previous">Anterior</button>
-      <button class="nextBtn" aria-label="Next">Siguiente</button>
+    <div class="cards-wrapper">
+        {
+            ParticipationsData.length === 0 ? (
+                <p style="text-align: center; padding: 2rem; color: #666;">
+                    No hay participaciones disponibles.
+                </p>
+            ) : (
+                ParticipationsData.map((item) => (
+                    <div class="card-container">
+                        <ParticipationCard
+                            title={item.title}
+                            image={item.img_url || "/placeholder.jpg"}
+                            description={item.content?.substring(0, 100) + "..."}
+                            text={item.content}
+                            id={item._id}
+                            href={`/participations/#{item._id}`}
+                        />
+                    </div>
+                ))
+            )
+        }
     </div>
-  )}
+
+    {
+        ParticipationsData.length > 0 && (
+            <div class="carousel-controls">
+                <button class="prevBtn" aria-label="Previous">
+                    Anterior
+                </button>
+                <button class="nextBtn" aria-label="Next">
+                    Siguiente
+                </button>
+            </div>
+        )
+    }
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const carousels = document.querySelectorAll(".participation-carousel");
+    document.addEventListener("DOMContentLoaded", () => {
+        const carousels = document.querySelectorAll(".participation-carousel");
 
-    carousels.forEach((carousel) => {
-      const wrapper = carousel.querySelector(".cards-wrapper");
-      const prevBtn = carousel.querySelector(".prevBtn");
-      const nextBtn = carousel.querySelector(".nextBtn");
-      const controls = carousel.querySelector(".carousel-controls");
+        carousels.forEach((carousel) => {
+            const wrapper = carousel.querySelector(".cards-wrapper");
+            const prevBtn = carousel.querySelector(".prevBtn");
+            const nextBtn = carousel.querySelector(".nextBtn");
+            const controls = carousel.querySelector(".carousel-controls");
 
-      let currentIndex = 0;
+            let currentIndex = 0;
 
-      function getCardWidth() {
-        const firstCard = wrapper.querySelector(".card-container");
-        return firstCard ? firstCard.offsetWidth : 0;
-      }
+            function getCardWidth() {
+                const firstCard = wrapper.querySelector(".card-container");
+                return firstCard ? firstCard.offsetWidth : 0;
+            }
 
-      function visibleCount() {
-        const cw = getCardWidth();
-        if (!cw) return 1;
-        return Math.max(1, Math.floor(wrapper.clientWidth / cw));
-      }
+            function visibleCount() {
+                const cw = getCardWidth();
+                if (!cw) return 1;
+                return Math.max(1, Math.floor(wrapper.clientWidth / cw));
+            }
 
-      function updateCarousel() {
-        const cardWidth = getCardWidth();
-        const offset = -(currentIndex * cardWidth);
-        wrapper.style.transform = `translateX(${offset}px)`;
-      }
+            function updateCarousel() {
+                const cardWidth = getCardWidth();
+                const offset = -(currentIndex * cardWidth);
+                wrapper.style.transform = `translateX(${offset}px)`;
+            }
 
-      function checkMode() {
-        if (window.innerWidth > 900) {
-          controls.style.display = "flex";
-          wrapper.style.transition = "transform 0.4s ease-in-out";
+            function checkMode() {
+                if (window.innerWidth > 900) {
+                    controls.style.display = "flex";
+                    wrapper.style.transition = "transform 0.4s ease-in-out";
 
-          const maxIndex = wrapper.children.length - visibleCount();
-          currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
-          updateCarousel();
-        } else {
-          controls.style.display = "none";
-          wrapper.style.transition = "none";
-          wrapper.style.transform = "none";
-        }
-      }
+                    const maxIndex = wrapper.children.length - visibleCount();
+                    currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+                    updateCarousel();
+                } else {
+                    controls.style.display = "none";
+                    wrapper.style.transition = "none";
+                    wrapper.style.transform = "none";
+                }
+            }
 
-      nextBtn?.addEventListener("click", () => {
-        const maxIndex = wrapper.children.length - visibleCount();
-        if (currentIndex < maxIndex) {
-          currentIndex++;
-          updateCarousel();
-        }
-      });
+            nextBtn?.addEventListener("click", () => {
+                const maxIndex = wrapper.children.length - visibleCount();
+                if (currentIndex < maxIndex) {
+                    currentIndex++;
+                    updateCarousel();
+                }
+            });
 
-      prevBtn?.addEventListener("click", () => {
-        if (currentIndex > 0) {
-          currentIndex--;
-          updateCarousel();
-        }
-      });
+            prevBtn?.addEventListener("click", () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateCarousel();
+                }
+            });
 
-      let resizeTimeout;
-      window.addEventListener("resize", () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(checkMode, 120);
-      });
+            let resizeTimeout;
+            window.addEventListener("resize", () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(checkMode, 120);
+            });
 
-      checkMode();
+            checkMode();
+        });
     });
-  });
 </script>

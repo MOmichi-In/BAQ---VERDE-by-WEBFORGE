@@ -1,29 +1,29 @@
 ---
 const { title, image, href } = Astro.props;
 import "../../styles/common/cards.css";
-import "../../styles/global.css"
+import "../../styles/global.css";
 ---
 
 <div class="card">
-  <div class="card-header">
-    <h3>{title}</h3>
-  </div>
+    <div class="card-header">
+        <h3>{title}</h3>
+    </div>
 
-  <img src={`${import.meta.env.PUBLIC_URL_SERVER}${image}`} alt={title} class="card-image" />
+    <img src={`${import.meta.env.PUBLIC_URL_SERVER}${image}`} alt={title} class="card-image" />
 
-  <a href={`/participations/${Astro.props.id}`} class="card-buttom">Ver más</a>
+    <a href={`/participations/${Astro.props.id}`} class="card-buttom">Ver más</a>
 </div>
 
 <style>
-@media (max-width: 900px) {
-  .card {
-    height: auto;
-  }
-}
+    @media (max-width: 900px) {
+        .card {
+            height: auto;
+        }
+    }
 
-@media (max-width: 600px) {
-  .card {
-    height: auto;
-  }
-}
+    @media (max-width: 600px) {
+        .card {
+            height: auto;
+        }
+    }
 </style>

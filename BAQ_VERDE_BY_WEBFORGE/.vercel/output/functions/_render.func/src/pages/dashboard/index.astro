@@ -18,88 +18,87 @@ if (Astro.url.searchParams.get("logout") === "true") {
 
 <Layout title="Panel de Administración">
     <!-- Welcome Section -->
-     <div class="dashboard-container">
-    <section class="welcome-section">
-        <div class="welcome-content">
-            <h2>Panel de Administración</h2>
-            <p>
-                Gestiona y supervisa todos los aspectos del Observatorio
-                Ambiental de Barranquilla
-            </p>
-
-            <div class="welcome-stats">
-                <div class="stat-item">
-                    <span class="stat-number">0</span>
-                    <div class="stat-label">Noticias publicadas</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">0</span>
-                    <div class="stat-label">Reportes ciudadanos</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">0</span>
-                    <div class="stat-label">Documentos oficiales</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Quick Actions -->
-    <section class="quick-actions">
-        <h2 class="section-title">Módulos de Administración</h2>
-        <div class="actions-grid">
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-newspaper"></i>
-                </div>
-                <h3>Gestión de Noticias</h3>
+    <div class="dashboard-container">
+        <section class="welcome-section">
+            <div class="welcome-content">
+                <h2>Panel de Administración</h2>
                 <p>
-                    Administra las publicaciones, artículos y comunicados del
-                    observatorio ambiental. Crea, edita y publica contenido
-                    informativo.
+                    Gestiona y supervisa todos los aspectos del Observatorio Ambiental de
+                    Barranquilla
                 </p>
-                <a href="/dashboard/news" class="action-link">
-                    Gestionar noticias <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
 
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-users"></i>
+                <div class="welcome-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <div class="stat-label">Noticias publicadas</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <div class="stat-label">Reportes ciudadanos</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <div class="stat-label">Documentos oficiales</div>
+                    </div>
                 </div>
-                <h3>Participación Ciudadana</h3>
-                <p>
-                    Supervisa reportes ciudadanos, comentarios y sugerencias de
-                    la comunidad sobre temas ambientales en Barranquilla.
-                </p>
-                <a href="/dashboard/stake" class="action-link">
-                    Ver participación <i class="fas fa-arrow-right"></i>
-                </a>
             </div>
+        </section>
 
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-database"></i>
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <h2 class="section-title">Módulos de Administración</h2>
+            <div class="actions-grid">
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h3>Gestión de Noticias</h3>
+                    <p>
+                        Administra las publicaciones, artículos y comunicados del observatorio
+                        ambiental. Crea, edita y publica contenido informativo.
+                    </p>
+                    <a href="/dashboard/news" class="action-link">
+                        Gestionar noticias <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
-                <h3>Gestión de Datos e Información</h3>
-                <p>
-                    Administra bases de datos ambientales, informes técnicos,
-                    documentos oficiales y archivos del observatorio.
-                </p>
-                <a href="/dashboard/document" class="action-link">
-                    Gestionar datos <i class="fas fa-arrow-right"></i>
-                </a>
+
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Participación Ciudadana</h3>
+                    <p>
+                        Supervisa reportes ciudadanos, comentarios y sugerencias de la comunidad
+                        sobre temas ambientales en Barranquilla.
+                    </p>
+                    <a href="/dashboard/stake" class="action-link">
+                        Ver participación <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Gestión de Datos e Información</h3>
+                    <p>
+                        Administra bases de datos ambientales, informes técnicos, documentos
+                        oficiales y archivos del observatorio.
+                    </p>
+                    <a href="/dashboard/document" class="action-link">
+                        Gestionar datos <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
             </div>
-        </div>
-    </section>
-</div>
+        </section>
+    </div>
     <style>
-          .dashboard-container {
-      padding: 2rem;
-      max-width: 95vw;
-      margin: 0 auto;
-      min-height: 100vh;
-    }
+        .dashboard-container {
+            padding: 2rem;
+            max-width: 95vw;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
         /* Estilos que antes estaban en <head>, ahora aquí */
         .welcome-section {
             background: var(--color-verde);

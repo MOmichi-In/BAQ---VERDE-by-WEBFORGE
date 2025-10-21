@@ -5,15 +5,18 @@ import { api } from "../../lib/api.js";
 
 const category = Astro.props.category || null;
 
-let url = '/news';
+let url = "/news";
 
 if (category) {
-  url += `?category=${encodeURIComponent(category)}`;
+    url += `?category=${encodeURIComponent(category)}`;
 }
 
 let newsData = [];
 
-const response = await api(url, {method: 'POST', headers: {'Content-Type': 'application/json'}});
+const response = await api(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+});
 
 newsData = response;
 ---
@@ -22,131 +25,138 @@ newsData = response;
   category: {category}
   newsData: {JSON.stringify(newsData, null, 2)}
 </pre> -->
-
 <div class="news-carousel carousel">
-  <div class="cards-wrapper">
-    {newsData.length === 0 ? (
-      <p style="text-align: center; padding: 2rem; color: #666;">No hay noticias disponibles.</p>
-    ) : (
-      newsData.map((news) => (
-        <div class="card-container">
-          <NewCard
-            title={news.title}
-            image={news.img_url || "/placeholder.jpg"}
-            description={news.content?.substring(0, 100) + "..."}
-            text={news.content}
-            id={news._id}
-            href={`/news/${news._id}`}
-          />
-        </div>
-      ))
-    )}
-  </div>
-
-  {newsData.length > 0 && (
-    <div class="carousel-controls">
-      <button class="prevBtn" aria-label="Previous">Anterior</button>
-      <button class="nextBtn" aria-label="Next">Siguiente</button>
+    <div class="cards-wrapper">
+        {
+            newsData.length === 0 ? (
+                <p style="text-align: center; padding: 2rem; color: #666;">
+                    No hay noticias disponibles.
+                </p>
+            ) : (
+                newsData.map((news) => (
+                    <div class="card-container">
+                        <NewCard
+                            title={news.title}
+                            image={news.img_url || "/placeholder.jpg"}
+                            description={news.content?.substring(0, 100) + "..."}
+                            text={news.content}
+                            id={news._id}
+                            href={`/news/${news._id}`}
+                        />
+                    </div>
+                ))
+            )
+        }
     </div>
-  )}
+
+    {
+        newsData.length > 0 && (
+            <div class="carousel-controls">
+                <button class="prevBtn" aria-label="Previous">
+                    Anterior
+                </button>
+                <button class="nextBtn" aria-label="Next">
+                    Siguiente
+                </button>
+            </div>
+        )
+    }
 </div>
 
 <style>
-.news-carousel .card-container .card {
-  height: 500px;
-  width: 100%;
-}
+    .news-carousel .card-container .card {
+        height: 500px;
+        width: 100%;
+    }
 </style>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
+        /**
+         * Recorrer TODOS los carruseles de la página.
+         * Esto permite reutilizar el componente <NewList /> varias veces
+         * sin que los controles (botones) dejen de funcionar.
+         */
+        document.querySelectorAll(".news-carousel").forEach((carousel) => {
+            // Elementos principales del carrusel
+            const wrapper = carousel.querySelector(".cards-wrapper");
+            const prevBtn = carousel.querySelector(".prevBtn");
+            const nextBtn = carousel.querySelector(".nextBtn");
+            const controls = carousel.querySelector(".carousel-controls");
 
-    /**
-     * Recorrer TODOS los carruseles de la página.
-     * Esto permite reutilizar el componente <NewList /> varias veces
-     * sin que los controles (botones) dejen de funcionar.
-    */
-    document.querySelectorAll(".news-carousel").forEach((carousel) => {
+            // Indice actual de la terjeta que se está mostrando
+            let currentIndex = 0;
 
-      // Elementos principales del carrusel
-      const wrapper = carousel.querySelector(".cards-wrapper");
-      const prevBtn = carousel.querySelector(".prevBtn");
-      const nextBtn = carousel.querySelector(".nextBtn");
-      const controls = carousel.querySelector(".carousel-controls");
-  
-      // Indice actual de la terjeta que se está mostrando
-      let currentIndex = 0;
-  
-      // Devuelve el ancho de una card (necesario para calcular cuanto debe moverse las cards)
-      function getCardWidth() {
-        const firstCard = wrapper.querySelector(".card-container");
-        return firstCard ? firstCard.offsetWidth : 0;
-      }
-  
-      // Calcula cuántas tarjetas caben en pantalla al mismo tiempo
-      function visibleCount() {
-        const cw = getCardWidth();
-        if (!cw) return 1;
-        return Math.max(1, Math.floor(wrapper.clientWidth / cw));
-      }
-  
-      // Aplica el desplazamiento del carrusel según el índice actual
-      function updateCarousel() {
-        const cardWidth = getCardWidth();
-        const offset = -(currentIndex * cardWidth); // Mover a la izquierda tantas veces como indices haya
-        wrapper.style.transform = `translateX(${offset}px)`;
-      }
-  
-      // Verifica en qué modo estamos (PC - Movil - tablet)
-      function checkMode() {
-        if (window.innerWidth > 900) {
-          // --- modo escritorio ---
-          controls.style.display = "flex";
-          wrapper.style.transition = "transform 0.4s ease-in-out";
-  
-          const maxIndex = wrapper.children.length - visibleCount();
-          currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
-          updateCarousel();
-        } else {
-          // --- modo móvil/tablet ---
-          controls.style.display = "none";
-          wrapper.style.transition = "none";
-          wrapper.style.transform = "none";
-        }
-      }
-  
-      // Listeners de los botones
-      nextBtn?.addEventListener("click", () => {
-        const maxIndex = wrapper.children.length - visibleCount();
-        if (currentIndex < maxIndex) {
-          currentIndex++; // mover de 1 en 1 a la derecha
-          updateCarousel();
-        }
-      });
-  
-      prevBtn?.addEventListener("click", () => {
-        if (currentIndex > 0) {
-          currentIndex--; // mover de 1 en 1 a la izquierda
-          updateCarousel();
-        }
-      });
-  
-      // Ajuste dinamico en caso de redimensionar la ventana
-      let resizeTimeout;
-      window.addEventListener("resize", () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(checkMode, 120); // Evitamos ejecuciones en excesos
-      });
-  
-      // Esperar a que carguen las imagenes
-      // Esto asegura que el cálculo de ancho sea correcto
-      carousel.querySelectorAll("img").forEach((img) => {
-        if (img.complete) return;
-        img.addEventListener("load", checkMode);
-      });
-  
-      // Llamamos a la verificación inicial al cargar la página
-      checkMode();
+            // Devuelve el ancho de una card (necesario para calcular cuanto debe moverse las cards)
+            function getCardWidth() {
+                const firstCard = wrapper.querySelector(".card-container");
+                return firstCard ? firstCard.offsetWidth : 0;
+            }
+
+            // Calcula cuántas tarjetas caben en pantalla al mismo tiempo
+            function visibleCount() {
+                const cw = getCardWidth();
+                if (!cw) return 1;
+                return Math.max(1, Math.floor(wrapper.clientWidth / cw));
+            }
+
+            // Aplica el desplazamiento del carrusel según el índice actual
+            function updateCarousel() {
+                const cardWidth = getCardWidth();
+                const offset = -(currentIndex * cardWidth); // Mover a la izquierda tantas veces como indices haya
+                wrapper.style.transform = `translateX(${offset}px)`;
+            }
+
+            // Verifica en qué modo estamos (PC - Movil - tablet)
+            function checkMode() {
+                if (window.innerWidth > 900) {
+                    // --- modo escritorio ---
+                    controls.style.display = "flex";
+                    wrapper.style.transition = "transform 0.4s ease-in-out";
+
+                    const maxIndex = wrapper.children.length - visibleCount();
+                    currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+                    updateCarousel();
+                } else {
+                    // --- modo móvil/tablet ---
+                    controls.style.display = "none";
+                    wrapper.style.transition = "none";
+                    wrapper.style.transform = "none";
+                }
+            }
+
+            // Listeners de los botones
+            nextBtn?.addEventListener("click", () => {
+                const maxIndex = wrapper.children.length - visibleCount();
+                if (currentIndex < maxIndex) {
+                    currentIndex++; // mover de 1 en 1 a la derecha
+                    updateCarousel();
+                }
+            });
+
+            prevBtn?.addEventListener("click", () => {
+                if (currentIndex > 0) {
+                    currentIndex--; // mover de 1 en 1 a la izquierda
+                    updateCarousel();
+                }
+            });
+
+            // Ajuste dinamico en caso de redimensionar la ventana
+            let resizeTimeout;
+            window.addEventListener("resize", () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(checkMode, 120); // Evitamos ejecuciones en excesos
+            });
+
+            // Esperar a que carguen las imagenes
+            // Esto asegura que el cálculo de ancho sea correcto
+            carousel.querySelectorAll("img").forEach((img) => {
+                if (img.complete) return;
+                img.addEventListener("load", checkMode);
+            });
+
+            // Llamamos a la verificación inicial al cargar la página
+            checkMode();
+        });
     });
-  });
 </script>
