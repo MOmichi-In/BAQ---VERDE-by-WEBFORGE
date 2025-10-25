@@ -19,29 +19,45 @@ const { post } = Astro.props;
 const { Content } = await post.render();
 ---
 
-<Layout>
-  <main class="icau-landing">
-    <h1>{post.data.title}</h1>
-    <p class="description">{post.data.description}</p>
-    <img src={post.data.image} alt={post.data.title} />
-    
-    <article class="content">
-      <Content />
-    </article>
-  </main>
+<Layout title={`ICAU – ${post.data.title}`}>
+  <div class="icau-page-background">
+    <main class="icau-landing">
+      <h1>{post.data.title}</h1>
+      <p class="description">{post.data.description}</p>
+
+      <article class="content">
+        <Content />
+      </article>
+    </main>
+  </div>
 </Layout>
 
+
 <style>
+   .icau-page-background {
+    background-image: url("/images/svg/flores.svg");
+    background-size: auto;
+    background-repeat: repeat;
+    background-position: top left;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+
   .icau-landing {
     padding: 4rem 2rem;
     max-width: 900px;
     margin: 0 auto;
-    background: var(--bv-blanco);
+    /* ❌ Quita el background blanco si quieres ver el fondo */
+    /* background: var(--bv-blanco); */
     border-radius: 1.5rem;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
     color: #1a1a1a;
     font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1.6;
+    background: rgba(255, 255, 255, 0.85); /* ✅ Fondo blanco translúcido para legibilidad */
+    backdrop-filter: blur(4px); /* opcional: efecto glassmorphism */
   }
 
   .icau-landing h1 {

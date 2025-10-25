@@ -28,11 +28,12 @@ Los valores calculados del ICA pueden ser asociados a una clasificación descrip
 
 | Descriptores | Ámbito Numérico | Color |
 |--------------|-----------------|-------|
-| Muy Malo     | 0 - 0.25        | ![Muy Malo](https://via.placeholder.com/50/FF0000/FFFFFF?text=M) |
-| Malo         | 0.26 - 0.50     | ![Malo](https://via.placeholder.com/50/FFA500/FFFFFF?text=M) |
-| Regular      | 0.51 - 0.70     | ![Regular](https://via.placeholder.com/50/FFFF00/000000?text=R) |
-| Aceptable    | 0.71 - 0.90     | ![Aceptable](https://via.placeholder.com/50/00FF00/FFFFFF?text=A) |
-| Bueno        | 0.91 - 1.00     | ![Bueno](https://via.placeholder.com/50/0000FF/FFFFFF?text=B) |
+| Muy Malo     | 0 - 0.25        | <span style="display:inline-block;width:50px;height:20px;background:#FF0000;border-radius:4px;"></span> |
+| Malo         | 0.26 - 0.50     | <span style="display:inline-block;width:50px;height:20px;background:#FFA500;border-radius:4px;"></span> |
+| Regular      | 0.51 - 0.70     | <span style="display:inline-block;width:50px;height:20px;background:#FFFF00;border-radius:4px;border:1px solid #ccc;"></span> |
+| Aceptable    | 0.71 - 0.90     | <span style="display:inline-block;width:50px;height:20px;background:#00FF00;border-radius:4px;"></span> |
+| Bueno        | 0.91 - 1.00     | <span style="display:inline-block;width:50px;height:20px;background:#0000FF;border-radius:4px;"></span> |
+
 
 ## Datos reportados
 

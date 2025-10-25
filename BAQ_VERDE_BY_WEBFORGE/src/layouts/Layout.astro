@@ -3,14 +3,21 @@
    LAYOUT.ASTRO - Plantilla base de las landing del Observatorio Ambiental
    =================================== */
 
-/* === PROPIEDADES Y CONFIGURACIÓN === */
-const { title = "Observatorio Ambiental", heroImage = "/images/hero-bg-01.webp" } = Astro.props;
+const { title = "Observatorio Ambiental" } = Astro.props;
 const year = new Date().getFullYear();
+
+// === Selección aleatoria del fondo ===
+const images = [
+  "/images/bg/fondolayout1.jpg",
+  "/images/bg/fondolayout2.jpg"
+];
+const heroImage = images[Math.floor(Math.random() * images.length)];
 
 /* === IMPORTACIÓN DE ESTILOS === */
 import "../styles/layout.css";
 import "../styles/global.css";
 ---
+
 
 <!doctype html>
 <html lang="es">
@@ -51,7 +58,7 @@ import "../styles/global.css";
                 <nav class="nav">
                     <a href="/">Inicio</a>
                     <a href="/participation">Participacion</a>
-                    <a href="/maps">Mapa</a>
+                    <a href="/maps">GeoPortal</a>
                     <a href="/news">Noticias</a>
                     <a href="/documents">Documentos</a>
                 </nav>
@@ -122,26 +129,14 @@ import "../styles/global.css";
                         <ul>
                             <li><a href="/">Inicio</a></li>
                             <li><a href="/participation">Participación</a></li>
-                            <li><a href="/maps">Mapas</a></li>
+                            <li><a href="/maps">GeoPortal</a></li>
                             <li><a href="/news">Noticias</a></li>
                             <li><a href="/documents">Documentos</a></li>
                         </ul>
                     </div>
 
                     <!-- Columna: Recursos externos e internos -->
-                    <div class="footer-col">
-                        <h4>Recursos</h4>
-                        <ul>
-                            <li>
-                                <a href="https://www.gov.co" target="_blank" rel="noopener"
-                                    >Certificados (GOV.CO)</a
-                                >
-                            </li>
-                            <li><a href="#">API Ambiental</a></li>
-                            <li><a href="#">Reportes públicos</a></li>
-                            <li><a href="#">Documentación técnica</a></li>
-                        </ul>
-                    </div>
+                  
 
                     <!-- Columna: Información de contacto y emergencias -->
                     <div class="footer-col">
@@ -149,12 +144,6 @@ import "../styles/global.css";
                         <ul>
                             <li>Email: contacto@observatorioambiental.gov.co</li>
                             <li>Tel: (605) 311 2470</li>
-                            <li>Horario: L–V, 8:00 – 17:00</li>
-                            <li>
-                                <a href="https://www.gov.co" target="_blank" rel="noopener">
-                                    Líneas de emergencia (GOV.CO)
-                                </a>
-                            </li>
                         </ul>
                     </div>
                 </div>
