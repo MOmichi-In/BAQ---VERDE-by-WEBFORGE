@@ -44,19 +44,21 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 />
 
 <style is:global>
-    /* Contenedor principal */
+    /* ============================================
+       CONTENEDOR PRINCIPAL Y MODO PANTALLA COMPLETA
+       ============================================ */
     .map-app-container {
         display: flex;
         height: calc(100vh - 4rem);
         width: 100%;
         overflow: hidden;
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
         font-family: var(--font-family-base);
-        background-color: var(--bv-blanco);
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
         position: relative;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Modo pantalla completa */
     .map-app-container.fullscreen-mode {
         position: fixed;
         top: 0;
@@ -64,98 +66,227 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         width: 100vw;
         height: 100vh;
         z-index: 9999;
+        border-radius: 0;
     }
 
     .map-app-container.fullscreen-mode .sidebar {
         display: none;
     }
 
-    /* Sidebar izquierdo */
+    /* ============================================
+       SIDEBAR IZQUIERDO
+       ============================================ */
     .sidebar {
-        width: 320px;
+        width: 360px;
         display: flex;
         flex-direction: column;
-        border-right: 1px solid var(--bv-gris-claro);
-        background: var(--bv-blanco);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
         z-index: 2;
-        overflow: auto;
+        overflow: hidden;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+        border-right: 1px solid rgba(55, 180, 72, 0.1);
+        transition: all 0.3s ease;
     }
 
     .sidebar-header {
-        padding: var(--spacing-lg) var(--spacing-md);
+        padding: 2rem 1.5rem;
         background: linear-gradient(
             135deg,
             var(--bv-verde-primario) 0%,
+            #2d9843 50%,
             var(--bv-verde-primario-dark) 100%
         );
         color: var(--bv-blanco);
         position: relative;
-        flex-shrink: 0;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(55, 180, 72, 0.3);
+    }
+
+    .sidebar-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+        50% {
+            transform: translate(-20px, 20px) scale(1.1);
+        }
     }
 
     .sidebar-header h3 {
         color: var(--bv-blanco);
         margin: 0;
-        font-size: 1.125rem;
+        font-size: 1.5rem;
         font-weight: 700;
         line-height: 1.3;
         font-family: var(--font-family-heading);
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        letter-spacing: -0.5px;
     }
 
     .sidebar-subtitle {
-        font-size: 0.8125rem;
+        font-size: 0.875rem;
         opacity: 0.95;
-        margin-top: var(--spacing-xs);
+        margin-top: 0.5rem;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     }
 
     .sidebar-content {
         flex: 1;
-        padding: var(--spacing-md);
+        padding: 1.5rem;
         overflow-y: auto;
-        background: var(--bv-gris-claro);
+        background: linear-gradient(
+            180deg,
+            rgba(248, 250, 252, 0.8) 0%,
+            rgba(241, 245, 249, 0.95) 100%
+        );
     }
 
+    /* Scrollbar personalizado */
+    .sidebar-content::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .sidebar-content::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 10px;
+    }
+
+    .sidebar-content::-webkit-scrollbar-thumb {
+        background: var(--bv-verde-primario);
+        border-radius: 10px;
+        transition: background 0.3s ease;
+    }
+
+    .sidebar-content::-webkit-scrollbar-thumb:hover {
+        background: var(--bv-verde-primario-dark);
+    }
+
+    /* ============================================
+       FILTROS Y CATEGORÍAS
+       ============================================ */
     .filter-group {
-        margin-bottom: var(--spacing-md);
+        margin-bottom: 1.5rem;
+        animation: slideInLeft 0.5s ease;
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
 
     .filter-item {
         display: flex;
         align-items: center;
-        padding: var(--spacing-md);
-        background: var(--bv-blanco);
-        border: 1px solid var(--bv-gris-claro);
-        border-radius: var(--border-radius-lg);
-        margin-bottom: var(--spacing-md);
+        padding: 1.25rem;
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid transparent;
+        border-radius: 16px;
+        margin-bottom: 1rem;
         cursor: pointer;
-        transition:
-            transform 0.18s ease,
-            box-shadow 0.18s ease,
-            border-color 0.18s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .filter-item::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--bv-verde-primario);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
     }
 
     .filter-item:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--bv-verde-primario);
+        transform: translateX(4px) translateY(-2px);
+        box-shadow: 0 8px 24px rgba(55, 180, 72, 0.2);
+        border-color: rgba(55, 180, 72, 0.3);
+    }
+
+    .filter-item:hover::before {
+        transform: scaleY(1);
     }
 
     .filter-item.active {
         border-color: var(--bv-verde-primario);
-        box-shadow: 0 0 0 6px rgba(55, 180, 72, 0.06);
+        background: linear-gradient(
+            135deg,
+            rgba(55, 180, 72, 0.05) 0%,
+            rgba(55, 180, 72, 0.02) 100%
+        );
+        box-shadow: 0 8px 24px rgba(55, 180, 72, 0.15);
+    }
+
+    .filter-item.active::before {
+        transform: scaleY(1);
     }
 
     .filter-item-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: var(--border-radius-md);
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-right: var(--spacing-md);
-        font-size: 18px;
+        margin-right: 1rem;
+        font-size: 22px;
         flex-shrink: 0;
+        position: relative;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-item:hover .filter-item-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .filter-item-icon::after {
+        content: "";
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 12px;
+        height: 12px;
+        background: var(--bv-verde-primario);
+        border-radius: 50%;
+        opacity: 0;
+        transform: scale(0);
+        transition: all 0.3s ease;
+    }
+
+    .filter-item.active .filter-item-icon::after {
+        opacity: 1;
+        transform: scale(1);
     }
 
     .filter-item-content {
@@ -164,45 +295,62 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     }
 
     .filter-item-title {
-        font-size: 0.9375rem;
-        font-weight: 600;
+        font-size: 1rem;
+        font-weight: 700;
         color: var(--bv-azul-oscuro);
-        margin-bottom: 2px;
+        margin-bottom: 4px;
         display: flex;
         align-items: center;
-        gap: var(--spacing-sm);
+        gap: 0.75rem;
         font-family: var(--font-family-heading);
+        letter-spacing: -0.3px;
     }
 
     .category-count {
         font-size: 0.75rem;
-        font-weight: 500;
-        color: var(--bv-gris);
-        background-color: var(--bv-gris-claro);
-        padding: 2px var(--spacing-sm);
-        border-radius: var(--border-radius-lg);
-        min-width: 24px;
+        font-weight: 600;
+        color: var(--bv-verde-primario);
+        background: linear-gradient(
+            135deg,
+            rgba(55, 180, 72, 0.15) 0%,
+            rgba(55, 180, 72, 0.08) 100%
+        );
+        padding: 4px 10px;
+        border-radius: 12px;
+        min-width: 28px;
         text-align: center;
+        box-shadow: inset 0 1px 2px rgba(55, 180, 72, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .filter-item.active .category-count {
+        background: var(--bv-verde-primario);
+        color: white;
     }
 
     .filter-item-description {
         font-size: 0.8125rem;
         color: var(--bv-gris);
-        line-height: 1.4;
+        line-height: 1.5;
     }
 
+    /* ============================================
+       SWITCH TOGGLE MEJORADO
+       ============================================ */
     .switch {
         position: relative;
         display: inline-block;
-        width: 48px;
-        height: 28px;
+        width: 56px;
+        height: 32px;
         flex-shrink: 0;
     }
+
     .switch input {
         opacity: 0;
         width: 0;
         height: 0;
     }
+
     .slider {
         position: absolute;
         cursor: pointer;
@@ -210,259 +358,332 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: var(--bv-gris-claro);
-        transition:
-            background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-            box-shadow 0.2s ease;
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         border-radius: 34px;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
     .slider:before {
         position: absolute;
         content: "";
-        height: 20px;
-        width: 20px;
+        height: 24px;
+        width: 24px;
         left: 4px;
         bottom: 4px;
-        background-color: var(--bv-blanco);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         border-radius: 50%;
-        box-shadow: var(--shadow-sm);
-    }
-    .switch input:checked + .slider {
-        background-color: var(--bv-amarillo);
-    }
-    .switch input:checked + .slider[data-category="biodiversity"] {
-        background-color: var(--bv-verde-primario-dark);
-    }
-    .switch input:checked + .slider[data-category="soil"] {
-        background-color: rgba(137, 81, 41, 1);
-    }
-    .switch input:focus + .slider {
-        box-shadow: 0 0 0 4px rgba(55, 180, 72, 0.12);
-    }
-    .switch input:checked + .slider:before {
-        transform: translateX(20px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
+    .switch input:checked + .slider {
+        background: linear-gradient(135deg, var(--bv-amarillo) 0%, #ffd700 100%);
+        box-shadow:
+            0 0 16px rgba(255, 234, 0, 0.4),
+            inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .switch input:checked + .slider[data-category="biodiversity"] {
+        background: linear-gradient(135deg, var(--bv-verde-primario-dark) 0%, #1e7e34 100%);
+        box-shadow: 0 0 16px rgba(55, 180, 72, 0.4);
+    }
+
+    .switch input:checked + .slider[data-category="soil"] {
+        background: linear-gradient(135deg, rgba(137, 81, 41, 1) 0%, rgba(101, 60, 30, 1) 100%);
+        box-shadow: 0 0 16px rgba(137, 81, 41, 0.4);
+    }
+
+    .switch input:focus + .slider {
+        box-shadow: 0 0 0 6px rgba(55, 180, 72, 0.15);
+    }
+
+    .switch input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+
+    .switch:hover .slider {
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ============================================
+       MAPA Y CONTROLES
+       ============================================ */
     #map {
         flex: 1;
         height: 100%;
         position: relative;
-        background-color: var(--bv-gris-claro);
+        background: linear-gradient(135deg, #e8ecf1 0%, #dde3ea 100%);
+        border-radius: 0 16px 16px 0;
+        overflow: hidden;
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.05);
     }
 
-    /* Controles personalizados del mapa */
+    .map-app-container.fullscreen-mode #map {
+        border-radius: 0;
+    }
+
+    /* Controles del mapa mejorados */
     .map-controls {
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 24px;
+        right: 24px;
         z-index: 1000;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
+        animation: slideInRight 0.5s ease;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
 
     .map-control-btn {
-        width: 44px;
-        height: 44px;
-        background: var(--bv-blanco);
-        border: 2px solid var(--bv-gris-claro);
-        border-radius: var(--border-radius-md);
+        width: 52px;
+        height: 52px;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(55, 180, 72, 0.15);
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: var(--shadow-md);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         color: var(--bv-azul-oscuro);
-        font-size: 18px;
+        font-size: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .map-control-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: var(--bv-verde-primario);
+        transform: translate(-50%, -50%);
+        transition: all 0.4s ease;
+        opacity: 0;
     }
 
     .map-control-btn:hover {
-        background: var(--bv-verde-primario);
         color: var(--bv-blanco);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 8px 24px rgba(55, 180, 72, 0.3);
         border-color: var(--bv-verde-primario);
+    }
+
+    .map-control-btn:hover::before {
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+    }
+
+    .map-control-btn i {
+        position: relative;
+        z-index: 1;
     }
 
     .map-control-btn:active {
-        transform: translateY(0);
+        transform: translateY(-2px) scale(1.02);
     }
 
     .map-control-btn.active {
-        background: var(--bv-verde-primario);
-        color: var(--bv-blanco);
-        border-color: var(--bv-verde-primario);
-    }
-
-    /* Overlay para desactivar scroll en mapa */
-    .map-scroll-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: transparent;
-        z-index: 999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
-
-    .map-scroll-overlay.active {
-        display: none;
-    }
-
-    .map-click-hint {
-        background: rgba(55, 180, 72, 0.95);
-        color: var(--bv-blanco);
-        padding: 16px 24px;
-        border-radius: var(--border-radius-lg);
-        font-size: 0.9375rem;
-        font-weight: 600;
-        box-shadow: var(--shadow-lg);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-        0%,
-        100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.05);
-        }
-    }
-
-    .map-click-hint i {
-        font-size: 24px;
-    }
-
-    /* Modal de manual de uso */
-    .manual-modal-content {
-        max-width: 900px;
-    }
-
-    .manual-step {
-        display: flex;
-        gap: var(--spacing-lg);
-        margin-bottom: var(--spacing-xl);
-        padding: var(--spacing-lg);
-        background: var(--bv-gris-claro);
-        border-radius: var(--border-radius-lg);
-        align-items: center;
-    }
-
-    .manual-step-number {
-        width: 48px;
-        height: 48px;
         background: linear-gradient(
             135deg,
             var(--bv-verde-primario) 0%,
             var(--bv-verde-primario-dark) 100%
         );
         color: var(--bv-blanco);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        font-weight: 700;
-        flex-shrink: 0;
+        border-color: var(--bv-verde-primario-dark);
+        box-shadow: 0 8px 24px rgba(55, 180, 72, 0.35);
     }
 
-    .manual-step-content {
-        flex: 1;
-    }
-
-    .manual-step-title {
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: var(--bv-azul-oscuro);
-        margin-bottom: var(--spacing-sm);
-        font-family: var(--font-family-heading);
-    }
-
-    .manual-step-description {
-        font-size: 0.9375rem;
-        color: var(--bv-gris);
-        line-height: 1.6;
-    }
-
-    .manual-step-image {
-        width: 200px;
-        height: 150px;
-        background: var(--bv-blanco);
-        border-radius: var(--border-radius-md);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid var(--bv-gris-claro);
-        flex-shrink: 0;
-        overflow: hidden;
-    }
-
-    .manual-step-image img {
+    /* ============================================
+       OVERLAY DEL MAPA
+       ============================================ */
+    .map-scroll-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        background: linear-gradient(
+            135deg,
+            rgba(55, 180, 72, 0.03) 0%,
+            rgba(55, 180, 72, 0.08) 100%
+        );
+        backdrop-filter: blur(2px);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.4s ease;
     }
 
-    .manual-step-image i {
-        font-size: 3rem;
-        color: var(--bv-gris-claro);
+    .map-scroll-overlay.active {
+        opacity: 0;
+        pointer-events: none;
     }
 
+    .map-click-hint {
+        background: linear-gradient(
+            135deg,
+            rgba(55, 180, 72, 0.98) 0%,
+            rgba(45, 152, 67, 0.98) 100%
+        );
+        color: var(--bv-blanco);
+        padding: 20px 32px;
+        border-radius: 16px;
+        font-size: 1rem;
+        font-weight: 600;
+        box-shadow: 0 12px 40px rgba(55, 180, 72, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        animation: pulseGlow 2s ease-in-out infinite;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    @keyframes pulseGlow {
+        0%,
+        100% {
+            transform: scale(1);
+            box-shadow: 0 12px 40px rgba(55, 180, 72, 0.4);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 16px 48px rgba(55, 180, 72, 0.6);
+        }
+    }
+
+    .map-click-hint i {
+        font-size: 28px;
+        animation: bounce 1.5s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-8px);
+        }
+    }
+
+    /* ============================================
+       MARCADORES PERSONALIZADOS
+       ============================================ */
     .custom-marker-icon {
         background: transparent !important;
         border: none !important;
     }
+
     .marker-bubble {
-        width: 36px;
-        height: 36px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
         display: flex;
         justify-content: center;
         align-items: center;
         color: var(--bv-blanco);
         font-weight: 700;
-        font-size: 14px;
-        box-shadow: var(--shadow-md);
+        font-size: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         border: 3px solid var(--bv-blanco);
         position: relative;
         transform: translateY(-50%);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        animation: markerAppear 0.5s ease;
     }
+
+    @keyframes markerAppear {
+        from {
+            opacity: 0;
+            transform: translateY(-70%) scale(0.5);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+    }
+
+    .marker-bubble:hover {
+        transform: translateY(-50%) scale(1.15);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+    }
+
     .marker-bubble::after {
         content: "";
         position: absolute;
-        bottom: -6px;
+        bottom: -8px;
         left: 50%;
         transform: translateX(-50%);
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
-        border-top: 6px solid var(--bv-blanco);
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid var(--bv-blanco);
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
     }
 
-    /* Modal personalizado mejorado */
+    /* Efecto de pulso para marcadores */
+    .marker-bubble::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.3;
+        animation: pulse 2s ease-out infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.3;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1.8);
+            opacity: 0;
+        }
+    }
+
+    /* ============================================
+       MODALES MEJORADOS
+       ============================================ */
     .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(12px);
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(8px);
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 10000;
-        animation: fadeIn 0.2s ease;
+        animation: fadeIn 0.3s ease;
     }
 
     @keyframes fadeIn {
@@ -477,15 +698,15 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     .modal-content {
         background: var(--bv-blanco);
         width: 90%;
-        max-width: 800px;
+        max-width: 900px;
         max-height: 90vh;
         padding: 0;
-        border-radius: 16px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
         overflow: hidden;
         position: relative;
         font-family: var(--font-family-base);
-        animation: slideUp 0.3s ease;
+        animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         flex-direction: column;
     }
@@ -493,44 +714,61 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     @keyframes slideUp {
         from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px) scale(0.95);
         }
         to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
     }
 
     .modal-header {
-        padding: var(--spacing-lg) var(--spacing-xl);
+        padding: 2rem 2.5rem;
         background: linear-gradient(
             135deg,
             var(--bv-verde-primario) 0%,
+            #2d9843 50%,
             var(--bv-verde-primario-dark) 100%
         );
         color: var(--bv-blanco);
         position: relative;
         border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+    }
+
+    .modal-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
     }
 
     .modal-header h3 {
         margin: 0;
-        font-size: 1.5rem;
+        font-size: 1.75rem;
         font-weight: 700;
         font-family: var(--font-family-heading);
         color: var(--bv-blanco);
-        padding-right: 40px;
+        padding-right: 50px;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        letter-spacing: -0.5px;
     }
 
     .modal-close {
         position: absolute;
-        top: var(--spacing-lg);
-        right: var(--spacing-lg);
+        top: 2rem;
+        right: 2rem;
         background: rgba(255, 255, 255, 0.15);
-        border: none;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
         font-size: 1.5rem;
         cursor: pointer;
         color: var(--bv-blanco);
@@ -538,26 +776,46 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
         backdrop-filter: blur(10px);
+        z-index: 2;
     }
 
     .modal-close:hover {
         background: rgba(255, 255, 255, 0.25);
-        transform: rotate(90deg);
+        transform: rotate(90deg) scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     .modal-body {
-        padding: var(--spacing-xl);
+        padding: 2.5rem;
         overflow-y: auto;
         flex: 1;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     }
 
+    .modal-body::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .modal-body::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 10px;
+    }
+
+    .modal-body::-webkit-scrollbar-thumb {
+        background: var(--bv-verde-primario);
+        border-radius: 10px;
+    }
+
+    /* ============================================
+       FORMULARIOS
+       ============================================ */
     .modal-form {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: var(--spacing-md);
-        margin-bottom: var(--spacing-xl);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     .form-group {
@@ -566,70 +824,101 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
     .form-group label {
         display: block;
-        margin-bottom: var(--spacing-xs);
-        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-weight: 700;
         color: var(--bv-azul-oscuro);
         font-family: var(--font-family-heading);
         font-size: 0.875rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .form-group label i {
-        margin-right: 6px;
         color: var(--bv-verde-primario);
+        font-size: 1rem;
     }
 
     .form-group select {
         width: 100%;
-        padding: var(--spacing-sm) var(--spacing-md);
-        border: 2px solid var(--bv-gris-claro);
-        border-radius: var(--border-radius-md);
+        padding: 0.875rem 1rem;
+        border: 2px solid rgba(55, 180, 72, 0.15);
+        border-radius: 12px;
         background: var(--bv-blanco);
         font-size: 0.9375rem;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
         font-family: var(--font-family-base);
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .form-group select:focus {
         outline: none;
         border-color: var(--bv-verde-primario);
-        box-shadow: 0 0 0 3px rgba(55, 180, 72, 0.1);
+        box-shadow:
+            0 0 0 4px rgba(55, 180, 72, 0.1),
+            0 4px 12px rgba(55, 180, 72, 0.15);
+        transform: translateY(-2px);
     }
 
     .form-group select:disabled {
-        background: var(--bv-gris-claro);
+        background: rgba(0, 0, 0, 0.03);
         cursor: not-allowed;
         opacity: 0.6;
     }
 
     .btn-primary {
         width: 100%;
-        padding: var(--spacing-md) var(--spacing-lg);
+        padding: 1rem 1.5rem;
         background: linear-gradient(
             135deg,
             var(--bv-verde-primario) 0%,
+            #2d9843 50%,
             var(--bv-verde-primario-dark) 100%
         );
         color: white;
         border: none;
-        border-radius: var(--border-radius-md);
-        font-weight: 600;
+        border-radius: 12px;
+        font-weight: 700;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
         font-size: 1rem;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 4px 12px rgba(55, 180, 72, 0.3);
+        letter-spacing: 1px;
+        box-shadow: 0 6px 20px rgba(55, 180, 72, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition:
+            width 0.6s,
+            height 0.6s;
     }
 
     .btn-primary:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(55, 180, 72, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(55, 180, 72, 0.4);
+    }
+
+    .btn-primary:hover:not(:disabled)::before {
+        width: 300px;
+        height: 300px;
     }
 
     .btn-primary:active:not(:disabled) {
-        transform: translateY(0);
+        transform: translateY(-1px);
     }
 
     .btn-primary:disabled {
@@ -639,55 +928,80 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     }
 
     .btn-primary i {
-        margin-right: 8px;
+        margin-right: 10px;
+        font-size: 1.1rem;
     }
 
-    /* Contenedor de la gráfica mejorado */
+    /* ============================================
+       SECCIÓN DE GRÁFICAS
+       ============================================ */
     .chart-section {
-        margin-top: var(--spacing-lg);
-        padding: var(--spacing-lg);
+        margin-top: 2rem;
+        padding: 2rem;
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border-radius: var(--border-radius-lg);
-        border: 1px solid var(--bv-gris-claro);
+        border-radius: 16px;
+        border: 2px solid rgba(55, 180, 72, 0.1);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .chart-section:hover {
+        box-shadow: 0 12px 32px rgba(55, 180, 72, 0.15);
+        transform: translateY(-2px);
     }
 
     .chart-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: var(--spacing-md);
-        padding-bottom: var(--spacing-sm);
-        border-bottom: 2px solid var(--bv-gris-claro);
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(55, 180, 72, 0.15);
     }
 
     .chart-title {
-        font-size: 1.125rem;
+        font-size: 1.25rem;
         color: var(--bv-azul-oscuro);
         font-weight: 700;
         font-family: var(--font-family-heading);
         margin: 0;
         display: flex;
         align-items: center;
-        gap: var(--spacing-sm);
+        gap: 0.75rem;
+        letter-spacing: -0.3px;
     }
 
     .chart-title i {
         color: var(--bv-verde-primario);
+        font-size: 1.5rem;
+        animation: chartIconPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes chartIconPulse {
+        0%,
+        100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
     }
 
     .chart-subtitle {
         font-size: 0.875rem;
         color: var(--bv-gris);
-        margin-top: var(--spacing-xs);
+        margin-top: 0.5rem;
+        font-weight: 500;
     }
 
     .chart-container {
         position: relative;
-        height: 350px;
+        height: 400px;
         background: var(--bv-blanco);
-        border-radius: var(--border-radius-md);
-        padding: var(--spacing-md);
+        border-radius: 12px;
+        padding: 1.5rem;
         box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
     }
 
     .chart-empty-state {
@@ -701,15 +1015,27 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     }
 
     .chart-empty-state i {
-        font-size: 3rem;
-        margin-bottom: var(--spacing-md);
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
         opacity: 0.3;
+        animation: floatIcon 3s ease-in-out infinite;
+    }
+
+    @keyframes floatIcon {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
     }
 
     .chart-empty-state p {
         font-size: 1rem;
         margin: 0;
-        margin-top: var(--spacing-sm);
+        margin-top: 0.75rem;
+        font-weight: 500;
     }
 
     /* Loading state */
@@ -723,19 +1049,13 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     }
 
     .chart-loading .spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid var(--bv-gris-claro);
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(55, 180, 72, 0.2);
         border-top-color: var(--bv-verde-primario);
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
-        margin-bottom: var(--spacing-md);
-    }
-
-    .manual-step-image img {
-        width: 100%;
-        height: auto;
-        display: block;
+        margin-bottom: 1.5rem;
     }
 
     @keyframes spin {
@@ -744,46 +1064,590 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         }
     }
 
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .map-app-container {
-            flex-direction: column;
+    .chart-loading p {
+        font-weight: 600;
+        color: var(--bv-verde-primario);
+    }
+
+    /* ============================================
+       MANUAL DE USO
+       ============================================ */
+    .manual-modal-content {
+        max-width: 1000px;
+    }
+
+    .manual-step {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(
+            135deg,
+            rgba(55, 180, 72, 0.03) 0%,
+            rgba(255, 255, 255, 0.8) 100%
+        );
+        border-radius: 16px;
+        align-items: center;
+        border: 2px solid rgba(55, 180, 72, 0.1);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+
+    .manual-step:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+    .manual-step:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    .manual-step:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+    .manual-step:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+    .manual-step:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+    .manual-step:nth-child(6) {
+        animation-delay: 0.6s;
+    }
+    .manual-step:nth-child(7) {
+        animation-delay: 0.7s;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
         }
-        .sidebar {
-            width: 100%;
-            max-height: 40%;
-        }
-        #map {
-            height: 60%;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
 
+    .manual-step:hover {
+        transform: translateX(8px);
+        box-shadow: 0 8px 24px rgba(55, 180, 72, 0.15);
+        border-color: var(--bv-verde-primario);
+    }
+
+    .manual-step-number {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-primario) 0%,
+            var(--bv-verde-primario-dark) 100%
+        );
+        color: var(--bv-blanco);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        box-shadow: 0 6px 20px rgba(55, 180, 72, 0.3);
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .manual-step:hover .manual-step-number {
+        transform: scale(1.1) rotate(360deg);
+    }
+
+    .manual-step-number::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: inherit;
+        opacity: 0.5;
+        animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes ping {
+        75%,
+        100% {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+    }
+
+    .manual-step-content {
+        flex: 1;
+    }
+
+    .manual-step-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--bv-azul-oscuro);
+        margin-bottom: 0.75rem;
+        font-family: var(--font-family-heading);
+        letter-spacing: -0.3px;
+    }
+
+    .manual-step-description {
+        font-size: 1rem;
+        color: var(--bv-gris);
+        line-height: 1.7;
+        font-weight: 400;
+    }
+
+    .manual-step-image {
+        width: 220px;
+        height: 165px;
+        background: var(--bv-blanco);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(55, 180, 72, 0.1);
+        flex-shrink: 0;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .manual-step:hover .manual-step-image {
+        transform: scale(1.05);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .manual-step-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all 0.3s ease;
+    }
+
+    .manual-step:hover .manual-step-image img {
+        transform: scale(1.1);
+    }
+
+    .manual-step-image i {
+        font-size: 3.5rem;
+        color: rgba(55, 180, 72, 0.2);
+    }
+
+    /* ============================================
+   RESPONSIVE 
+   ============================================ */
+
+    /* Tablets y pantallas medianas (1024px o menos) */
+    @media (max-width: 1024px) {
+        .map-app-container {
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 100% !important;
+            max-width: 100% !important;
+            max-height: 40vh;
+            border-right: none;
+            border-bottom: 2px solid rgba(55, 180, 72, 0.1);
+            border-radius: 0;
+        }
+
+        .sidebar-content {
+            max-height: calc(40vh - 120px);
+        }
+
+        #map {
+            height: 60vh;
+            border-radius: 0;
+        }
+
+        .map-controls {
+            top: 16px;
+            right: 16px;
+            gap: 10px;
+        }
+
+        .map-control-btn {
+            width: 46px;
+            height: 46px;
+            font-size: 18px;
+        }
+
+        .modal-content {
+            width: 92%;
+            max-height: 92vh;
+        }
+    }
+
+    /* Móviles grandes (768px o menos) */
     @media (max-width: 768px) {
+        .sidebar {
+            max-height: 35vh;
+        }
+
+        .sidebar-header {
+            padding: 1.25rem 1rem;
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.25rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.8125rem;
+        }
+
+        .sidebar-content {
+            padding: 1rem;
+            max-height: calc(35vh - 100px);
+        }
+
+        #map {
+            height: 65vh;
+        }
+
+        .filter-item {
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .filter-item-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 18px;
+            margin-right: 0.75rem;
+        }
+
+        .filter-item-title {
+            font-size: 0.9375rem;
+        }
+
+        .filter-item-description {
+            font-size: 0.75rem;
+        }
+
+        .map-controls {
+            top: 12px;
+            right: 12px;
+            gap: 8px;
+        }
+
+        .map-control-btn {
+            width: 42px;
+            height: 42px;
+            font-size: 16px;
+        }
+
         .modal-content {
             width: 95%;
             max-height: 95vh;
+            border-radius: 16px;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.375rem;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 1.25rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
         }
 
         .modal-form {
             grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        .chart-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
         }
 
         .chart-container {
             height: 280px;
+            padding: 1rem;
         }
 
-        .modal-header h3 {
-            font-size: 1.25rem;
+        .chart-title {
+            font-size: 1.125rem;
         }
 
         .manual-step {
             flex-direction: column;
+            gap: 1.25rem;
+            padding: 1.25rem;
+        }
+
+        .manual-step-number {
+            width: 50px;
+            height: 50px;
+            font-size: 1.25rem;
+        }
+
+        .manual-step-title {
+            font-size: 1.125rem;
+        }
+
+        .manual-step-description {
+            font-size: 0.9375rem;
         }
 
         .manual-step-image {
             width: 100%;
-            height: 200px;
+            height: 180px;
         }
+    }
+
+    /* Móviles pequeños (480px o menos) */
+    @media (max-width: 480px) {
+        .map-app-container {
+            height: 100vh;
+        }
+
+        .sidebar {
+            max-height: 32vh;
+        }
+
+        .sidebar-header {
+            padding: 1rem 0.875rem;
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.125rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.75rem;
+        }
+
+        .sidebar-content {
+            padding: 0.875rem;
+            max-height: calc(32vh - 85px);
+        }
+
+        #map {
+            height: 68vh;
+        }
+
+        .filter-item {
+            padding: 0.875rem;
+            border-radius: 12px;
+        }
+
+        .filter-item-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+            margin-right: 0.625rem;
+        }
+
+        .filter-item-title {
+            font-size: 0.875rem;
+        }
+
+        .filter-item-description {
+            font-size: 0.6875rem;
+        }
+
+        .category-count {
+            font-size: 0.6875rem;
+            padding: 3px 8px;
+        }
+
+        .switch {
+            width: 48px;
+            height: 28px;
+        }
+
+        .slider:before {
+            height: 20px;
+            width: 20px;
+        }
+
+        .switch input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .map-controls {
+            top: 10px;
+            right: 10px;
+            gap: 6px;
+        }
+
+        .map-control-btn {
+            width: 38px;
+            height: 38px;
+            font-size: 14px;
+            border-radius: 10px;
+        }
+
+        .map-click-hint {
+            padding: 14px 20px;
+            font-size: 0.875rem;
+            gap: 12px;
+        }
+
+        .map-click-hint i {
+            font-size: 20px;
+        }
+
+        .modal-content {
+            width: 96%;
+            max-height: 96vh;
+            border-radius: 12px;
+        }
+
+        .modal-header {
+            padding: 1.25rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            padding-right: 40px;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            top: 1.25rem;
+            right: 1.25rem;
+            font-size: 1.125rem;
+        }
+
+        .modal-body {
+            padding: 1.25rem;
+        }
+
+        .form-group label {
+            font-size: 0.8125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group select {
+            padding: 0.75rem 0.875rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            padding: 0.875rem 1.25rem;
+            font-size: 0.9375rem;
+        }
+
+        .chart-section {
+            margin-top: 1.25rem;
+            padding: 1.25rem;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+        }
+
+        .chart-subtitle {
+            font-size: 0.8125rem;
+        }
+
+        .chart-container {
+            height: 240px;
+            padding: 0.875rem;
+        }
+
+        .chart-empty-state i {
+            font-size: 3rem;
+        }
+
+        .chart-empty-state p {
+            font-size: 0.875rem;
+        }
+
+        .manual-step {
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .manual-step-number {
+            width: 44px;
+            height: 44px;
+            font-size: 1.125rem;
+        }
+
+        .manual-step-title {
+            font-size: 1rem;
+        }
+
+        .manual-step-description {
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .manual-step-image {
+            height: 160px;
+        }
+    }
+
+    /* Móviles muy pequeños (360px o menos) */
+    @media (max-width: 360px) {
+        .sidebar-header h3 {
+            font-size: 1rem;
+        }
+
+        .filter-item-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 14px;
+        }
+
+        .map-control-btn {
+            width: 36px;
+            height: 36px;
+            font-size: 13px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.125rem;
+        }
+
+        .chart-container {
+            height: 220px;
+        }
+    }
+    /* ============================================
+       ANIMACIONES ADICIONALES
+       ============================================ */
+    @keyframes shimmer {
+        0% {
+            background-position: -1000px 0;
+        }
+        100% {
+            background-position: 1000px 0;
+        }
+    }
+
+    .loading-shimmer {
+        animation: shimmer 2s infinite;
+        background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+        background-size: 1000px 100%;
+    }
+
+    /* Mejora visual para leaflet popup */
+    .leaflet-popup-content-wrapper {
+        border-radius: 12px !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .leaflet-popup-tip {
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1) !important;
     }
 </style>
 
@@ -1052,36 +1916,55 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // Función básica de sanitización
+    // ============================================
+    // FUNCIÓN DE SANITIZACIÓN
+    // ============================================
     function escapeHtml(unsafe) {
         if (typeof unsafe !== "string") return String(unsafe);
         return unsafe
             .replace(/&/g, "&amp;")
-            .replace(/</g, "<")
-            .replace(/>/g, ">")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
 
     if (typeof window !== "undefined") {
-        // Obtener estaciones desde el DOM
+        // ============================================
+        // CONFIGURACIÓN INICIAL
+        // ============================================
         const stationDataEl = document.getElementById("station-data");
         const stationsFromServer = stationDataEl ? JSON.parse(stationDataEl.dataset.stations) : [];
-
-        // Obtener la URL base desde la variable de entorno pública
         const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8000";
 
         let currentStationData = null;
         let chartInstance = null;
         let mapInteractionTimeout = null;
         let isFullscreen = false;
+        let map;
+        let currentMarkers = {};
 
+        // ============================================
+        // CONFIGURACIÓN DE CATEGORÍAS
+        // ============================================
         const categoriesConfig = {
-            airQuality: { color: "#FFEA00" },
-            biodiversity: { color: "var(--bv-verde-primario-dark)" },
-            soil: { color: "rgba(137, 81, 41, 1)" },
+            airQuality: {
+                color: "#FFEA00",
+                name: "Calidad del Aire",
+            },
+            biodiversity: {
+                color: "var(--bv-verde-primario-dark)",
+                name: "Biodiversidad",
+            },
+            soil: {
+                color: "rgba(137, 81, 41, 1)",
+                name: "Suelo",
+            },
         };
 
+        // ============================================
+        // NORMALIZACIÓN DE DATOS
+        // ============================================
         const normalizedStations = stationsFromServer.map((station) => ({
             ...station,
             lng: station.lon,
@@ -1097,9 +1980,10 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         }));
 
         const allMarkersData = [...airQualityMarkers];
-        let map;
-        let currentMarkers = {};
 
+        // ============================================
+        // FUNCIÓN: CREAR ICONO DE MARCADOR PERSONALIZADO
+        // ============================================
         function createCustomMarkerIcon(color, number) {
             let actualColor = color;
             if (color.startsWith("var(")) {
@@ -1110,12 +1994,15 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             return L.divIcon({
                 className: "custom-marker-icon",
                 html: `<div style="background-color: ${actualColor};" class="marker-bubble">${number}</div>`,
-                iconSize: [36, 48],
-                iconAnchor: [18, 42],
-                popupAnchor: [0, -42],
+                iconSize: [42, 50],
+                iconAnchor: [21, 45],
+                popupAnchor: [0, -45],
             });
         }
 
+        // ============================================
+        // FUNCIÓN: ACTIVAR/DESACTIVAR MAPA
+        // ============================================
         function activateMap() {
             const mapScrollOverlay = document.getElementById("mapScrollOverlay");
             mapScrollOverlay.classList.add("active");
@@ -1128,7 +2015,7 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
             mapInteractionTimeout = setTimeout(() => {
                 deactivateMap();
-            }, 3000);
+            }, 5000);
         }
 
         function deactivateMap() {
@@ -1138,6 +2025,9 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             map.dragging.disable();
         }
 
+        // ============================================
+        // FUNCIÓN: ESTADOS DE LA GRÁFICA
+        // ============================================
         function showChartLoading() {
             const canvas = document.getElementById("chartCanvas");
             const emptyState = document.getElementById("chartEmptyState");
@@ -1169,6 +2059,9 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             emptyState.style.display = "none";
         }
 
+        // ============================================
+        // FUNCIÓN: PANTALLA COMPLETA
+        // ============================================
         function toggleFullscreen() {
             const container = document.getElementById("mapAppContainer");
             const fullscreenBtn = document.getElementById("fullscreenBtn");
@@ -1192,14 +2085,20 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
             setTimeout(() => {
                 map.invalidateSize();
-            }, 300);
+            }, 350);
         }
 
+        // ============================================
+        // FUNCIÓN: ABRIR MODAL DE ESTACIÓN
+        // ============================================
         async function openStationModal(stationData) {
             currentStationData = stationData;
             const modal = document.getElementById("stationModal");
             modal.style.display = "flex";
-            document.getElementById("modalStationTitle").textContent = stationData.name;
+
+            const title = document.getElementById("modalStationTitle");
+            title.textContent = stationData.name;
+            title.style.animation = "slideInRight 0.3s ease";
 
             const yearSelect = document.getElementById("yearSelect");
             const monthSelect = document.getElementById("monthSelect");
@@ -1216,7 +2115,10 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             showEmptyState();
 
             try {
-                if (Array.isArray(stationData.charts_permited) && stationData.charts_permited.length > 0) {
+                if (
+                    Array.isArray(stationData.charts_permited) &&
+                    stationData.charts_permited.length > 0
+                ) {
                     chartSelect.innerHTML = "";
                     stationData.charts_permited.forEach((chart) => {
                         const opt = document.createElement("option");
@@ -1226,7 +2128,7 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                     });
                     chartSelect.disabled = false;
                 } else {
-                    chartSelect.innerHTML = '<option value="">No hay gráficos</option>';
+                    chartSelect.innerHTML = '<option value="">No hay gráficos disponibles</option>';
                 }
 
                 const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
@@ -1259,25 +2161,38 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                     });
                     yearSelect.disabled = false;
                 } else {
-                    yearSelect.innerHTML = '<option value="">No hay datos</option>';
+                    yearSelect.innerHTML = '<option value="">No hay datos disponibles</option>';
                 }
 
                 updateViewButtonState();
             } catch (error) {
                 console.error("Error al cargar periodos:", error);
-                yearSelect.innerHTML = '<option value="">Error al cargar</option>';
-                chartSelect.innerHTML = '<option value="">Error al cargar</option>';
+                yearSelect.innerHTML = '<option value="">Error al cargar datos</option>';
+                chartSelect.innerHTML = '<option value="">Error al cargar datos</option>';
             }
         }
 
+        // ============================================
+        // FUNCIÓN: ACTUALIZAR ESTADO DEL BOTÓN VER
+        // ============================================
         function updateViewButtonState() {
             const year = document.getElementById("yearSelect").value;
             const chart = document.getElementById("chartSelect").value;
-            document.getElementById("viewChartBtn").disabled = !(year && chart);
+            const viewBtn = document.getElementById("viewChartBtn");
+            viewBtn.disabled = !(year && chart);
         }
 
+        // ============================================
+        // FUNCIÓN: CERRAR MODAL DE ESTACIÓN
+        // ============================================
         function closeStationModal() {
-            document.getElementById("stationModal").style.display = "none";
+            const modal = document.getElementById("stationModal");
+            modal.style.animation = "fadeOut 0.2s ease";
+            setTimeout(() => {
+                modal.style.display = "none";
+                modal.style.animation = "";
+            }, 200);
+
             currentStationData = null;
             if (chartInstance) {
                 chartInstance.destroy();
@@ -1286,6 +2201,9 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             showEmptyState();
         }
 
+        // ============================================
+        // FUNCIÓN: RENDERIZAR MARCADORES
+        // ============================================
         function renderMarkers() {
             for (const category in currentMarkers) {
                 (currentMarkers[category] || []).forEach((marker) => map.removeLayer(marker));
@@ -1311,12 +2229,226 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                     const markerIcon = createCustomMarkerIcon(color, index + 1);
                     const marker = L.marker([markerData.lat, markerData.lng], { icon: markerIcon })
                         .addTo(map)
-                        .on("click", () => openStationModal(markerData));
+                        .on("click", () => {
+                            openStationModal(markerData);
+                            activateMap();
+                        });
                     currentMarkers[activeCat].push(marker);
                 });
             });
         }
 
+        // ============================================
+        // FUNCIÓN: CARGAR Y MOSTRAR GRÁFICA
+        // ============================================
+        async function loadAndShowChart() {
+            const year = document.getElementById("yearSelect").value;
+            const month = document.getElementById("monthSelect").value || "all";
+            const chart = document.getElementById("chartSelect").value;
+            const stationId = currentStationData.id;
+
+            if (!year || !chart) return;
+
+            showChartLoading();
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+
+            try {
+                const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
+                const token = tokenMatch ? tokenMatch[2] : "";
+                const url = `${API_BASE_URL}/station-data/hourly-by-month?station_id=${encodeURIComponent(stationId)}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}&variable=${encodeURIComponent(chart)}`;
+
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+
+                if (!data.y || !Array.isArray(data.y)) {
+                    throw new Error('Respuesta inválida: no contiene arreglo "y"');
+                }
+
+                showChart();
+
+                const xLabels = data.y.map((_, i) => i);
+                const monthName =
+                    month === "all"
+                        ? "Todo el año"
+                        : month.charAt(0).toUpperCase() + month.slice(1);
+                document.getElementById("chartTitleText").textContent = chart;
+                document.getElementById("chartSubtitle").textContent =
+                    `${monthName} ${year} - Datos por hora`;
+
+                const ctx = document.getElementById("chartCanvas").getContext("2d");
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, "rgba(55, 180, 72, 0.4)");
+                gradient.addColorStop(0.5, "rgba(55, 180, 72, 0.2)");
+                gradient.addColorStop(1, "rgba(55, 180, 72, 0.02)");
+
+                const values = data.y.filter((v) => v !== null && !isNaN(v));
+                const minValue = Math.min(...values);
+                const maxValue = Math.max(...values);
+                const avgValue = values.reduce((a, b) => a + b, 0) / values.length;
+
+                const chartData = {
+                    labels: xLabels,
+                    datasets: [
+                        {
+                            label: chart,
+                            data: data.y,
+                            borderColor: "#37B448",
+                            backgroundColor: gradient,
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            pointHoverRadius: 10,
+                            pointHoverBackgroundColor: "#37B448",
+                            pointHoverBorderColor: "#fff",
+                            pointHoverBorderWidth: 4,
+                            fill: true,
+                            tension: 0.4,
+                            cubicInterpolationMode: "monotone",
+                        },
+                    ],
+                };
+
+                const chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                        easing: "easeOutQuart",
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: "rgba(25, 25, 35, 0.98)",
+                            titleColor: "#fff",
+                            bodyColor: "#fff",
+                            titleFont: {
+                                family: "'Inter', sans-serif",
+                                size: 15,
+                                weight: "700",
+                            },
+                            bodyFont: {
+                                family: "'Inter', sans-serif",
+                                size: 13,
+                                weight: "500",
+                            },
+                            padding: 18,
+                            cornerRadius: 12,
+                            displayColors: false,
+                            borderColor: "rgba(55, 180, 72, 0.6)",
+                            borderWidth: 2,
+                            callbacks: {
+                                title: (tooltipItems) => `⏰ Hora ${tooltipItems[0].dataIndex}`,
+                                label: (tooltipItem) => {
+                                    const value = tooltipItem.raw;
+                                    return [
+                                        `📊 Valor: ${value.toFixed(2)}`,
+                                        ``,
+                                        `📈 Promedio: ${avgValue.toFixed(2)}`,
+                                        `⬇️  Mínimo: ${minValue.toFixed(2)}`,
+                                        `⬆️  Máximo: ${maxValue.toFixed(2)}`,
+                                    ];
+                                },
+                            },
+                        },
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            grid: {
+                                display: false,
+                            },
+                            ticks: {
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 11,
+                                    weight: "500",
+                                },
+                                color: "#6B7280",
+                                maxTicksLimit: 12,
+                                callback: (value) => (value % 24 === 0 ? `${value}h` : ""),
+                            },
+                            title: {
+                                display: true,
+                                text: "Horas del día",
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 13,
+                                    weight: "700",
+                                },
+                                color: "#374151",
+                            },
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: "rgba(0, 0, 0, 0.06)",
+                                drawBorder: false,
+                                lineWidth: 1,
+                            },
+                            ticks: {
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12,
+                                    weight: "500",
+                                },
+                                color: "#6B7280",
+                                padding: 10,
+                                callback: (value) =>
+                                    value.toLocaleString("es-CO", {
+                                        maximumFractionDigits: 1,
+                                    }),
+                            },
+                            title: {
+                                display: true,
+                                text: chart,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 14,
+                                    weight: "700",
+                                },
+                                color: "#1F2937",
+                                padding: { top: 0, bottom: 12 },
+                            },
+                        },
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: "index",
+                    },
+                };
+
+                chartInstance = new Chart(ctx, {
+                    type: "line",
+                    data: chartData,
+                    options: chartOptions,
+                });
+            } catch (error) {
+                console.error("Error al cargar la gráfica:", error);
+                const emptyState = document.getElementById("chartEmptyState");
+                emptyState.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="color: #EF4444; font-size: 4rem; margin-bottom: 1.5rem;"></i>
+                    <p style="color: #EF4444; font-weight: 600; font-size: 1.1rem;">Error al cargar los datos</p>
+                    <p style="font-size: 0.9rem; margin-top: 8px; color: #6B7280;">Por favor, inténtalo de nuevo más tarde</p>
+                `;
+                emptyState.style.display = "flex";
+                document.getElementById("chartCanvas").style.display = "none";
+            }
+        }
+
+        // ============================================
+        // FUNCIÓN: INICIALIZAR LEAFLET
+        // ============================================
         function loadLeaflet() {
             map = L.map("map", {
                 center: [10.9877, -74.8055],
@@ -1324,6 +2456,9 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 zoomControl: false,
                 scrollWheelZoom: false,
                 dragging: false,
+                zoomAnimation: true,
+                fadeAnimation: true,
+                markerZoomAnimation: true,
             });
 
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -1334,6 +2469,9 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
             renderMarkers();
 
+            // ============================================
+            // EVENT LISTENERS DEL MAPA
+            // ============================================
             const mapScrollOverlay = document.getElementById("mapScrollOverlay");
             const mapContainer = document.getElementById("map");
 
@@ -1346,21 +2484,21 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                     activateMap();
                 } else {
                     if (mapInteractionTimeout) clearTimeout(mapInteractionTimeout);
-                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 3000);
+                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 5000);
                 }
             });
 
             mapContainer.addEventListener("mousemove", () => {
                 if (mapScrollOverlay.classList.contains("active")) {
                     if (mapInteractionTimeout) clearTimeout(mapInteractionTimeout);
-                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 3000);
+                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 5000);
                 }
             });
 
             mapContainer.addEventListener("wheel", () => {
                 if (mapScrollOverlay.classList.contains("active")) {
                     if (mapInteractionTimeout) clearTimeout(mapInteractionTimeout);
-                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 3000);
+                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 5000);
                 }
             });
 
@@ -1375,41 +2513,93 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 }
             });
 
-            document.getElementById("fullscreenBtn").addEventListener("click", toggleFullscreen);
-            document.getElementById("zoomInBtn").addEventListener("click", () => { map.zoomIn(); activateMap(); });
-            document.getElementById("zoomOutBtn").addEventListener("click", () => { map.zoomOut(); activateMap(); });
-            document.getElementById("centerMapBtn").addEventListener("click", () => {
-                map.setView([10.9877, -74.8055], 13, { animate: true, duration: 1 });
+            // ============================================
+            // CONTROLES DEL MAPA
+            // ============================================
+            document.getElementById("fullscreenBtn").addEventListener("click", () => {
+                toggleFullscreen();
                 activateMap();
             });
 
+            document.getElementById("zoomInBtn").addEventListener("click", () => {
+                map.zoomIn();
+                activateMap();
+            });
+
+            document.getElementById("zoomOutBtn").addEventListener("click", () => {
+                map.zoomOut();
+                activateMap();
+            });
+
+            document.getElementById("centerMapBtn").addEventListener("click", () => {
+                map.setView([10.9877, -74.8055], 13, {
+                    animate: true,
+                    duration: 1,
+                });
+                activateMap();
+            });
+
+            // ============================================
+            // MODAL DE MANUAL
+            // ============================================
             document.getElementById("manualBtn").addEventListener("click", () => {
                 document.getElementById("manualModal").style.display = "flex";
             });
 
             document.querySelector(".manual-modal-close").addEventListener("click", () => {
-                document.getElementById("manualModal").style.display = "none";
+                const manualModal = document.getElementById("manualModal");
+                manualModal.style.animation = "fadeOut 0.2s ease";
+                setTimeout(() => {
+                    manualModal.style.display = "none";
+                    manualModal.style.animation = "";
+                }, 200);
             });
 
             document.getElementById("manualModal").addEventListener("click", (e) => {
                 if (e.target === document.getElementById("manualModal")) {
-                    document.getElementById("manualModal").style.display = "none";
+                    const manualModal = document.getElementById("manualModal");
+                    manualModal.style.animation = "fadeOut 0.2s ease";
+                    setTimeout(() => {
+                        manualModal.style.display = "none";
+                        manualModal.style.animation = "";
+                    }, 200);
                 }
             });
 
+            // ============================================
+            // FILTROS DE CATEGORÍAS
+            // ============================================
             document.querySelectorAll('.sidebar input[type="checkbox"]').forEach((checkbox) => {
-                checkbox.addEventListener("change", renderMarkers);
+                checkbox.addEventListener("change", () => {
+                    renderMarkers();
+                    // Efecto de feedback visual
+                    const filterItem = checkbox.closest(".filter-item");
+                    filterItem.style.transform = "scale(0.95)";
+                    setTimeout(() => {
+                        filterItem.style.transform = "";
+                    }, 150);
+                });
             });
 
+            // ============================================
+            // MODAL DE ESTACIÓN
+            // ============================================
             document.querySelector(".modal-close").addEventListener("click", closeStationModal);
+
             document.getElementById("stationModal").addEventListener("click", (e) => {
-                if (e.target === document.getElementById("stationModal")) closeStationModal();
+                if (e.target === document.getElementById("stationModal")) {
+                    closeStationModal();
+                }
             });
 
+            // ============================================
+            // FORMULARIO DE SELECCIÓN
+            // ============================================
             document.getElementById("yearSelect").addEventListener("change", function () {
                 const monthSelect = document.getElementById("monthSelect");
                 const periods = currentStationData?._periods || {};
                 monthSelect.innerHTML = "";
+
                 if (this.value && periods[this.value]) {
                     monthSelect.disabled = false;
                     periods[this.value].forEach((month) => {
@@ -1425,175 +2615,178 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 updateViewButtonState();
             });
 
-            document.getElementById("chartSelect").addEventListener("change", updateViewButtonState);
+            document
+                .getElementById("monthSelect")
+                .addEventListener("change", updateViewButtonState);
+            document
+                .getElementById("chartSelect")
+                .addEventListener("change", updateViewButtonState);
 
-            document.getElementById("viewChartBtn").addEventListener("click", async () => {
-                const year = document.getElementById("yearSelect").value;
-                const month = document.getElementById("monthSelect").value || "all";
-                const chart = document.getElementById("chartSelect").value;
-                const stationId = currentStationData.id;
-                if (!year || !chart) return;
+            document.getElementById("viewChartBtn").addEventListener("click", loadAndShowChart);
 
-                showChartLoading();
-                if (chartInstance) {
-                    chartInstance.destroy();
-                    chartInstance = null;
-                }
-
-                try {
-                    const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
-                    const token = tokenMatch ? tokenMatch[2] : "";
-                    const url = `${API_BASE_URL}/station-data/hourly-by-month?station_id=${encodeURIComponent(stationId)}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}&variable=${encodeURIComponent(chart)}`;
-                    const response = await fetch(url, {
-                        method: "GET",
-                        headers: {
-                            Accept: "application/json",
-                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                        },
-                    });
-
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    const data = await response.json();
-                    if (!data.y || !Array.isArray(data.y)) {
-                        throw new Error('Respuesta inválida: no contiene arreglo "y"');
-                    }
-
-                    showChart();
-                    const xLabels = data.y.map((_, i) => i);
-                    const monthName = month === "all" ? "Todo el año" : month.charAt(0).toUpperCase() + month.slice(1);
-                    document.getElementById("chartTitleText").textContent = chart;
-                    document.getElementById("chartSubtitle").textContent = `${monthName} ${year} - Datos por hora`;
-
-                    const ctx = document.getElementById("chartCanvas").getContext("2d");
-                    const gradient = ctx.createLinearGradient(0, 0, 0, 350);
-                    gradient.addColorStop(0, "rgba(55, 180, 72, 0.3)");
-                    gradient.addColorStop(1, "rgba(55, 180, 72, 0.01)");
-
-                    const chartData = {
-                        labels: xLabels,
-                        datasets: [{
-                            label: chart,
-                            data: data.y,
-                            borderColor: "#37B448",
-                            backgroundColor: gradient,
-                            borderWidth: 3,
-                            pointRadius: 0,
-                            pointHoverRadius: 8,
-                            pointHoverBackgroundColor: "#37B448",
-                            pointHoverBorderColor: "#fff",
-                            pointHoverBorderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            cubicInterpolationMode: "monotone",
-                        }],
-                    };
-
-                    const values = data.y.filter((v) => v !== null && !isNaN(v));
-                    const minValue = Math.min(...values);
-                    const maxValue = Math.max(...values);
-                    const avgValue = values.reduce((a, b) => a + b, 0) / values.length;
-
-                    const chartOptions = {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: { duration: 1200, easing: "easeOutQuart" },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                enabled: true,
-                                backgroundColor: "rgba(25, 25, 35, 0.95)",
-                                titleColor: "#fff",
-                                bodyColor: "#fff",
-                                titleFont: { family: "'Inter', sans-serif", size: 14, weight: "600" },
-                                bodyFont: { family: "'Inter', sans-serif", size: 13 },
-                                padding: 16,
-                                cornerRadius: 12,
-                                displayColors: false,
-                                borderColor: "rgba(55, 180, 72, 0.5)",
-                                borderWidth: 1,
-                                callbacks: {
-                                    title: (tooltipItems) => `Hora ${tooltipItems[0].dataIndex}`,
-                                    label: (tooltipItem) => {
-                                        const value = tooltipItem.raw;
-                                        return [
-                                            `Valor: ${value.toFixed(2)}`,
-                                            ``,
-                                            `Promedio: ${avgValue.toFixed(2)}`,
-                                            `Mínimo: ${minValue.toFixed(2)}`,
-                                            `Máximo: ${maxValue.toFixed(2)}`,
-                                        ];
-                                    },
-                                },
-                            },
-                        },
-                        scales: {
-                            x: {
-                                display: true,
-                                grid: { display: false },
-                                ticks: {
-                                    font: { family: "'Inter', sans-serif", size: 11 },
-                                    color: "#6B7280",
-                                    maxTicksLimit: 12,
-                                    callback: (value) => value % 24 === 0 ? `${value}h` : "",
-                                },
-                                title: {
-                                    display: true,
-                                    text: "Horas",
-                                    font: { family: "'Inter', sans-serif", size: 12, weight: "600" },
-                                    color: "#4B5563",
-                                },
-                            },
-                            y: {
-                                beginAtZero: false,
-                                grid: { color: "rgba(0, 0, 0, 0.06)", drawBorder: false, lineWidth: 1 },
-                                ticks: {
-                                    font: { family: "'Inter', sans-serif", size: 12 },
-                                    color: "#6B7280",
-                                    padding: 8,
-                                    callback: (value) => value.toLocaleString("es-CO", { maximumFractionDigits: 1 }),
-                                },
-                                title: {
-                                    display: true,
-                                    text: chart,
-                                    font: { family: "'Inter', sans-serif", size: 13, weight: "600" },
-                                    color: "#374151",
-                                    padding: { top: 0, bottom: 10 },
-                                },
-                            },
-                        },
-                        interaction: { intersect: false, mode: "index" },
-                    };
-
-                    chartInstance = new Chart(ctx, { type: "line", data: chartData, options: chartOptions });
-                } catch (error) {
-                    console.error("Error al cargar la gráfica:", error);
-                    const emptyState = document.getElementById("chartEmptyState");
-                    emptyState.innerHTML = `
-                        <i class="fas fa-exclamation-triangle" style="color: #EF4444;"></i>
-                        <p style="color: #EF4444;">Error al cargar los datos</p>
-                        <p style="font-size: 0.875rem; margin-top: 8px;">Por favor, inténtalo de nuevo</p>
-                    `;
-                    emptyState.style.display = "flex";
-                    document.getElementById("chartCanvas").style.display = "none";
-                }
-            });
-
+            // ============================================
+            // ATAJOS DE TECLADO
+            // ============================================
             document.addEventListener("keydown", (e) => {
-                if (e.key === "Escape" && isFullscreen) {
-                    toggleFullscreen();
+                // ESC - Salir de pantalla completa o cerrar modales
+                if (e.key === "Escape") {
+                    if (isFullscreen) {
+                        toggleFullscreen();
+                    } else if (document.getElementById("stationModal").style.display === "flex") {
+                        closeStationModal();
+                    } else if (document.getElementById("manualModal").style.display === "flex") {
+                        document.getElementById("manualModal").style.display = "none";
+                    }
+                }
+
+                // F - Pantalla completa
+                if (e.key === "f" || e.key === "F") {
+                    if (!document.activeElement || document.activeElement.tagName !== "INPUT") {
+                        toggleFullscreen();
+                    }
+                }
+
+                // H - Ayuda (Manual)
+                if (e.key === "h" || e.key === "H") {
+                    if (!document.activeElement || document.activeElement.tagName !== "INPUT") {
+                        document.getElementById("manualModal").style.display = "flex";
+                    }
+                }
+
+                // C - Centrar mapa
+                if (e.key === "c" || e.key === "C") {
+                    if (!document.activeElement || document.activeElement.tagName !== "INPUT") {
+                        map.setView([10.9877, -74.8055], 13, {
+                            animate: true,
+                            duration: 1,
+                        });
+                        activateMap();
+                    }
                 }
             });
 
-            // ✅ MOSTRAR MODAL DE MANUAL AL CARGAR LA PÁGINA
-            document.getElementById("manualModal").style.display = "flex";
+            // ============================================
+            // ANIMACIONES DE ENTRADA
+            // ============================================
+            setTimeout(() => {
+                const filterItems = document.querySelectorAll(".filter-item");
+                filterItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.animation = `slideInLeft 0.5s ease forwards`;
+                    }, index * 100);
+                });
+            }, 300);
+
+            // ============================================
+            // EFECTOS HOVER EN MARCADORES
+            // ============================================
+            const style = document.createElement("style");
+            style.textContent = `
+                .leaflet-marker-icon:hover {
+                    z-index: 1000 !important;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // ============================================
+            // MOSTRAR MODAL DE MANUAL AL INICIO
+            // ============================================
+            setTimeout(() => {
+                document.getElementById("manualModal").style.display = "flex";
+            }, 500);
+
+            // ============================================
+            // NOTIFICACIONES TOAST (Opcional)
+            // ============================================
+            window.showToast = function (message, type = "info") {
+                const toast = document.createElement("div");
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 24px;
+                    right: 24px;
+                    padding: 16px 24px;
+                    background: ${type === "error" ? "#EF4444" : type === "success" ? "#37B448" : "#3B82F6"};
+                    color: white;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                    z-index: 10001;
+                    font-weight: 600;
+                    animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s;
+                    max-width: 400px;
+                `;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 3000);
+            };
+
+            // ============================================
+            // PERFORMANCE OPTIMIZATION
+            // ============================================
+            // Throttle para eventos de scroll/mousemove
+            function throttle(func, limit) {
+                let inThrottle;
+                return function () {
+                    const args = arguments;
+                    const context = this;
+                    if (!inThrottle) {
+                        func.apply(context, args);
+                        inThrottle = true;
+                        setTimeout(() => (inThrottle = false), limit);
+                    }
+                };
+            }
+
+            // Aplicar throttle a eventos frecuentes
+            const throttledMouseMove = throttle(() => {
+                if (mapScrollOverlay.classList.contains("active")) {
+                    if (mapInteractionTimeout) clearTimeout(mapInteractionTimeout);
+                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 5000);
+                }
+            }, 100);
+
+            mapContainer.addEventListener("mousemove", throttledMouseMove);
+
+            // ============================================
+            // LAZY LOADING DE IMÁGENES DEL MANUAL
+            // ============================================
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute("data-src");
+                            observer.unobserve(img);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll(".manual-step-image img[data-src]").forEach((img) => {
+                imageObserver.observe(img);
+            });
+
+            console.log("✅ Geoportal inicializado correctamente");
         }
 
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
         if (window.L) {
             loadLeaflet();
         } else {
             const script = document.createElement("script");
             script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
             script.onload = loadLeaflet;
+            script.onerror = () => {
+                console.error("❌ Error al cargar Leaflet");
+                if (window.showToast) {
+                    window.showToast("Error al cargar el mapa", "error");
+                }
+            };
             document.head.appendChild(script);
         }
     }
