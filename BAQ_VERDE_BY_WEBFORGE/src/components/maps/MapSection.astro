@@ -331,7 +331,8 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     }
 
     @keyframes pulse {
-        0%, 100% {
+        0%,
+        100% {
             transform: scale(1);
         }
         50% {
@@ -361,7 +362,11 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     .manual-step-number {
         width: 48px;
         height: 48px;
-        background: linear-gradient(135deg, var(--bv-verde-primario) 0%, var(--bv-verde-primario-dark) 100%);
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-primario) 0%,
+            var(--bv-verde-primario-dark) 100%
+        );
         color: var(--bv-blanco);
         border-radius: 50%;
         display: flex;
@@ -727,6 +732,12 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         margin-bottom: var(--spacing-md);
     }
 
+    .manual-step-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
     @keyframes spin {
         to {
             transform: rotate(360deg);
@@ -818,19 +829,39 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
         <!-- Controles personalizados del mapa -->
         <div class="map-controls">
-            <button class="map-control-btn" id="fullscreenBtn" title="Pantalla completa" aria-label="Pantalla completa">
+            <button
+                class="map-control-btn"
+                id="fullscreenBtn"
+                title="Pantalla completa"
+                aria-label="Pantalla completa"
+            >
                 <i class="fas fa-expand"></i>
             </button>
-            <button class="map-control-btn" id="zoomInBtn" title="Acercar" aria-label="Acercar zoom">
+            <button
+                class="map-control-btn"
+                id="zoomInBtn"
+                title="Acercar"
+                aria-label="Acercar zoom"
+            >
                 <i class="fas fa-plus"></i>
             </button>
             <button class="map-control-btn" id="zoomOutBtn" title="Alejar" aria-label="Alejar zoom">
                 <i class="fas fa-minus"></i>
             </button>
-            <button class="map-control-btn" id="centerMapBtn" title="Centrar en Barranquilla" aria-label="Centrar mapa">
+            <button
+                class="map-control-btn"
+                id="centerMapBtn"
+                title="Centrar en Barranquilla"
+                aria-label="Centrar mapa"
+            >
                 <i class="fas fa-crosshairs"></i>
             </button>
-            <button class="map-control-btn" id="manualBtn" title="Manual de uso" aria-label="Abrir manual">
+            <button
+                class="map-control-btn"
+                id="manualBtn"
+                title="Manual de uso"
+                aria-label="Abrir manual"
+            >
                 <i class="fas fa-question"></i>
             </button>
         </div>
@@ -913,16 +944,17 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         </div>
 
         <div class="modal-body">
-            <div htmlclass="manual-step">
+            <div class="manual-step">
                 <div class="manual-step-number">1</div>
                 <div class="manual-step-content">
                     <div class="manual-step-title">Activar el mapa</div>
                     <div class="manual-step-description">
-                        Haz clic en el mapa para activarlo y poder interactuar. Esto evita que el scroll de la página afecte al mapa.
+                        Haz clic en el mapa para activarlo y poder interactuar. Esto evita que el
+                        scroll de la página afecte al mapa.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <i class="fas fa-hand-pointer"></i>
+                    <img src="/images/steps/activar.jpeg" alt="Activar el mapa" />
                 </div>
             </div>
 
@@ -931,11 +963,12 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 <div class="manual-step-content">
                     <div class="manual-step-title">Pantalla completa</div>
                     <div class="manual-step-description">
-                        Usa el botón de expandir para ver el mapa en pantalla completa y tener una mejor visibilidad de las estaciones.
+                        Usa el botón de expandir para ver el mapa en pantalla completa y tener una
+                        mejor visibilidad de las estaciones.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <i class="fas fa-expand"></i>
+                    <img src="images/steps/pantallacompleta.jpeg" alt="Pantalla completa" />
                 </div>
             </div>
 
@@ -944,11 +977,12 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 <div class="manual-step-content">
                     <div class="manual-step-title">Acercar y alejar</div>
                     <div class="manual-step-description">
-                        Usa los botones + y - en la esquina superior derecha para hacer zoom, o usa la rueda del mouse cuando el mapa esté activo.
+                        Usa los botones + y - en la esquina superior derecha para hacer zoom, o usa
+                        la rueda del mouse cuando el mapa esté activo.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <i class="fas fa-search-plus"></i>
+                    <img src="images/steps/acercaryalejar.jpeg" alt="Acercar y alejar" />
                 </div>
             </div>
 
@@ -957,11 +991,12 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 <div class="manual-step-content">
                     <div class="manual-step-title">Navegar por el mapa</div>
                     <div class="manual-step-description">
-                        Arrastra el mapa con el mouse o con el dedo (en dispositivos táctiles) para moverte por diferentes áreas.
+                        Arrastra el mapa con el mouse o con el dedo (en dispositivos táctiles) para
+                        moverte por diferentes áreas.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <i class="fas fa-arrows-alt"></i>
+                    <img src="images/steps/navegar.jpeg" alt="Navegar por el mapa" />
                 </div>
             </div>
 
@@ -970,11 +1005,12 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 <div class="manual-step-content">
                     <div class="manual-step-title">Ver estaciones</div>
                     <div class="manual-step-description">
-                        Haz clic en los marcadores numerados para ver la información detallada de cada estación de monitoreo.
+                        Haz clic en los marcadores numerados para ver la información detallada de
+                        cada estación de monitoreo.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <i class="fas fa-map-marker-alt"></i>
+                    <img src="images/steps/estacion.jpeg" alt="Ver estaciones" />
                 </div>
             </div>
 
@@ -983,11 +1019,12 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 <div class="manual-step-content">
                     <div class="manual-step-title">Centrar en Barranquilla</div>
                     <div class="manual-step-description">
-                        Usa el botón con el ícono de cruz para volver rápidamente a la vista centrada en Barranquilla.
+                        Usa el botón con el ícono de cruz para volver rápidamente a la vista
+                        centrada en Barranquilla.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <i class="fas fa-crosshairs"></i>
+                    <img src="images/steps/centrar.jpeg" alt="Centrar en Barranquilla" />
                 </div>
             </div>
 
@@ -996,11 +1033,12 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 <div class="manual-step-content">
                     <div class="manual-step-title">Filtrar categorías</div>
                     <div class="manual-step-description">
-                        Usa los interruptores en el panel lateral para mostrar u ocultar diferentes tipos de estaciones (calidad del aire, biodiversidad, suelo).
+                        Usa los interruptores en el panel lateral para mostrar u ocultar diferentes
+                        tipos de estaciones (calidad del aire, biodiversidad, suelo).
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <i class="fas fa-filter"></i>
+                    <img src="images/steps/filtrar.jpeg" alt="Filtrar categorías" />
                 </div>
             </div>
         </div>
@@ -1368,9 +1406,11 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
             // Desactivar mapa al hacer clic fuera
             document.addEventListener("click", (e) => {
-                if (!mapContainer.contains(e.target) && 
+                if (
+                    !mapContainer.contains(e.target) &&
                     !document.getElementById("stationModal").contains(e.target) &&
-                    !document.getElementById("manualModal").contains(e.target)) {
+                    !document.getElementById("manualModal").contains(e.target)
+                ) {
                     if (mapInteractionTimeout) {
                         clearTimeout(mapInteractionTimeout);
                     }

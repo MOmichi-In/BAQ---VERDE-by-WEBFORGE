@@ -12,6 +12,8 @@ import "../styles/global.css";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preload" as="image" href="/images/hero-bg-01.webp" />
+    <!-- ✅ Font Awesome para íconos de redes sociales -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>{title}</title>
   </head>
   <body>
@@ -37,7 +39,7 @@ import "../styles/global.css";
     <!-- ========================
      NAVEGACIÓN PRINCIPAL (STICKY)
      ======================== -->
-<div class="header main header--home" id="mainNav">
+    <div class="header main header--home" id="mainNav">
       <div class="container-full">
         <div class="logo">
           <img src="/images/logo.png" alt="Observatorio Ambiental" />
@@ -120,12 +122,9 @@ import "../styles/global.css";
           class="indicator active"
           data-slide="0"
           aria-label="Ir a slide 1"></button>
-        <button class="indicator" data-slide="1" aria-label="Ir a slide 2"
-        ></button>
-        <button class="indicator" data-slide="2" aria-label="Ir a slide 3"
-        ></button>
-        <button class="indicator" data-slide="3" aria-label="Ir a slide 4"
-        ></button>
+        <button class="indicator" data-slide="1" aria-label="Ir a slide 2"></button>
+        <button class="indicator" data-slide="2" aria-label="Ir a slide 3"></button>
+        <button class="indicator" data-slide="3" aria-label="Ir a slide 4"></button>
       </div>
 
       <button class="carousel-control prev" id="prevBtn" aria-label="Anterior">
@@ -203,15 +202,12 @@ import "../styles/global.css";
             </ul>
           </div>
 
-         
-
           <!-- Columna: Información de contacto y emergencias -->
           <div class="footer-col">
             <h4>Contacto</h4>
             <ul>
               <li>Email: contacto@observatorioambiental.gov.co</li>
               <li>Tel: (605) 311 2470</li>
-              
             </ul>
           </div>
         </div>
