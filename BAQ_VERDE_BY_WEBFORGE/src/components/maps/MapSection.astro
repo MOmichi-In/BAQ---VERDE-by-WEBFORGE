@@ -53,6 +53,21 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         box-shadow: var(--shadow-lg);
         font-family: var(--font-family-base);
         background-color: var(--bv-blanco);
+        position: relative;
+    }
+
+    /* Modo pantalla completa */
+    .map-app-container.fullscreen-mode {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999;
+    }
+
+    .map-app-container.fullscreen-mode .sidebar {
+        display: none;
     }
 
     /* Sidebar izquierdo */
@@ -275,6 +290,12 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         transform: translateY(0);
     }
 
+    .map-control-btn.active {
+        background: var(--bv-verde-primario);
+        color: var(--bv-blanco);
+        border-color: var(--bv-verde-primario);
+    }
+
     /* Overlay para desactivar scroll en mapa */
     .map-scroll-overlay {
         position: absolute;
@@ -310,7 +331,8 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     }
 
     @keyframes pulse {
-        0%, 100% {
+        0%,
+        100% {
             transform: scale(1);
         }
         50% {
@@ -340,7 +362,11 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     .manual-step-number {
         width: 48px;
         height: 48px;
-        background: linear-gradient(135deg, var(--bv-verde-primario) 0%, var(--bv-verde-primario-dark) 100%);
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-primario) 0%,
+            var(--bv-verde-primario-dark) 100%
+        );
         color: var(--bv-blanco);
         border-radius: 50%;
         display: flex;
@@ -435,7 +461,7 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 1000;
+        z-index: 10000;
         animation: fadeIn 0.2s ease;
     }
 
@@ -706,6 +732,12 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         margin-bottom: var(--spacing-md);
     }
 
+    .manual-step-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
     @keyframes spin {
         to {
             transform: rotate(360deg);
@@ -755,7 +787,7 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
     }
 </style>
 
-<div class="map-app-container">
+<div class="map-app-container" id="mapAppContainer">
     <div class="sidebar" role="region" aria-label="Filtros de mapas">
         <div class="sidebar-header">
             <h3>Datos Ambientales</h3>
@@ -797,16 +829,39 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
         <!-- Controles personalizados del mapa -->
         <div class="map-controls">
-            <button class="map-control-btn" id="zoomInBtn" title="Acercar" aria-label="Acercar zoom">
+            <button
+                class="map-control-btn"
+                id="fullscreenBtn"
+                title="Pantalla completa"
+                aria-label="Pantalla completa"
+            >
+                <i class="fas fa-expand"></i>
+            </button>
+            <button
+                class="map-control-btn"
+                id="zoomInBtn"
+                title="Acercar"
+                aria-label="Acercar zoom"
+            >
                 <i class="fas fa-plus"></i>
             </button>
             <button class="map-control-btn" id="zoomOutBtn" title="Alejar" aria-label="Alejar zoom">
                 <i class="fas fa-minus"></i>
             </button>
-            <button class="map-control-btn" id="centerMapBtn" title="Centrar en Barranquilla" aria-label="Centrar mapa">
+            <button
+                class="map-control-btn"
+                id="centerMapBtn"
+                title="Centrar en Barranquilla"
+                aria-label="Centrar mapa"
+            >
                 <i class="fas fa-crosshairs"></i>
             </button>
-            <button class="map-control-btn" id="manualBtn" title="Manual de uso" aria-label="Abrir manual">
+            <button
+                class="map-control-btn"
+                id="manualBtn"
+                title="Manual de uso"
+                aria-label="Abrir manual"
+            >
                 <i class="fas fa-question"></i>
             </button>
         </div>
@@ -894,82 +949,96 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 <div class="manual-step-content">
                     <div class="manual-step-title">Activar el mapa</div>
                     <div class="manual-step-description">
-                        Haz clic en el mapa para activarlo y poder interactuar. Esto evita que el scroll de la página afecte al mapa.
+                        Haz clic en el mapa para activarlo y poder interactuar. Esto evita que el
+                        scroll de la página afecte al mapa.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <!-- Aquí puedes agregar tu imagen -->
-                    <i class="fas fa-hand-pointer"></i>
+                    <img src="/images/steps/activar.jpeg" alt="Activar el mapa" />
                 </div>
             </div>
 
             <div class="manual-step">
                 <div class="manual-step-number">2</div>
                 <div class="manual-step-content">
-                    <div class="manual-step-title">Acercar y alejar</div>
+                    <div class="manual-step-title">Pantalla completa</div>
                     <div class="manual-step-description">
-                        Usa los botones + y - en la esquina superior derecha para hacer zoom, o usa la rueda del mouse cuando el mapa esté activo.
+                        Usa el botón de expandir para ver el mapa en pantalla completa y tener una
+                        mejor visibilidad de las estaciones.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <!-- Aquí puedes agregar tu imagen -->
-                    <i class="fas fa-search-plus"></i>
+                    <img src="images/steps/pantallacompleta.jpeg" alt="Pantalla completa" />
                 </div>
             </div>
 
             <div class="manual-step">
                 <div class="manual-step-number">3</div>
                 <div class="manual-step-content">
-                    <div class="manual-step-title">Navegar por el mapa</div>
+                    <div class="manual-step-title">Acercar y alejar</div>
                     <div class="manual-step-description">
-                        Arrastra el mapa con el mouse o con el dedo (en dispositivos táctiles) para moverte por diferentes áreas.
+                        Usa los botones + y - en la esquina superior derecha para hacer zoom, o usa
+                        la rueda del mouse cuando el mapa esté activo.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <!-- Aquí puedes agregar tu imagen -->
-                    <i class="fas fa-arrows-alt"></i>
+                    <img src="images/steps/acercaryalejar.jpeg" alt="Acercar y alejar" />
                 </div>
             </div>
 
             <div class="manual-step">
                 <div class="manual-step-number">4</div>
                 <div class="manual-step-content">
-                    <div class="manual-step-title">Ver estaciones</div>
+                    <div class="manual-step-title">Navegar por el mapa</div>
                     <div class="manual-step-description">
-                        Haz clic en los marcadores numerados para ver la información detallada de cada estación de monitoreo.
+                        Arrastra el mapa con el mouse o con el dedo (en dispositivos táctiles) para
+                        moverte por diferentes áreas.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <!-- Aquí puedes agregar tu imagen -->
-                    <i class="fas fa-map-marker-alt"></i>
+                    <img src="images/steps/navegar.jpeg" alt="Navegar por el mapa" />
                 </div>
             </div>
 
             <div class="manual-step">
                 <div class="manual-step-number">5</div>
                 <div class="manual-step-content">
-                    <div class="manual-step-title">Centrar en Barranquilla</div>
+                    <div class="manual-step-title">Ver estaciones</div>
                     <div class="manual-step-description">
-                        Usa el botón con el ícono de cruz para volver rápidamente a la vista centrada en Barranquilla.
+                        Haz clic en los marcadores numerados para ver la información detallada de
+                        cada estación de monitoreo.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <!-- Aquí puedes agregar tu imagen -->
-                    <i class="fas fa-crosshairs"></i>
+                    <img src="images/steps/estacion.jpeg" alt="Ver estaciones" />
                 </div>
             </div>
 
             <div class="manual-step">
                 <div class="manual-step-number">6</div>
                 <div class="manual-step-content">
-                    <div class="manual-step-title">Filtrar categorías</div>
+                    <div class="manual-step-title">Centrar en Barranquilla</div>
                     <div class="manual-step-description">
-                        Usa los interruptores en el panel lateral para mostrar u ocultar diferentes tipos de estaciones (calidad del aire, biodiversidad, suelo).
+                        Usa el botón con el ícono de cruz para volver rápidamente a la vista
+                        centrada en Barranquilla.
                     </div>
                 </div>
                 <div class="manual-step-image">
-                    <!-- Aquí puedes agregar tu imagen -->
-                    <i class="fas fa-filter"></i>
+                    <img src="images/steps/centrar.jpeg" alt="Centrar en Barranquilla" />
+                </div>
+            </div>
+
+            <div class="manual-step">
+                <div class="manual-step-number">7</div>
+                <div class="manual-step-content">
+                    <div class="manual-step-title">Filtrar categorías</div>
+                    <div class="manual-step-description">
+                        Usa los interruptores en el panel lateral para mostrar u ocultar diferentes
+                        tipos de estaciones (calidad del aire, biodiversidad, suelo).
+                    </div>
+                </div>
+                <div class="manual-step-image">
+                    <img src="images/steps/filtrar.jpeg" alt="Filtrar categorías" />
                 </div>
             </div>
         </div>
@@ -1003,7 +1072,9 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8000";
 
         let currentStationData = null;
-        let chartInstance = null; // Para reutilizar o destruir la gráfica
+        let chartInstance = null;
+        let mapInteractionTimeout = null;
+        let isFullscreen = false;
 
         const categoriesConfig = {
             airQuality: { color: "#FFEA00" },
@@ -1045,6 +1116,32 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             });
         }
 
+        // Función para activar el mapa
+        function activateMap() {
+            const mapScrollOverlay = document.getElementById("mapScrollOverlay");
+            mapScrollOverlay.classList.add("active");
+            map.scrollWheelZoom.enable();
+            map.dragging.enable();
+
+            // Limpiar timeout anterior si existe
+            if (mapInteractionTimeout) {
+                clearTimeout(mapInteractionTimeout);
+            }
+
+            // Desactivar el mapa después de 3 segundos de inactividad
+            mapInteractionTimeout = setTimeout(() => {
+                deactivateMap();
+            }, 3000);
+        }
+
+        // Función para desactivar el mapa
+        function deactivateMap() {
+            const mapScrollOverlay = document.getElementById("mapScrollOverlay");
+            mapScrollOverlay.classList.remove("active");
+            map.scrollWheelZoom.disable();
+            map.dragging.disable();
+        }
+
         // Función para mostrar el estado de carga
         function showChartLoading() {
             const canvas = document.getElementById("chartCanvas");
@@ -1080,6 +1177,34 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
             canvas.style.display = "block";
             emptyState.style.display = "none";
+        }
+
+        // Función para toggle pantalla completa
+        function toggleFullscreen() {
+            const container = document.getElementById("mapAppContainer");
+            const fullscreenBtn = document.getElementById("fullscreenBtn");
+            const icon = fullscreenBtn.querySelector("i");
+
+            isFullscreen = !isFullscreen;
+
+            if (isFullscreen) {
+                container.classList.add("fullscreen-mode");
+                icon.classList.remove("fa-expand");
+                icon.classList.add("fa-compress");
+                fullscreenBtn.title = "Salir de pantalla completa";
+                fullscreenBtn.classList.add("active");
+            } else {
+                container.classList.remove("fullscreen-mode");
+                icon.classList.remove("fa-compress");
+                icon.classList.add("fa-expand");
+                fullscreenBtn.title = "Pantalla completa";
+                fullscreenBtn.classList.remove("active");
+            }
+
+            // Invalidar tamaño del mapa después de cambiar el modo
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 300);
         }
 
         async function openStationModal(stationData) {
@@ -1219,8 +1344,8 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 center: [10.9877, -74.8055],
                 zoom: 13,
                 zoomControl: false,
-                scrollWheelZoom: false, // Desactivar scroll wheel inicialmente
-                dragging: false, // Desactivar arrastre inicialmente
+                scrollWheelZoom: false,
+                dragging: false,
             });
 
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -1235,28 +1360,75 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             const mapScrollOverlay = document.getElementById("mapScrollOverlay");
             const mapContainer = document.getElementById("map");
 
+            // Activar mapa al hacer clic en el overlay
             mapScrollOverlay.addEventListener("click", () => {
-                mapScrollOverlay.classList.add("active");
-                map.scrollWheelZoom.enable();
-                map.dragging.enable();
+                activateMap();
+            });
+
+            // Detectar interacción con el mapa para mantenerlo activo
+            mapContainer.addEventListener("mousedown", () => {
+                if (!mapScrollOverlay.classList.contains("active")) {
+                    activateMap();
+                } else {
+                    // Si ya está activo, resetear el timeout
+                    if (mapInteractionTimeout) {
+                        clearTimeout(mapInteractionTimeout);
+                    }
+                    mapInteractionTimeout = setTimeout(() => {
+                        deactivateMap();
+                    }, 3000);
+                }
+            });
+
+            mapContainer.addEventListener("mousemove", () => {
+                if (mapScrollOverlay.classList.contains("active")) {
+                    // Resetear timeout durante el movimiento
+                    if (mapInteractionTimeout) {
+                        clearTimeout(mapInteractionTimeout);
+                    }
+                    mapInteractionTimeout = setTimeout(() => {
+                        deactivateMap();
+                    }, 3000);
+                }
+            });
+
+            mapContainer.addEventListener("wheel", () => {
+                if (mapScrollOverlay.classList.contains("active")) {
+                    // Resetear timeout durante el zoom
+                    if (mapInteractionTimeout) {
+                        clearTimeout(mapInteractionTimeout);
+                    }
+                    mapInteractionTimeout = setTimeout(() => {
+                        deactivateMap();
+                    }, 3000);
+                }
             });
 
             // Desactivar mapa al hacer clic fuera
             document.addEventListener("click", (e) => {
-                if (!mapContainer.contains(e.target)) {
-                    mapScrollOverlay.classList.remove("active");
-                    map.scrollWheelZoom.disable();
-                    map.dragging.disable();
+                if (
+                    !mapContainer.contains(e.target) &&
+                    !document.getElementById("stationModal").contains(e.target) &&
+                    !document.getElementById("manualModal").contains(e.target)
+                ) {
+                    if (mapInteractionTimeout) {
+                        clearTimeout(mapInteractionTimeout);
+                    }
+                    deactivateMap();
                 }
             });
 
             // Controles personalizados
+            document.getElementById("fullscreenBtn").addEventListener("click", toggleFullscreen);
+
             document.getElementById("zoomInBtn").addEventListener("click", () => {
                 map.zoomIn();
+                activateMap();
             });
 
             document.getElementById("zoomOutBtn").addEventListener("click", () => {
                 map.zoomOut();
+                activateMap();
             });
 
             document.getElementById("centerMapBtn").addEventListener("click", () => {
@@ -1264,6 +1436,7 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                     animate: true,
                     duration: 1,
                 });
+                activateMap();
             });
 
             // Abrir modal de manual
@@ -1317,7 +1490,7 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 .getElementById("chartSelect")
                 .addEventListener("change", updateViewButtonState);
 
-            // Evento del botón Ver Gráfico (mejorado)
+            // Evento del botón Ver Gráfico
             document.getElementById("viewChartBtn").addEventListener("click", async () => {
                 const year = document.getElementById("yearSelect").value;
                 const month = document.getElementById("monthSelect").value || "all";
@@ -1539,6 +1712,13 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
           `;
                     emptyState.style.display = "flex";
                     document.getElementById("chartCanvas").style.display = "none";
+                }
+            });
+
+            // Detectar tecla ESC para salir de pantalla completa
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && isFullscreen) {
+                    toggleFullscreen();
                 }
             });
         }

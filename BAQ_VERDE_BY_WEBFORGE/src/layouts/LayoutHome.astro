@@ -12,6 +12,8 @@ import "../styles/global.css";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preload" as="image" href="/images/hero-bg-01.webp" />
+    <!-- ✅ Font Awesome para íconos de redes sociales -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>{title}</title>
   </head>
   <body>
@@ -37,7 +39,7 @@ import "../styles/global.css";
     <!-- ========================
      NAVEGACIÓN PRINCIPAL (STICKY)
      ======================== -->
-<div class="header main header--home" id="mainNav">
+    <div class="header main header--home" id="mainNav">
       <div class="container-full">
         <div class="logo">
           <img src="/images/logo.png" alt="Observatorio Ambiental" />
@@ -120,12 +122,9 @@ import "../styles/global.css";
           class="indicator active"
           data-slide="0"
           aria-label="Ir a slide 1"></button>
-        <button class="indicator" data-slide="1" aria-label="Ir a slide 2"
-        ></button>
-        <button class="indicator" data-slide="2" aria-label="Ir a slide 3"
-        ></button>
-        <button class="indicator" data-slide="3" aria-label="Ir a slide 4"
-        ></button>
+        <button class="indicator" data-slide="1" aria-label="Ir a slide 2"></button>
+        <button class="indicator" data-slide="2" aria-label="Ir a slide 3"></button>
+        <button class="indicator" data-slide="3" aria-label="Ir a slide 4"></button>
       </div>
 
       <button class="carousel-control prev" id="prevBtn" aria-label="Anterior">
@@ -197,24 +196,9 @@ import "../styles/global.css";
             <ul>
               <li><a href="/">Inicio</a></li>
               <li><a href="/participation">Participación</a></li>
-              <li><a href="/maps">Mapas</a></li>
+              <li><a href="/maps">GeoPortal</a></li>
               <li><a href="/news">Noticias</a></li>
               <li><a href="/documents">Documentos</a></li>
-            </ul>
-          </div>
-
-          <!-- Columna: Recursos externos e internos -->
-          <div class="footer-col">
-            <h4>Recursos</h4>
-            <ul>
-              <li>
-                <a href="https://www.gov.co" target="_blank" rel="noopener"
-                  >Certificados (GOV.CO)</a
-                >
-              </li>
-              <li><a href="#">API Ambiental</a></li>
-              <li><a href="#">Reportes públicos</a></li>
-              <li><a href="#">Documentación técnica</a></li>
             </ul>
           </div>
 
@@ -224,12 +208,6 @@ import "../styles/global.css";
             <ul>
               <li>Email: contacto@observatorioambiental.gov.co</li>
               <li>Tel: (605) 311 2470</li>
-              <li>Horario: L–V, 8:00 – 17:00</li>
-              <li>
-                <a href="https://www.gov.co" target="_blank" rel="noopener">
-                  Líneas de emergencia (GOV.CO)
-                </a>
-              </li>
             </ul>
           </div>
         </div>
