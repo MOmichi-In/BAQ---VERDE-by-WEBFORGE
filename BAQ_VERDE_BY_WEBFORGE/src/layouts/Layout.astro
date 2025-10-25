@@ -18,13 +18,13 @@ import "../styles/layout.css";
 import "../styles/global.css";
 ---
 
-
 <!doctype html>
 <html lang="es">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="preload" as="image" href={heroImage} />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <title>{title}</title>
     </head>
     <body>
@@ -55,6 +55,15 @@ import "../styles/global.css";
                 <div class="logo">
                     <img src="/images/logo.png" alt="Observatorio Ambiental" />
                 </div>
+                
+                <!-- Botón Hamburguesa -->
+                <button class="hamburger" id="hamburger" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <!-- Navegación -->
                 <nav class="nav">
                     <a href="/">Inicio</a>
                     <a href="/participation">Participacion</a>
@@ -64,6 +73,9 @@ import "../styles/global.css";
                 </nav>
             </div>
         </div>
+
+        <!-- Overlay para cerrar el menú móvil -->
+        <div class="nav-overlay" id="navOverlay"></div>
 
         <!-- ========================
          HERO SECTION
@@ -117,9 +129,15 @@ import "../styles/global.css";
                             info@observatorioambiental.gov.co
                         </p>
                         <div class="social-links">
-                            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
                         </div>
                     </div>
 
@@ -134,9 +152,6 @@ import "../styles/global.css";
                             <li><a href="/documents">Documentos</a></li>
                         </ul>
                     </div>
-
-                    <!-- Columna: Recursos externos e internos -->
-                  
 
                     <!-- Columna: Información de contacto y emergencias -->
                     <div class="footer-col">
@@ -163,6 +178,7 @@ import "../styles/global.css";
          ======================== -->
         <script>
             document.addEventListener("DOMContentLoaded", () => {
+                // === HEADER SCROLL BEHAVIOR ===
                 const header = document.querySelector(".header");
                 const scrollThreshold = 150;
 
@@ -178,6 +194,48 @@ import "../styles/global.css";
 
                 window.addEventListener("scroll", updateHeader);
                 updateHeader();
+
+                // === MENÚ HAMBURGUESA ===
+                const hamburger = document.getElementById("hamburger");
+                const nav = document.querySelector(".nav");
+                const navOverlay = document.getElementById("navOverlay");
+                const navLinks = document.querySelectorAll(".nav a");
+
+                // Toggle menú
+                hamburger?.addEventListener("click", () => {
+                    hamburger.classList.toggle("active");
+                    nav?.classList.toggle("active");
+                    navOverlay?.classList.toggle("active");
+                    document.body.style.overflow = nav?.classList.contains("active") ? "hidden" : "";
+                });
+
+                // Cerrar menú al hacer clic en overlay
+                navOverlay?.addEventListener("click", () => {
+                    hamburger?.classList.remove("active");
+                    nav?.classList.remove("active");
+                    navOverlay?.classList.remove("active");
+                    document.body.style.overflow = "";
+                });
+
+                // Cerrar menú al hacer clic en un enlace
+                navLinks.forEach(link => {
+                    link.addEventListener("click", () => {
+                        hamburger?.classList.remove("active");
+                        nav?.classList.remove("active");
+                        navOverlay?.classList.remove("active");
+                        document.body.style.overflow = "";
+                    });
+                });
+
+                // Cerrar menú al presionar ESC
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape" && nav?.classList.contains("active")) {
+                        hamburger?.classList.remove("active");
+                        nav?.classList.remove("active");
+                        navOverlay?.classList.remove("active");
+                        document.body.style.overflow = "";
+                    }
+                });
             });
         </script>
     </body>

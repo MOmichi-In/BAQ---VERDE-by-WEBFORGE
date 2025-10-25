@@ -11,22 +11,21 @@ const text =
     </div>
 
     <!-- SVGs decorativos -->
-    <img src="/images/svg/tucan.svg" class="toucan" alt="Tucán" />
-    <img src="/images/svg/leon.svg" class="chameleon" alt="Camaleón" />
-    <img src="/images/svg/plantas.svg" class="leaves-left" alt="Hojas izquierda" />
-    <img src="/images/svg/plantas_2.svg" class="leaves-right" alt="Hojas derecha" />
+    <img src="/images/svg/tucan.svg" class="toucan svg-decorativo" alt="Tucán" />
+    <img src="/images/svg/leon.svg" class="chameleon svg-decorativo" alt="Camaleón" />
+    <img src="/images/svg/plantas.svg" class="leaves-left svg-decorativo" alt="Hojas izquierda" />
+    <img src="/images/svg/plantas_2.svg" class="leaves-right svg-decorativo" alt="Hojas derecha" />
 </section>
 
 <style>
     /* --- Contenedor principal --- */
     .banner-about {
         position: relative;
-        padding: 4rem 0;
+        padding: 6rem 2rem;
         background-color: #ffffff;
         min-height: 400px;
         overflow: hidden;
         opacity: 0;
-        padding: 10%;
         animation: fadeInSection 0.8s ease-out forwards;
     }
 
@@ -53,11 +52,11 @@ const text =
     .banner-about .content {
         text-align: center;
         color: #2e7d32;
-        font-size: 1.2rem;
-        line-height: 1.6;
-        max-width: 700px;
+        font-size: 1.25rem;
+        line-height: 1.8;
+        max-width: 800px;
         margin: 0 auto;
-        padding: 2rem 1rem;
+        padding: 2rem;
         z-index: 2;
         font-weight: 500;
         opacity: 0;
@@ -155,73 +154,128 @@ const text =
     }
 
     /* --- Responsive Design --- */
-    @media (max-width: 1024px) {
+    
+    /* Tablets grandes (1200px) */
+    @media (max-width: 1200px) {
+        .banner-about {
+            padding: 5rem 2rem;
+        }
+        
         .banner-about .toucan {
-            width: 130px;
-            top: 8%;
+            width: 240px;
+            top: 20%;
+            left: 4%;
+        }
+        
+        .banner-about .chameleon {
+            width: 280px;
+            top: 30%;
+            right: 4%;
+        }
+        
+        .banner-about .leaves-left {
+            width: 240px;
+            bottom: 2%;
+            left: 4%;
+        }
+        
+        .banner-about .leaves-right {
+            width: 200px;
+            bottom: 0%;
+            right: 4%;
+        }
+    }
+
+    /* Tablets (1024px) */
+    @media (max-width: 1024px) {
+        .banner-about {
+            padding: 4rem 2rem;
+        }
+        
+        .banner-about .content {
+            font-size: 1.15rem;
+            padding: 1.75rem;
+        }
+        
+        .banner-about .toucan {
+            width: 180px;
+            top: 15%;
             left: 3%;
         }
+        
         .banner-about .chameleon {
-            width: 140px;
-            top: 6%;
+            width: 200px;
+            top: 25%;
             right: 3%;
         }
+        
         .banner-about .leaves-left {
-            width: 100px;
-            bottom: 6%;
-            left: 2%;
+            width: 180px;
+            bottom: 5%;
+            left: 3%;
         }
+        
         .banner-about .leaves-right {
-            width: 110px;
-            bottom: 4%;
-            right: 2%;
+            width: 160px;
+            bottom: 3%;
+            right: 3%;
         }
     }
 
+    /* OCULTAR TODOS LOS SVGs en 900px y menores */
+    @media (max-width: 900px) {
+        .banner-about .svg-decorativo {
+            display: none !important;
+        }
+        
+        .banner-about {
+            padding: 4rem 1.5rem;
+        }
+        
+        .banner-about .content {
+            font-size: 1.125rem;
+            max-width: 100%;
+        }
+    }
+
+    /* Tablets pequeñas (768px) */
     @media (max-width: 768px) {
         .banner-about {
-            padding: 3rem 0;
+            padding: 3rem 1.5rem;
             min-height: 300px;
         }
+        
         .banner-about .content {
-            font-size: 1.1rem;
-            max-width: 90%;
-            padding: 1.5rem 1rem;
-        }
-        .banner-about .toucan {
-            width: 100px;
-            top: 5%;
-            left: 2%;
-        }
-        .banner-about .chameleon {
-            width: 110px;
-            top: 3%;
-            right: 2%;
-        }
-        .banner-about .leaves-left {
-            width: 80px;
-            bottom: 4%;
-            left: 1%;
-        }
-        .banner-about .leaves-right {
-            width: 90px;
-            bottom: 2%;
-            right: 1%;
+            font-size: 1.0625rem;
+            line-height: 1.7;
+            padding: 1.5rem;
         }
     }
 
+    /* Móviles (480px) */
     @media (max-width: 480px) {
         .banner-about {
-            padding: 2rem 0;
-            min-height: 250px;
+            padding: 2.5rem 1rem;
+            min-height: 280px;
         }
+        
         .banner-about .content {
             font-size: 1rem;
-            padding: 1rem;
+            line-height: 1.6;
+            padding: 1.25rem;
         }
-        .banner-about .leaves-left,
-        .banner-about .leaves-right {
-            opacity: 0.6;
+    }
+
+    /* Móviles pequeños (360px) */
+    @media (max-width: 360px) {
+        .banner-about {
+            padding: 2rem 0.75rem;
+            min-height: 260px;
+        }
+        
+        .banner-about .content {
+            font-size: 0.9375rem;
+            padding: 1rem;
         }
     }
 </style>
