@@ -1057,8 +1057,8 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         if (typeof unsafe !== "string") return String(unsafe);
         return unsafe
             .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
+            .replace(/</g, "<")
+            .replace(/>/g, ">")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
@@ -1116,25 +1116,21 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             });
         }
 
-        // Función para activar el mapa
         function activateMap() {
             const mapScrollOverlay = document.getElementById("mapScrollOverlay");
             mapScrollOverlay.classList.add("active");
             map.scrollWheelZoom.enable();
             map.dragging.enable();
 
-            // Limpiar timeout anterior si existe
             if (mapInteractionTimeout) {
                 clearTimeout(mapInteractionTimeout);
             }
 
-            // Desactivar el mapa después de 3 segundos de inactividad
             mapInteractionTimeout = setTimeout(() => {
                 deactivateMap();
             }, 3000);
         }
 
-        // Función para desactivar el mapa
         function deactivateMap() {
             const mapScrollOverlay = document.getElementById("mapScrollOverlay");
             mapScrollOverlay.classList.remove("active");
@@ -1142,44 +1138,37 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             map.dragging.disable();
         }
 
-        // Función para mostrar el estado de carga
         function showChartLoading() {
             const canvas = document.getElementById("chartCanvas");
             const emptyState = document.getElementById("chartEmptyState");
-
             canvas.style.display = "none";
             emptyState.innerHTML = `
-        <div class="chart-loading">
-          <div class="spinner"></div>
-          <p>Cargando datos...</p>
-        </div>
-      `;
+                <div class="chart-loading">
+                    <div class="spinner"></div>
+                    <p>Cargando datos...</p>
+                </div>
+            `;
             emptyState.style.display = "flex";
         }
 
-        // Función para ocultar el canvas y mostrar empty state
         function showEmptyState() {
             const canvas = document.getElementById("chartCanvas");
             const emptyState = document.getElementById("chartEmptyState");
-
             canvas.style.display = "none";
             emptyState.innerHTML = `
-        <i class="fas fa-chart-line"></i>
-        <p>Selecciona un año, mes y variable para visualizar los datos</p>
-      `;
+                <i class="fas fa-chart-line"></i>
+                <p>Selecciona un año, mes y variable para visualizar los datos</p>
+            `;
             emptyState.style.display = "flex";
         }
 
-        // Función para mostrar el canvas
         function showChart() {
             const canvas = document.getElementById("chartCanvas");
             const emptyState = document.getElementById("chartEmptyState");
-
             canvas.style.display = "block";
             emptyState.style.display = "none";
         }
 
-        // Función para toggle pantalla completa
         function toggleFullscreen() {
             const container = document.getElementById("mapAppContainer");
             const fullscreenBtn = document.getElementById("fullscreenBtn");
@@ -1201,7 +1190,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 fullscreenBtn.classList.remove("active");
             }
 
-            // Invalidar tamaño del mapa después de cambiar el modo
             setTimeout(() => {
                 map.invalidateSize();
             }, 300);
@@ -1211,7 +1199,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             currentStationData = stationData;
             const modal = document.getElementById("stationModal");
             modal.style.display = "flex";
-
             document.getElementById("modalStationTitle").textContent = stationData.name;
 
             const yearSelect = document.getElementById("yearSelect");
@@ -1226,16 +1213,10 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
             monthSelect.disabled = true;
             chartSelect.disabled = true;
             viewBtn.disabled = true;
-
-            // Resetear gráfica
             showEmptyState();
 
             try {
-                // Gráficos
-                if (
-                    Array.isArray(stationData.charts_permited) &&
-                    stationData.charts_permited.length > 0
-                ) {
+                if (Array.isArray(stationData.charts_permited) && stationData.charts_permited.length > 0) {
                     chartSelect.innerHTML = "";
                     stationData.charts_permited.forEach((chart) => {
                         const opt = document.createElement("option");
@@ -1248,11 +1229,9 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                     chartSelect.innerHTML = '<option value="">No hay gráficos</option>';
                 }
 
-                // Token
                 const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
                 const token = tokenMatch ? tokenMatch[2] : "";
 
-                // Llamar al endpoint con la URL base
                 const response = await fetch(
                     `${API_BASE_URL}/station-data/available-periods?station_id=${encodeURIComponent(stationData.id)}`,
                     {
@@ -1300,7 +1279,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
         function closeStationModal() {
             document.getElementById("stationModal").style.display = "none";
             currentStationData = null;
-            // Destruir gráfica si existe
             if (chartInstance) {
                 chartInstance.destroy();
                 chartInstance = null;
@@ -1356,95 +1334,59 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
 
             renderMarkers();
 
-            // Gestionar activación del mapa
             const mapScrollOverlay = document.getElementById("mapScrollOverlay");
             const mapContainer = document.getElementById("map");
 
-            // Activar mapa al hacer clic en el overlay
             mapScrollOverlay.addEventListener("click", () => {
                 activateMap();
             });
 
-            // Detectar interacción con el mapa para mantenerlo activo
             mapContainer.addEventListener("mousedown", () => {
                 if (!mapScrollOverlay.classList.contains("active")) {
                     activateMap();
                 } else {
-                    // Si ya está activo, resetear el timeout
-                    if (mapInteractionTimeout) {
-                        clearTimeout(mapInteractionTimeout);
-                    }
-                    mapInteractionTimeout = setTimeout(() => {
-                        deactivateMap();
-                    }, 3000);
+                    if (mapInteractionTimeout) clearTimeout(mapInteractionTimeout);
+                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 3000);
                 }
             });
 
             mapContainer.addEventListener("mousemove", () => {
                 if (mapScrollOverlay.classList.contains("active")) {
-                    // Resetear timeout durante el movimiento
-                    if (mapInteractionTimeout) {
-                        clearTimeout(mapInteractionTimeout);
-                    }
-                    mapInteractionTimeout = setTimeout(() => {
-                        deactivateMap();
-                    }, 3000);
+                    if (mapInteractionTimeout) clearTimeout(mapInteractionTimeout);
+                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 3000);
                 }
             });
 
             mapContainer.addEventListener("wheel", () => {
                 if (mapScrollOverlay.classList.contains("active")) {
-                    // Resetear timeout durante el zoom
-                    if (mapInteractionTimeout) {
-                        clearTimeout(mapInteractionTimeout);
-                    }
-                    mapInteractionTimeout = setTimeout(() => {
-                        deactivateMap();
-                    }, 3000);
+                    if (mapInteractionTimeout) clearTimeout(mapInteractionTimeout);
+                    mapInteractionTimeout = setTimeout(() => deactivateMap(), 3000);
                 }
             });
 
-            // Desactivar mapa al hacer clic fuera
             document.addEventListener("click", (e) => {
                 if (
                     !mapContainer.contains(e.target) &&
                     !document.getElementById("stationModal").contains(e.target) &&
                     !document.getElementById("manualModal").contains(e.target)
                 ) {
-                    if (mapInteractionTimeout) {
-                        clearTimeout(mapInteractionTimeout);
-                    }
+                    if (mapInteractionTimeout) clearTimeout(mapInteractionTimeout);
                     deactivateMap();
                 }
             });
 
-            // Controles personalizados
             document.getElementById("fullscreenBtn").addEventListener("click", toggleFullscreen);
-
-            document.getElementById("zoomInBtn").addEventListener("click", () => {
-                map.zoomIn();
-                activateMap();
-            });
-
-            document.getElementById("zoomOutBtn").addEventListener("click", () => {
-                map.zoomOut();
-                activateMap();
-            });
-
+            document.getElementById("zoomInBtn").addEventListener("click", () => { map.zoomIn(); activateMap(); });
+            document.getElementById("zoomOutBtn").addEventListener("click", () => { map.zoomOut(); activateMap(); });
             document.getElementById("centerMapBtn").addEventListener("click", () => {
-                map.setView([10.9877, -74.8055], 13, {
-                    animate: true,
-                    duration: 1,
-                });
+                map.setView([10.9877, -74.8055], 13, { animate: true, duration: 1 });
                 activateMap();
             });
 
-            // Abrir modal de manual
             document.getElementById("manualBtn").addEventListener("click", () => {
                 document.getElementById("manualModal").style.display = "flex";
             });
 
-            // Cerrar modal de manual
             document.querySelector(".manual-modal-close").addEventListener("click", () => {
                 document.getElementById("manualModal").style.display = "none";
             });
@@ -1459,17 +1401,14 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 checkbox.addEventListener("change", renderMarkers);
             });
 
-            // Eventos del modal de estación
             document.querySelector(".modal-close").addEventListener("click", closeStationModal);
             document.getElementById("stationModal").addEventListener("click", (e) => {
                 if (e.target === document.getElementById("stationModal")) closeStationModal();
             });
 
-            // Cambio de año → llenar meses
             document.getElementById("yearSelect").addEventListener("change", function () {
                 const monthSelect = document.getElementById("monthSelect");
                 const periods = currentStationData?._periods || {};
-
                 monthSelect.innerHTML = "";
                 if (this.value && periods[this.value]) {
                     monthSelect.disabled = false;
@@ -1486,23 +1425,16 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 updateViewButtonState();
             });
 
-            document
-                .getElementById("chartSelect")
-                .addEventListener("change", updateViewButtonState);
+            document.getElementById("chartSelect").addEventListener("change", updateViewButtonState);
 
-            // Evento del botón Ver Gráfico
             document.getElementById("viewChartBtn").addEventListener("click", async () => {
                 const year = document.getElementById("yearSelect").value;
                 const month = document.getElementById("monthSelect").value || "all";
                 const chart = document.getElementById("chartSelect").value;
                 const stationId = currentStationData.id;
-
                 if (!year || !chart) return;
 
-                // Mostrar loading
                 showChartLoading();
-
-                // Limpiar gráfica anterior
                 if (chartInstance) {
                     chartInstance.destroy();
                     chartInstance = null;
@@ -1511,9 +1443,7 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 try {
                     const tokenMatch = document.cookie.match(/(^|;\s*)token=([^;]*)/);
                     const token = tokenMatch ? tokenMatch[2] : "";
-
                     const url = `${API_BASE_URL}/station-data/hourly-by-month?station_id=${encodeURIComponent(stationId)}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}&variable=${encodeURIComponent(chart)}`;
-
                     const response = await fetch(url, {
                         method: "GET",
                         headers: {
@@ -1523,90 +1453,59 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                     });
 
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
                     const data = await response.json();
-
                     if (!data.y || !Array.isArray(data.y)) {
                         throw new Error('Respuesta inválida: no contiene arreglo "y"');
                     }
 
-                    // Mostrar canvas
                     showChart();
-
-                    // Crear etiquetas para el eje X
                     const xLabels = data.y.map((_, i) => i);
-
-                    // Configurar título y subtítulo
-                    const monthName =
-                        month === "all"
-                            ? "Todo el año"
-                            : month.charAt(0).toUpperCase() + month.slice(1);
+                    const monthName = month === "all" ? "Todo el año" : month.charAt(0).toUpperCase() + month.slice(1);
                     document.getElementById("chartTitleText").textContent = chart;
-                    document.getElementById("chartSubtitle").textContent =
-                        `${monthName} ${year} - Datos por hora`;
+                    document.getElementById("chartSubtitle").textContent = `${monthName} ${year} - Datos por hora`;
 
-                    // Obtener el canvas
                     const ctx = document.getElementById("chartCanvas").getContext("2d");
-
-                    // Crear gradiente dinámico
                     const gradient = ctx.createLinearGradient(0, 0, 0, 350);
                     gradient.addColorStop(0, "rgba(55, 180, 72, 0.3)");
                     gradient.addColorStop(1, "rgba(55, 180, 72, 0.01)");
 
-                    // Configurar datos
                     const chartData = {
                         labels: xLabels,
-                        datasets: [
-                            {
-                                label: chart,
-                                data: data.y,
-                                borderColor: "#37B448",
-                                backgroundColor: gradient,
-                                borderWidth: 3,
-                                pointRadius: 0,
-                                pointHoverRadius: 8,
-                                pointHoverBackgroundColor: "#37B448",
-                                pointHoverBorderColor: "#fff",
-                                pointHoverBorderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                cubicInterpolationMode: "monotone",
-                            },
-                        ],
+                        datasets: [{
+                            label: chart,
+                            data: data.y,
+                            borderColor: "#37B448",
+                            backgroundColor: gradient,
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            pointHoverRadius: 8,
+                            pointHoverBackgroundColor: "#37B448",
+                            pointHoverBorderColor: "#fff",
+                            pointHoverBorderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            cubicInterpolationMode: "monotone",
+                        }],
                     };
 
-                    // Calcular estadísticas
                     const values = data.y.filter((v) => v !== null && !isNaN(v));
                     const minValue = Math.min(...values);
                     const maxValue = Math.max(...values);
                     const avgValue = values.reduce((a, b) => a + b, 0) / values.length;
 
-                    // Opciones avanzadas
                     const chartOptions = {
                         responsive: true,
                         maintainAspectRatio: false,
-                        animation: {
-                            duration: 1200,
-                            easing: "easeOutQuart",
-                        },
+                        animation: { duration: 1200, easing: "easeOutQuart" },
                         plugins: {
-                            legend: {
-                                display: false,
-                            },
+                            legend: { display: false },
                             tooltip: {
                                 enabled: true,
                                 backgroundColor: "rgba(25, 25, 35, 0.95)",
                                 titleColor: "#fff",
                                 bodyColor: "#fff",
-                                titleFont: {
-                                    family: "'Inter', sans-serif",
-                                    size: 14,
-                                    weight: "600",
-                                },
-                                bodyFont: {
-                                    family: "'Inter', sans-serif",
-                                    size: 13,
-                                },
+                                titleFont: { family: "'Inter', sans-serif", size: 14, weight: "600" },
+                                bodyFont: { family: "'Inter', sans-serif", size: 13 },
                                 padding: 16,
                                 cornerRadius: 12,
                                 displayColors: false,
@@ -1630,97 +1529,63 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                         scales: {
                             x: {
                                 display: true,
-                                grid: {
-                                    display: false,
-                                },
+                                grid: { display: false },
                                 ticks: {
-                                    font: {
-                                        family: "'Inter', sans-serif",
-                                        size: 11,
-                                    },
+                                    font: { family: "'Inter', sans-serif", size: 11 },
                                     color: "#6B7280",
                                     maxTicksLimit: 12,
-                                    callback: function (value) {
-                                        return value % 24 === 0 ? `${value}h` : "";
-                                    },
+                                    callback: (value) => value % 24 === 0 ? `${value}h` : "",
                                 },
                                 title: {
                                     display: true,
                                     text: "Horas",
-                                    font: {
-                                        family: "'Inter', sans-serif",
-                                        size: 12,
-                                        weight: "600",
-                                    },
+                                    font: { family: "'Inter', sans-serif", size: 12, weight: "600" },
                                     color: "#4B5563",
                                 },
                             },
                             y: {
                                 beginAtZero: false,
-                                grid: {
-                                    color: "rgba(0, 0, 0, 0.06)",
-                                    drawBorder: false,
-                                    lineWidth: 1,
-                                },
+                                grid: { color: "rgba(0, 0, 0, 0.06)", drawBorder: false, lineWidth: 1 },
                                 ticks: {
-                                    font: {
-                                        family: "'Inter', sans-serif",
-                                        size: 12,
-                                    },
+                                    font: { family: "'Inter', sans-serif", size: 12 },
                                     color: "#6B7280",
                                     padding: 8,
-                                    callback: function (value) {
-                                        return value.toLocaleString("es-CO", {
-                                            maximumFractionDigits: 1,
-                                        });
-                                    },
+                                    callback: (value) => value.toLocaleString("es-CO", { maximumFractionDigits: 1 }),
                                 },
                                 title: {
                                     display: true,
                                     text: chart,
-                                    font: {
-                                        family: "'Inter', sans-serif",
-                                        size: 13,
-                                        weight: "600",
-                                    },
+                                    font: { family: "'Inter', sans-serif", size: 13, weight: "600" },
                                     color: "#374151",
                                     padding: { top: 0, bottom: 10 },
                                 },
                             },
                         },
-                        interaction: {
-                            intersect: false,
-                            mode: "index",
-                        },
+                        interaction: { intersect: false, mode: "index" },
                     };
 
-                    // Crear la gráfica
-                    chartInstance = new Chart(ctx, {
-                        type: "line",
-                        data: chartData,
-                        options: chartOptions,
-                    });
+                    chartInstance = new Chart(ctx, { type: "line", data: chartData, options: chartOptions });
                 } catch (error) {
                     console.error("Error al cargar la gráfica:", error);
-
-                    // Mostrar estado de error
                     const emptyState = document.getElementById("chartEmptyState");
                     emptyState.innerHTML = `
-            <i class="fas fa-exclamation-triangle" style="color: #EF4444;"></i>
-            <p style="color: #EF4444;">Error al cargar los datos</p>
-            <p style="font-size: 0.875rem; margin-top: 8px;">Por favor, inténtalo de nuevo</p>
-          `;
+                        <i class="fas fa-exclamation-triangle" style="color: #EF4444;"></i>
+                        <p style="color: #EF4444;">Error al cargar los datos</p>
+                        <p style="font-size: 0.875rem; margin-top: 8px;">Por favor, inténtalo de nuevo</p>
+                    `;
                     emptyState.style.display = "flex";
                     document.getElementById("chartCanvas").style.display = "none";
                 }
             });
 
-            // Detectar tecla ESC para salir de pantalla completa
             document.addEventListener("keydown", (e) => {
                 if (e.key === "Escape" && isFullscreen) {
                     toggleFullscreen();
                 }
             });
+
+            // ✅ MOSTRAR MODAL DE MANUAL AL CARGAR LA PÁGINA
+            document.getElementById("manualModal").style.display = "flex";
         }
 
         if (window.L) {
