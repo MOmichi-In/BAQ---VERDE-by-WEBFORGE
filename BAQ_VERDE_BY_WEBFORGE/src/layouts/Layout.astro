@@ -3,14 +3,11 @@
    LAYOUT.ASTRO - Plantilla base de las landing del Observatorio Ambiental
    =================================== */
 
-const { title = "Observatorio Ambiental" } = Astro.props;
+const { title = "Categorias" } = Astro.props;
 const year = new Date().getFullYear();
 
 // === Selección aleatoria del fondo ===
-const images = [
-  "/images/bg/fondolayout1.jpg",
-  "/images/bg/fondolayout2.jpg"
-];
+const images = ["/images/bg/fondolayout1.jpg", "/images/bg/fondolayout2.jpg"];
 const heroImage = images[Math.floor(Math.random() * images.length)];
 
 /* === IMPORTACIÓN DE ESTILOS === */
@@ -24,7 +21,10 @@ import "../styles/global.css";
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="preload" as="image" href={heroImage} />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        />
         <title>{title}</title>
     </head>
     <body>
@@ -53,9 +53,11 @@ import "../styles/global.css";
         <div class="header" id="mainNav">
             <div class="container-full">
                 <div class="logo">
-                    <img src="/images/logo.png" alt="Observatorio Ambiental" />
+                    <a href="/">
+                        <img src="/images/logo.png" alt="Observatorio Ambiental" />
+                    </a>
                 </div>
-                
+
                 <!-- Botón Hamburguesa -->
                 <button class="hamburger" id="hamburger" aria-label="Menú">
                     <span></span>
@@ -126,16 +128,30 @@ import "../styles/global.css";
                         <p>
                             Observatorio Ambiental<br />
                             Barranquilla, Colombia<br />
-                            info@observatorioambiental.gov.co
                         </p>
                         <div class="social-links">
-                            <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+                            <a
+                                href="https://facebook.com"
+                                target="_blank"
+                                rel="noopener"
+                                aria-label="Facebook"
+                            >
                                 <i class="fab fa-facebook-f"></i>
                             </a>
-                            <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter">
+                            <a
+                                href="https://twitter.com"
+                                target="_blank"
+                                rel="noopener"
+                                aria-label="Twitter"
+                            >
                                 <i class="fab fa-twitter"></i>
                             </a>
-                            <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+                            <a
+                                href="https://instagram.com"
+                                target="_blank"
+                                rel="noopener"
+                                aria-label="Instagram"
+                            >
                                 <i class="fab fa-instagram"></i>
                             </a>
                         </div>
@@ -157,7 +173,7 @@ import "../styles/global.css";
                     <div class="footer-col">
                         <h4>Contacto</h4>
                         <ul>
-                            <li>Email: contacto@observatorioambiental.gov.co</li>
+                            <li>Direccion: Carrera 60 No. 72 - 19 - Barranquilla, Colombia</li>
                             <li>Tel: (605) 311 2470</li>
                         </ul>
                     </div>
@@ -206,7 +222,9 @@ import "../styles/global.css";
                     hamburger.classList.toggle("active");
                     nav?.classList.toggle("active");
                     navOverlay?.classList.toggle("active");
-                    document.body.style.overflow = nav?.classList.contains("active") ? "hidden" : "";
+                    document.body.style.overflow = nav?.classList.contains("active")
+                        ? "hidden"
+                        : "";
                 });
 
                 // Cerrar menú al hacer clic en overlay
@@ -218,7 +236,7 @@ import "../styles/global.css";
                 });
 
                 // Cerrar menú al hacer clic en un enlace
-                navLinks.forEach(link => {
+                navLinks.forEach((link) => {
                     link.addEventListener("click", () => {
                         hamburger?.classList.remove("active");
                         nav?.classList.remove("active");

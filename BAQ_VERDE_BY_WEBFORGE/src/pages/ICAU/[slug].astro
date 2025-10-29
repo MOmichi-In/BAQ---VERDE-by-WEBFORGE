@@ -49,15 +49,14 @@ const { Content } = await post.render();
     padding: 4rem 2rem;
     max-width: 900px;
     margin: 0 auto;
-    /* ❌ Quita el background blanco si quieres ver el fondo */
-    /* background: var(--bv-blanco); */
+
     border-radius: 1.5rem;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
     color: #1a1a1a;
     font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1.6;
-    background: rgba(255, 255, 255, 0.85); /* ✅ Fondo blanco translúcido para legibilidad */
-    backdrop-filter: blur(4px); /* opcional: efecto glassmorphism */
+    background: rgba(255, 255, 255, 0.85); 
+    backdrop-filter: blur(4px);
   }
 
   .icau-landing h1 {
@@ -154,7 +153,6 @@ const { Content } = await post.render();
     margin-top: 0.25rem;
   }
 
-  /* Tabla personalizada estilo "clave: valor" (como en la imagen) */
   .custom-table {
     width: 100%;
     border-collapse: collapse;
@@ -193,7 +191,6 @@ const { Content } = await post.render();
     background: #fafafa;
   }
 
-  /* Tablas estándar (por si usas Markdown en el futuro) */
   .content table {
     width: 100%;
     border-collapse: separate;

@@ -1,129 +1,59 @@
 ---
+// src/pages/index.astro
+
 import Layout from "../layouts/LayoutHome.astro";
 import BannerAbout from "../components/home_sections/About.astro";
 import TitleSection from "../components/home_sections/Section.astro";
-import Card from "../components/ambiental_cards/ambiental_card.astro";
-import { cardsData } from "../lib/card_ambiental_data.js";
+import CardCategory from "../components/ambiental_cards/category_card.astro";
+import { categories } from "../lib/categories.js";
 import { slugify } from "../utils/slugify.js";
-
-const ITEMS_PER_PAGE = 8;
-const currentPage = Astro.url.searchParams.get("page")
-  ? parseInt(Astro.url.searchParams.get("page"))
-  : 1;
-const totalPages = Math.ceil(cardsData.length / ITEMS_PER_PAGE);
-const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-const currentCards = cardsData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 ---
 
 <Layout>
   <BannerAbout />
   <TitleSection />
 
-  <section class="cards-section">
-  <div id="cards-container" class="cards-grid">
-    {currentCards.map((title) => {
-      const slug = slugify(title);
-      return <Card title={title} slug={slug} />;
-    })}
-  </div>
-
-  {totalPages > 1 && (
-    <div class="pagination" data-total-pages={totalPages}>
-      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-        <a
-          href={`?page=${page}`}
-          class={`pagination-btn ${page === currentPage ? "active" : ""}`}
-          data-page={page}
-          key={page}
-        >
-          {page}
-        </a>
-      ))}
+  <section class="categories-section">
+    <div class="categories-grid">
+      {categories.map((category) => {
+        const slug = slugify(category);
+        return <CardCategory name={category} slug={slug} />;
+      })}
     </div>
-  )}
-</section>
-
+  </section>
 </Layout>
 
 <style>
-  .cards-section {
+  .categories-section {
     padding: var(--spacing-xxl) 0;
     background-color: var(--bv-blanco);
+    position: relative;
+  }
+
+  .categories-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-image: url("/images/svg/flores.svg");
     background-repeat: no-repeat;
     background-position: center top;
     background-size: cover;
+    z-index: 0;
+    pointer-events: none;
   }
 
-  .cards-grid {
+  .categories-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: var(--spacing-xl);
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 var(--spacing-md);
-    align-items: stretch; /* 👈 iguala la altura visual de las tarjetas */
-  }
-
-  .pagination {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-top: 2.5rem;
-    flex-wrap: wrap;
-  }
-
-  .pagination-btn {
-    padding: 0.5rem 1rem;
-    text-decoration: none;
-    color: var(--bv-verde-secundario-dark);
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius-md);
-    transition: all 0.2s ease;
-  }
-
-  .pagination-btn:hover {
-    background-color: var(--bv-amarillo);
-    color: var(--bv-verde-sec-dark);
-  }
-
-  .pagination-btn.active {
-    background-color: var(--bv-verde-secundario-dark);
-    color: white;
-    border-color: var(--bv-verde-secundario-dark);
+    align-items: stretch;
+    position: relative;
+    z-index: 1;
   }
 </style>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const container = document.getElementById("cards-container");
-    const pagination = document.querySelector(".pagination");
-
-    if (!container || !pagination) return;
-
-    pagination.addEventListener("click", async (e) => {
-      const link = e.target.closest("a[data-page]");
-      if (!link) return;
-
-      e.preventDefault();
-      const page = parseInt(link.dataset.page);
-
-      // Obtiene el HTML parcial (solo las tarjetas)
-      const res = await fetch(`?page=${page}`, { headers: { "X-Partial": "true" } });
-      const html = await res.text();
-
-      // Crea un documento temporal y reemplaza el grid de tarjetas
-      const temp = new DOMParser().parseFromString(html, "text/html");
-      const newCards = temp.getElementById("cards-container").innerHTML;
-
-      container.innerHTML = newCards;
-
-      // Actualiza la URL sin recargar la página
-      window.history.pushState({}, "", `?page=${page}`);
-
-      // Actualiza el botón activo
-      pagination.querySelectorAll("a").forEach(a => a.classList.remove("active"));
-      link.classList.add("active");
-    });
-  });
-</script>

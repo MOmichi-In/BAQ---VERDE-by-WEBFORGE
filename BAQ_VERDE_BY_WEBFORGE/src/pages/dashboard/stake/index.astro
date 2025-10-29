@@ -12,7 +12,6 @@ if (!sessionToken) {
     return Astro.redirect("/login");
 }
 
-// Borrar la cookie directamente desde el servidor si se pide
 if (Astro.url.searchParams.get("logout") === "true") {
     Astro.cookies.delete("token", { path: "/" });
     return Astro.redirect("/login");
@@ -394,7 +393,6 @@ const noticias = noticiasRes;
             btn.addEventListener("click", async (e) => {
                 const id = e.target.dataset.id;
                 if (confirm("¿Eliminar esta participación?")) {
-                    // 👇 Obtener el token de las cookies
                     const token = document.cookie
                         .split("; ")
                         .find((row) => row.startsWith("token="))
@@ -405,12 +403,11 @@ const noticias = noticiasRes;
                         return;
                     }
 
-                    console.log(import.meta.env.PUBLIC_URL_SERVER + "aswddadsa");
 
                     const res = await fetch(`${import.meta.env.PUBLIC_URL_SERVER}/news/${id}`, {
                         method: "DELETE",
                         headers: {
-                            Authorization: `Bearer ${token}`, // 👈 ¡Token agregado!
+                            Authorization: `Bearer ${token}`, 
                             "Content-Type": "application/json",
                         },
                     });
