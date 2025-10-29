@@ -1,0 +1,416 @@
+---
+// src/pages/categorias/[slug].astro
+
+import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/ambiental_cards/ambiental_card.astro";
+import { cardsData } from "../../lib/card_ambiental_data.js";
+import { slugify } from "../../utils/slugify.js";
+
+const { slug } = Astro.params;
+
+const googleIconsLink =
+    "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
+
+// Buscar la categoría original a partir del slug
+const categoryMap = new Map(cardsData.map((card) => [slugify(card.category), card.category]));
+const categoryName = categoryMap.get(slug);
+
+if (!categoryName) {
+    return Astro.redirect("/404");
+}
+
+// Filtrar los ICAUs por categoría
+const filteredCards = cardsData.filter((card) => card.category === categoryName);
+---
+
+<Layout>
+    <link href={googleIconsLink} rel="stylesheet" />
+
+    <section class="filtered-cards-section">
+        <div class="category-banner">
+            <div class="banner-gradient"></div>
+            <div class="banner-pattern"></div>
+
+            <div class="banner-content">
+                <div class="navigation-links">
+                    <a href="/" class="back-link">
+                        <span class="material-symbols-outlined">home</span>
+                        <span>Inicio</span>
+                    </a>
+                </div>
+
+                <div class="title-container">
+                    <div class="title-wrapper">
+                        <h1 class="category-title">{categoryName}</h1>
+                    </div>
+                </div>
+
+                <p class="category-subtitle">
+                    Explora los indicadores ambientales de esta categoría
+                </p>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            {
+                filteredCards.length > 0 ? (
+                    <div class="cards-grid">
+                        {filteredCards.map((card) => {
+                            const cardSlug = slugify(card.name);
+                            return (
+                                <Card title={card.name} category={card.category} slug={cardSlug} />
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div class="no-indicators">
+                        <div class="no-data-icon-wrapper">
+                            <span class="material-symbols-outlined no-data-icon">search_off</span>
+                        </div>
+                        <h2>No hay indicadores disponibles</h2>
+                        <p>
+                            La categoría <strong>{categoryName}</strong> aún no tiene indicadores
+                            registrados.
+                        </p>
+                        <a href="/categorias" class="btn-primary">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            <span>Volver a categorías</span>
+                        </a>
+                    </div>
+                )
+            }
+        </div>
+    </section>
+</Layout>
+
+<style>
+    .filtered-cards-section {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+        position: relative;
+    }
+
+    .category-banner {
+        background: linear-gradient(
+            135deg,
+            var(--bv-verde-secundario-dark) 0%,
+            #2d7a4f 50%,
+            #1e5a37 100%
+        );
+        padding: 3rem 0 6rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .banner-gradient {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .banner-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .banner-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 3rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .navigation-links {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        flex-wrap: wrap;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(255, 255, 255, 0.12);
+        padding: 0.625rem 1.25rem;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-link:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .back-link .material-symbols-outlined {
+        font-size: 20px;
+        font-variation-settings:
+            "FILL" 1,
+            "wght" 400,
+            "GRAD" 0,
+            "opsz" 20;
+    }
+
+    .title-container {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .title-wrapper {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.05) 100%
+        );
+        border-radius: 20px;
+        padding: 2.5rem 3rem;
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .title-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--bv-amarillo), transparent);
+    }
+
+    .category-title {
+        color: white;
+        font-size: 2.75rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        letter-spacing: -0.5px;
+    }
+
+    .category-subtitle {
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 1.125rem;
+        margin: 0;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+    }
+
+    .content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto; 
+        padding: 3rem 3rem 5rem; 
+        position: relative;
+        z-index: 10;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2.5rem;
+        padding: 45px;
+    }
+
+    .no-indicators {
+        background: white;
+        border-radius: 24px;
+        padding: 5rem 3rem;
+        text-align: center;
+        box-shadow:
+            0 4px 20px rgba(0, 0, 0, 0.06),
+            0 1px 4px rgba(0, 0, 0, 0.04);
+        margin-top: 2rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .no-data-icon-wrapper {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 2rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .no-data-icon {
+        font-size: 64px;
+        color: var(--bv-gris);
+        opacity: 0.4;
+    }
+
+    .no-indicators h2 {
+        color: var(--bv-verde-secundario-dark);
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+    }
+
+    .no-indicators p {
+        color: #6c757d;
+        font-size: 1.125rem;
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        background: linear-gradient(135deg, var(--bv-amarillo) 0%, #ffc107 100%);
+        color: var(--bv-azul-oscuro);
+        text-decoration: none;
+        padding: 1rem 2.25rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+    }
+
+    .btn-primary .material-symbols-outlined {
+        font-size: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-primary:hover .material-symbols-outlined {
+        transform: translateX(-4px);
+    }
+
+    @media (max-width: 768px) {
+        .category-banner {
+            padding: 2rem 0 4rem;
+        }
+
+        .banner-content {
+            padding: 0 1.5rem;
+        }
+
+        .navigation-links {
+            margin-bottom: 1.5rem;
+        }
+
+        .title-wrapper {
+            padding: 1.75rem 1.5rem;
+            border-radius: 16px;
+        }
+
+        .category-title {
+            font-size: 1.875rem;
+        }
+
+        .category-subtitle {
+            font-size: 1rem;
+        }
+
+        .content-wrapper {
+            padding: 0 1.5rem 3rem;
+            margin-top: -2rem;
+        }
+
+        .cards-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .no-indicators {
+            padding: 3.5rem 1.5rem;
+            border-radius: 20px;
+        }
+
+        .no-data-icon-wrapper {
+            width: 100px;
+            height: 100px;
+        }
+
+        .no-data-icon {
+            font-size: 52px;
+        }
+
+        .no-indicators h2 {
+            font-size: 1.5rem;
+        }
+
+        .no-indicators p {
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            padding: 0.875rem 1.75rem;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .cards-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-title {
+            font-size: 2.25rem;
+        }
+
+        .title-wrapper {
+            padding: 2rem 2.5rem;
+        }
+    }
+
+    @media (min-width: 1025px) {
+        .cards-grid {
+            gap: 3rem 2.5rem;
+        }
+    }
+</style>

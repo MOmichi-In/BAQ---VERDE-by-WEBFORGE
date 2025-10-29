@@ -16,12 +16,11 @@ export async function api(url, token, options = {}) {
     });
 
     if (!response.ok) {
-        let errorMessage = `Error del servidor: ${response.status}`; // Mensaje por defecto
+        let errorMessage = `Error del servidor: ${response.status}`;
 
         try {
             const errorData = await response.json();
 
-            // ✅ Lógica MEJORADA para "traducir" los errores de FastAPI
             if (errorData.detail) {
                 if (Array.isArray(errorData.detail)) {
                     errorMessage = errorData.detail

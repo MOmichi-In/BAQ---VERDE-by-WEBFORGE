@@ -19,7 +19,7 @@ if (!sessionToken) {
 // Obtener la participación actual por ID
 let participacion;
 try {
-    const res = await api(`/news/${id}`, sessionToken); // ← Asegúrate que esta ruta exista en tu backend
+    const res = await api(`/news/${id}`, sessionToken);
     participacion = res;
 } catch (error) {
     console.error("Error al cargar la participación:", error);
@@ -94,7 +94,6 @@ try {
                         )
                     }
 
-                    <!-- Nueva Imagen (opcional) -->
                     <div class="form-group">
                         <label for="image" class="form-label">
                             <span class="label-icon">📁</span>
@@ -481,7 +480,6 @@ try {
             const formData = new FormData(this);
             const data = {
                 title: formData.get("title")?.toString() || "",
-                // Si tu backend espera más campos, agrégales aquí
             };
 
             // Si se seleccionó una nueva imagen, convertirla a base64

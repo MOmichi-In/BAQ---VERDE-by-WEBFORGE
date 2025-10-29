@@ -16,7 +16,7 @@ if (Astro.url.searchParams.get("logout") === "true") {
 }
 
 // Obtener documentos
-const docsRes = await api(`/documents`, sessionToken); // ← ¡Agregué sessionToken aquí!
+const docsRes = await api(`/documents`, sessionToken); 
 const documentos = docsRes || [];
 ---
 

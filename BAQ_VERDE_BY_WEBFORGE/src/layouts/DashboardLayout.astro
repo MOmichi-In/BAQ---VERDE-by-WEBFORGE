@@ -1,320 +1,567 @@
 ---
 const { title } = Astro.props;
+const year = new Date().getFullYear();
 import "../styles/global.css";
 ---
 
 <!doctype html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{title} - Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} - Dashboard | Observatorio Ambiental</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      /* Reset básico */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        <!-- Font Awesome para iconos -->
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        />
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f9fafb;
+        color: #1a1a1a;
+        min-height: 100vh;
+        line-height: 1.6;
+      }
 
-        <style>
-            :root {
-                /* --------------------------------------------------
-        COLORES (reemplazados por tokends)
-        -------------------------------------------------- */
+      /* ========================
+         HEADER ADMINISTRATIVO (STICKY)
+         ======================== */
+      .header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: #279B48;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
 
-                --color-blanco: var(--bv-blanco);
-                --color-gris-claro: var(--bv-gris-claro);
-                --color-gris-medio: var(--bv-gris);
-                --color-gris-oscuro: var(--bv-gris);
-                --color-azul-oscuro: var(--bv-azul-oscuro);
-                --color-verde: var(--bv-verde-primario);
-                --color-verde-secundario: var(--bv-verde-secundario);
-                --color-amarillo: var(--bv-amarillo);
+      .header.scrolled {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
 
-                /* --------------------------------------------------
-        BORDES, ESPACIADOS Y SOMBRAS (mantener los que ya estaban)
-        -------------------------------------------------- */
+      .container-full {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 70px;
+      }
 
-                --border-radius-md: 8px;
-                --border-radius-lg: 12px;
+      /* Logo */
+      .logo a {
+        display: inline-block;
+      }
 
-                --spacing-xs: 4px;
-                --spacing-sm: 8px;
-                --spacing-md: 16px;
-                --spacing-lg: 24px;
-                --spacing-xl: 32px;
-                --spacing-xxl: 48px;
+      .logo img {
+        height: 45px;
+        display: block;
+      }
 
-                --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-                --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-                --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
-            }
+      /* Botón Hamburguesa */
+      .hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        z-index: 1001;
+      }
 
-            body {
-                margin: 0;
-                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-                /* background-color: var(--color-gris-claro); */
-                color: var(--color-azul-oscuro);
-                min-height: 100vh;
-            }
+      .hamburger span {
+        width: 25px;
+        height: 3px;
+        background: white;
+        border-radius: 3px;
+        transition: all 0.3s ease;
+      }
 
-            /* Header */
-            .header {
-                background: var(--color-blanco);
-                border-bottom: 1px solid var(--color-gris-medio);
-                padding: 0 var(--spacing-xl);
-                box-shadow: var(--shadow-sm);
-                position: sticky;
-                top: 0;
-                z-index: 100;
-            }
+      .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg) translate(7px, 7px);
+      }
 
-            .header-content {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                height: 70px;
-                max-width: 1400px;
-                margin: 0 auto;
-            }
+      .hamburger.active span:nth-child(2) {
+        opacity: 0;
+      }
 
-            .logo {
-                display: flex;
-                align-items: center;
-                gap: var(--spacing-md);
-            }
+      .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+      }
 
-            .logo-icon {
-                width: 40px;
-                height: 40px;
-                background: var(--color-verde);
-                border-radius: var(--border-radius-md);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: var(--color-blanco);
-                font-size: 20px;
-            }
+      /* Navegación Principal */
+      .nav {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
 
-            .logo-text h1 {
-                font-size: 1.4rem;
-                font-weight: 700;
-                margin: 0;
-                color: var(--color-azul-oscuro);
-            }
+      .nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+      }
 
-            .logo-text p {
-                font-size: 0.85rem;
-                color: var(--color-gris-oscuro);
-                margin: 0;
-            }
+      .nav a:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
 
-            /* Navegación Principal */
-            .main-nav {
-                display: flex;
-                align-items: center;
-                gap: var(--spacing-lg);
-            }
+      .nav a.active {
+        background: rgba(255, 255, 255, 0.25);
+        font-weight: 600;
+      }
 
-            .main-nav a {
-                color: var(--color-azul-oscuro);
-                text-decoration: none;
-                font-weight: 500;
-                padding: 6px 12px;
-                border-radius: var(--border-radius-md);
-                transition: all 0.2s ease;
-                font-size: 0.95rem;
-            }
+      .nav a i {
+        font-size: 0.9rem;
+      }
 
-            .main-nav a:hover,
-            .main-nav a.active {
-                background: var(--color-verde);
-                color: var(--color-blanco);
-            }
+      /* Acciones de Usuario */
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
 
-            .main-nav a i {
-                margin-right: 6px;
-                font-size: 0.9rem;
-            }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
 
-            /* Acciones de Header (Usuario + Logout) */
-            .header-actions {
-                display: flex;
-                align-items: center;
-                gap: var(--spacing-lg);
-                margin-left: var(--spacing-xl);
-            }
+      .user-profile:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
 
-            .user-profile {
-                display: flex;
-                align-items: center;
-                gap: var(--spacing-md);
-                padding: var(--spacing-sm) var(--spacing-md);
-                background: var(--color-gris-claro);
-                border-radius: var(--border-radius-lg);
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        background: white;
+        color: #279B48;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
 
-            .user-profile:hover {
-                background: var(--color-gris-medio);
-            }
+      .user-info h3 {
+        font-size: 0.9rem;
+        margin: 0;
+        font-weight: 600;
+        color: white;
+      }
 
-            .user-avatar {
-                width: 36px;
-                height: 36px;
-                background: var(--color-verde);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: var(--color-blanco);
-                font-weight: 600;
-                font-size: 0.9rem;
-            }
+      .user-info p {
+        font-size: 0.8rem;
+        margin: 0;
+        opacity: 0.9;
+        color: rgba(255, 255, 255, 0.9);
+      }
 
-            .user-info h3 {
-                font-size: 0.9rem;
-                font-weight: 600;
-                margin: 0;
-                color: var(--color-azul-oscuro);
-            }
+      .logout-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+      }
 
-            .user-info p {
-                font-size: 0.8rem;
-                color: var(--color-gris-oscuro);
-                margin: 0;
-            }
+      .logout-link:hover {
+        background: rgba(244, 67, 54, 0.9);
+      }
 
-            /* Logout */
-            .logout-link {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                color: var(--color-gris-oscuro);
-                text-decoration: none;
-                font-weight: 500;
-                padding: 6px 12px;
-                border-radius: var(--border-radius-md);
-                transition: all 0.2s ease;
-            }
+      /* Overlay para menú móvil */
+      .nav-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
 
-            .logout-link:hover {
-                background: #f44336;
-                color: white;
-            }
+      .nav-overlay.active {
+        display: block;
+        opacity: 1;
+      }
 
-            /* Responsive */
-            @media (max-width: 1024px) {
-                .main-nav {
-                    gap: var(--spacing-md);
-                }
-                .main-nav a {
-                    padding: 6px 8px;
-                    font-size: 0.9rem;
-                }
-            }
+      /* Contenido Principal */
+      main {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        min-height: calc(100vh - 140px);
+      }
 
-            @media (max-width: 768px) {
-                .header-content {
-                    flex-wrap: wrap;
-                    padding: 0 var(--spacing-md);
-                }
+      /* ========================
+         FOOTER ADMINISTRATIVO (MINIMALISTA)
+         ======================== */
+      .footer {
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
+        padding: 1.5rem 2rem;
+        margin-top: 4rem;
+      }
 
-                .main-nav {
-                    order: 3;
-                    width: 100%;
-                    justify-content: center;
-                    padding: var(--spacing-sm) 0;
-                    background: rgba(0, 0, 0, 0.03);
-                    margin-top: var(--spacing-sm);
-                }
+      .footer .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
 
-                .header-actions {
-                    margin-left: 0;
-                    width: 100%;
-                    justify-content: center;
-                    padding: var(--spacing-sm) 0;
-                    background: rgba(0, 0, 0, 0.02);
-                }
+      .footer-info {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
 
-                main {
-                    padding: var(--spacing-md);
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-seedling"></i>
-                    </div>
-                    <div class="logo-text">
-                        <h1>Observatorio Ambiental</h1>
-                        <p>Panel Administrativo</p>
-                    </div>
-                </div>
+      .footer-info p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
 
-                <!-- Menú de Navegación -->
-                <nav class="main-nav">
-                    <a
-                        href="/dashboard"
-                        class={Astro.url.pathname === "/dashboard" ? "active" : ""}
-                    >
-                        <i class="fas fa-home"></i> Dashboard
-                    </a>
-                    <a
-                        href="/dashboard/news"
-                        class={Astro.url.pathname.startsWith("/dashboard/news") ? "active" : ""}
-                    >
-                        <i class="fas fa-newspaper"></i> Noticias
-                    </a>
-                    <a
-                        href="/dashboard/stake"
-                        class={Astro.url.pathname.startsWith("/dashboard/stake") ? "active" : ""}
-                    >
-                        <i class="fas fa-users"></i> Participación
-                    </a>
-                    <a
-                        href="/dashboard/document"
-                        class={Astro.url.pathname.startsWith("/dashboard/document") ? "active" : ""}
-                    >
-                        <i class="fas fa-file-alt"></i> Documentos
-                    </a>
-                    <a
-                        href="/dashboard/stations"
-                        class={Astro.url.pathname.startsWith("/dashboard/stations") ? "active" : ""}
-                    >
-                        <i class="fas fa-map-marker-alt"></i> Estaciones
-                    </a>
-                </nav>
+      .footer-links {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
 
-                <!-- Acciones (Usuario + Logout) -->
-                <div class="header-actions">
-                    <div class="user-profile">
-                        <div class="user-avatar">AD</div>
-                        <div class="user-info">
-                            <h3>Administrador</h3>
-                            <p>Super usuario</p>
-                        </div>
-                        <i
-                            class="fas fa-chevron-down"
-                            style="color: var(--color-gris-oscuro); font-size: 0.8rem;"></i>
-                    </div>
+      .footer-links a {
+        color: #6b7280;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s ease;
+      }
 
-                    <a href="/dashboard?logout=true" class="logout-link">
-                        <i class="fas fa-door-open"></i> Salir
-                    </a>
-                </div>
+      .footer-links a:hover {
+        color: #279B48;
+      }
+
+      .footer-links a i {
+        margin-right: 0.3rem;
+      }
+
+      /* ========================
+         RESPONSIVE
+         ======================== */
+      @media (max-width: 1024px) {
+        .container-full {
+          padding: 0 1.5rem;
+        }
+
+        .nav {
+          gap: 0.75rem;
+        }
+
+        .nav a {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.9rem;
+        }
+
+        .header-actions {
+          gap: 1rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .hamburger {
+          display: flex;
+        }
+
+        .nav {
+          position: fixed;
+          top: 0;
+          right: -300px;
+          width: 300px;
+          height: 100vh;
+          background: #279B48;
+          flex-direction: column;
+          justify-content: flex-start;
+          padding: 5rem 2rem 2rem;
+          gap: 0.5rem;
+          transition: right 0.3s ease;
+          z-index: 999;
+          overflow-y: auto;
+        }
+
+        .nav.active {
+          right: 0;
+          box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav a {
+          width: 100%;
+          justify-content: flex-start;
+          padding: 0.75rem 1rem;
+          font-size: 1rem;
+        }
+
+        .header-actions {
+          position: fixed;
+          bottom: 0;
+          right: -300px;
+          width: 300px;
+          flex-direction: column;
+          background: rgba(0, 0, 0, 0.9);
+          padding: 1.5rem;
+          gap: 1rem;
+          transition: right 0.3s ease;
+          z-index: 999;
+        }
+
+        .nav.active ~ .header-actions {
+          right: 0;
+        }
+
+        .user-profile {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .logout-link {
+          width: 100%;
+          justify-content: center;
+          background: rgba(244, 67, 54, 0.9);
+        }
+
+        main {
+          padding: 1.25rem;
+        }
+
+        .footer {
+          padding: 1.25rem 1rem;
+        }
+
+        .footer .container {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
+        .footer-info {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container-full {
+          padding: 0 1rem;
+        }
+
+        .logo img {
+          height: 38px;
+        }
+
+        .footer-links {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ========================
+         HEADER ADMINISTRATIVO
+         ======================== -->
+    <header class="header" id="mainNav">
+      <div class="container-full">
+        <div class="logo">
+          <a href="/">
+            <img src="/images/logo.png" alt="Observatorio Ambiental" />
+          </a>
+        </div>
+
+        <!-- Botón Hamburguesa -->
+        <button class="hamburger" id="hamburger" aria-label="Menú">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <!-- Navegación -->
+        <nav class="nav" id="mainNavMenu">
+          <a
+            href="/dashboard"
+            class={Astro.url.pathname === "/dashboard" ? "active" : ""}
+          >
+            <i class="fas fa-home"></i> Dashboard
+          </a>
+          <a
+            href="/dashboard/news"
+            class={Astro.url.pathname.startsWith("/dashboard/news") ? "active" : ""}
+          >
+            <i class="fas fa-newspaper"></i> Noticias
+          </a>
+          <a
+            href="/dashboard/stake"
+            class={Astro.url.pathname.startsWith("/dashboard/stake") ? "active" : ""}
+          >
+            <i class="fas fa-users"></i> Participación
+          </a>
+          <a
+            href="/dashboard/document"
+            class={Astro.url.pathname.startsWith("/dashboard/document") ? "active" : ""}
+          >
+            <i class="fas fa-file-alt"></i> Documentos
+          </a>
+          <a
+            href="/dashboard/stations"
+            class={Astro.url.pathname.startsWith("/dashboard/stations") ? "active" : ""}
+          >
+            <i class="fas fa-map-marker-alt"></i> Estaciones
+          </a>
+        </nav>
+
+        <!-- Acciones de Usuario -->
+        <div class="header-actions">
+          <div class="user-profile">
+            <div class="user-avatar">AD</div>
+            <div class="user-info">
+              <h3>Administrador</h3>
+              <p>Super usuario</p>
             </div>
-        </header>
+          </div>
 
-        <!-- Contenido dinámico -->
-        <main>
-            <slot />
-        </main>
-    </body>
+          <a href="/dashboard?logout=true" class="logout-link">
+            <i class="fas fa-door-open"></i> Salir
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Overlay para menú móvil -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- ========================
+         CONTENIDO PRINCIPAL
+         ======================== -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- ========================
+         FOOTER ADMINISTRATIVO
+         ======================== -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-info">
+          <p>&copy; {year} Observatorio Ambiental - Panel Administrativo</p>
+          <p>Versión 1.0.0</p>
+        </div>
+        <div class="footer-links">
+     
+          <a href="/dashboard">
+            <i class="fas fa-cog"></i> Configuración
+          </a>
+          <a href="/">
+            <i class="fas fa-globe"></i> Ver sitio público
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ========================
+         JAVASCRIPT
+         ======================== -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // === HEADER SCROLL BEHAVIOR ===
+        const header = document.getElementById("mainNav");
+        const scrollThreshold = 50;
+
+        function updateHeader() {
+          if (window.scrollY > scrollThreshold) {
+            header?.classList.add("scrolled");
+          } else {
+            header?.classList.remove("scrolled");
+          }
+        }
+
+        window.addEventListener("scroll", updateHeader);
+        updateHeader();
+
+        // === MENÚ HAMBURGUESA ===
+        const hamburger = document.getElementById("hamburger");
+        const nav = document.getElementById("mainNavMenu");
+        const navOverlay = document.getElementById("navOverlay");
+        const navLinks = document.querySelectorAll(".nav a");
+
+        // Toggle menú
+        hamburger?.addEventListener("click", () => {
+          hamburger.classList.toggle("active");
+          nav?.classList.toggle("active");
+          navOverlay?.classList.toggle("active");
+          document.body.style.overflow = nav?.classList.contains("active") ? "hidden" : "";
+        });
+
+        // Cerrar menú al hacer clic en overlay
+        navOverlay?.addEventListener("click", () => {
+          hamburger?.classList.remove("active");
+          nav?.classList.remove("active");
+          navOverlay?.classList.remove("active");
+          document.body.style.overflow = "";
+        });
+
+        // Cerrar menú al hacer clic en un enlace
+        navLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            hamburger?.classList.remove("active");
+            nav?.classList.remove("active");
+            navOverlay?.classList.remove("active");
+            document.body.style.overflow = "";
+          });
+        });
+
+        // Cerrar menú con ESC
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && nav?.classList.contains("active")) {
+            hamburger?.classList.remove("active");
+            nav?.classList.remove("active");
+            navOverlay?.classList.remove("active");
+            document.body.style.overflow = "";
+          }
+        });
+      });
+    </script>
+  </body>
 </html>

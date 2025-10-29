@@ -4,12 +4,10 @@ import { getStations } from "../../lib/stationsService";
 const cookieStore = Astro.cookies;
 const sessionToken = cookieStore.get("token")?.value || null;
 
-console.log("👉 Token de sesión leído en .astro:", sessionToken);
 
 let stations = [];
 try {
     const data = await getStations(sessionToken);
-    console.log("👉 Respuesta cruda de la API en .astro:", data);
 
     if (Array.isArray(data)) {
         stations = data;
@@ -27,7 +25,7 @@ const validStations = stations.filter(
     (s) => typeof s.lat === "number" && typeof s.lon === "number" && !isNaN(s.lat) && !isNaN(s.lon)
 );
 
-console.log("✅ Estaciones válidas para el mapa:", validStations);
+
 ---
 
 <!-- Estilos de Leaflet -->
@@ -2769,7 +2767,6 @@ console.log("✅ Estaciones válidas para el mapa:", validStations);
                 imageObserver.observe(img);
             });
 
-            console.log("✅ Geoportal inicializado correctamente");
         }
 
         // ============================================

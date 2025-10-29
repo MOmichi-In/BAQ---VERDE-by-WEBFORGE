@@ -28,7 +28,7 @@ import "../../styles/global.css";
         box-shadow: var(--shadow-md);
         display: flex;
         flex-direction: column;
-        overflow: hidden; /* mantiene bordes limpios */
+        overflow: hidden; 
     }
 
     .card-content {
@@ -38,7 +38,7 @@ import "../../styles/global.css";
         flex-direction: column;
         justify-content: flex-start;
         gap: var(--spacing-sm);
-        overflow: hidden; /* 👈 evita que el texto empuje más allá */
+        overflow: hidden; 
     }
 
     .card-description,
@@ -70,7 +70,7 @@ import "../../styles/global.css";
     }
 
     .card-buttom {
-        margin-top: auto; /* 👈 siempre al fondo */
+        margin-top: auto; 
         display: block;
         text-align: center;
         padding: var(--spacing-sm) var(--spacing-md);
@@ -89,7 +89,7 @@ import "../../styles/global.css";
 
     @media (max-width: 900px) {
         .card {
-            height: auto; /* en móvil que se adapte al contenido */
+            height: auto; 
         }
         .card-image {
             height: 180px;
