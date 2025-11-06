@@ -93,6 +93,22 @@ const noticias = noticiasRes;
                         </div>
                     ))
                 }
+
+                {
+                    noticias.length === 0 && (
+                        <div class="empty-state">
+                            <div class="empty-icon">🤝</div>
+                            <h3 class="empty-title">No hay noticia registradas</h3>
+                            <p class="empty-description">
+                                Comienza creando la primera Noticia
+                            </p>
+                            <a href="/dashboard/news/create" class="btn-empty-action">
+                                <span class="btn-icon">+</span>
+                                Crear primera noticia
+                            </a>
+                        </div>
+                    )
+                }
             </div>
         </div>
     </div>
@@ -320,6 +336,52 @@ const noticias = noticiasRes;
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+         /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(76, 175, 80, 0.05);
+            border-radius: var(--border-radius-lg);
+            border: 2px dashed var(--color-verde-secundario);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-azul-oscuro);
+            margin: 0 0 1rem 0;
+        }
+        .empty-description {
+            color: var(--color-gris-medio);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-empty-action {
+            background: var(--color-verde);
+            color: var(--color-blanco);
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius-md);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+        .btn-empty-action:hover {
+            background: var(--color-verde-secundario);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
     </style>
 
