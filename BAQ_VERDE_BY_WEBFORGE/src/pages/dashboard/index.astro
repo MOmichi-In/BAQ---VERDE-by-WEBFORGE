@@ -19,30 +19,6 @@ if (Astro.url.searchParams.get("logout") === "true") {
 <Layout title="Panel de Administración">
     <!-- Welcome Section -->
     <div class="dashboard-container">
-        <section class="welcome-section">
-            <div class="welcome-content">
-                <h2>Panel de Administración</h2>
-                <p>
-                    Gestiona y supervisa todos los aspectos del Observatorio Ambiental de
-                    Barranquilla
-                </p>
-
-                <div class="welcome-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
-                        <div class="stat-label">Noticias publicadas</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
-                        <div class="stat-label">Reportes ciudadanos</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
-                        <div class="stat-label">Documentos oficiales</div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- Quick Actions -->
         <section class="quick-actions">
@@ -99,7 +75,7 @@ if (Astro.url.searchParams.get("logout") === "true") {
             max-width: 95vw;
             margin: 0 auto;
             min-height: 100vh;
-            background: var(--bv-gris-claro);
+
         }
 
         /* Welcome Section */
